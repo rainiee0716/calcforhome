@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
+import ToolIcon from '../components/ToolIcon.astro';
 import { calculateGravel } from '../lib/calculations';
 import { breadcrumbSchema, softwareApplicationSchema } from '../lib/schema';
 import { LAST_UPDATED } from '../lib/site';
@@ -26,9 +27,14 @@ const schema = [
   <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: 'Gravel for Driveway Calculator' }]} />
 
   <section class="card">
-    <h1>Gravel for Driveway Calculator</h1>
-    <p class="lead">How much gravel do you need for a driveway? Enter the size and depth — we'll give
-      you cubic yards and tons, plus a sensible waste margin.</p>
+    <div class="page-head">
+      <span class="tool-icon"><ToolIcon slug="gravel-driveway-calculator" /></span>
+      <div>
+        <h1>Gravel for Driveway Calculator</h1>
+        <p class="lead">How much gravel do you need for a driveway? Enter the size and depth — we'll give
+          you cubic yards and tons, plus a sensible waste margin.</p>
+      </div>
+    </div>
 
     <form id="calculator-form" class="calc" novalidate>
       <div class="row">

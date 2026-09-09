@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
+import ToolIcon from '../components/ToolIcon.astro';
 import { calculateConcrete } from '../lib/calculations';
 import { breadcrumbSchema, softwareApplicationSchema } from '../lib/schema';
 import { LAST_UPDATED } from '../lib/site';
@@ -26,9 +27,14 @@ const schema = [
   <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: 'Concrete Calculator' }]} />
 
   <section class="card">
-    <h1>Concrete Calculator</h1>
-    <p class="lead">How much concrete for your slab or footing? Enter the dimensions and we'll give
-      you the volume in cubic feet, cubic yards, and the number of 80&nbsp;lb bags.</p>
+    <div class="page-head">
+      <span class="tool-icon"><ToolIcon slug="concrete-calculator" /></span>
+      <div>
+        <h1>Concrete Calculator</h1>
+        <p class="lead">How much concrete for your slab or footing? Enter the dimensions and we'll give
+          you the volume in cubic feet, cubic yards, and the number of 80&nbsp;lb bags.</p>
+      </div>
+    </div>
 
     <form id="calculator-form" class="calc" novalidate>
       <div class="row">

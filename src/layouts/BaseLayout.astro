@@ -21,7 +21,7 @@ const year = new Date().getFullYear();
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#2f6df0" />
+  <meta name="theme-color" content="#0b1220" />
   <title>{title}</title>
   <meta name="description" content={description} />
   {noindex && <meta name="robots" content="noindex, follow" />}
@@ -51,7 +51,16 @@ const year = new Date().getFullYear();
   <a class="skip-link" href="#main-content">Skip to main content</a>
   <header class="site">
     <div class="wrap">
-      <a class="logo" href="/" aria-label={`${SITE_NAME} home`}>CalcFor<span>Home</span></a>
+      <a class="logo" href="/" aria-label={`${SITE_NAME} home`}>
+        <span class="logo-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 10.5 12 3l9 7.5" />
+            <path d="M5.5 9.5V21h13V9.5" />
+            <path d="M10 21v-6h4v6" />
+          </svg>
+        </span>
+        CalcFor<span>Home</span>
+      </a>
       <nav class="top" aria-label="Primary">
         <a href="/">Home</a>
         <a href="/concrete-calculator/">Concrete</a>
@@ -68,17 +77,45 @@ const year = new Date().getFullYear();
 
   <footer class="site">
     <div class="wrap">
-      <span>© {year} {SITE_NAME}</span>
-      <span>
-        <a href="/">Home</a> · <a href="/concrete-calculator/">Concrete</a> ·
-        <a href="/concrete-bags-calculator/">Bags</a> ·
-        <a href="/gravel-driveway-calculator/">Gravel</a> ·
-        <a href="/concrete-fence-post-calculator/">Fence Post</a> ·
-        <a href="/about/">About</a> · <a href="/privacy/">Privacy</a> ·
-        <a href="/terms/">Terms</a> ·
-        <a href="/affiliate-disclosure/">Affiliate disclosure</a> ·
-        <a href="/contact/">Contact</a>
-      </span>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="logo" href="/" aria-label={`${SITE_NAME} home`}>
+            <span class="logo-mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 10.5 12 3l9 7.5" />
+                <path d="M5.5 9.5V21h13V9.5" />
+                <path d="M10 21v-6h4v6" />
+              </svg>
+            </span>
+            CalcFor<span>Home</span>
+          </a>
+          <p>Free, single-purpose calculators for DIY concrete and gravel projects. Exact
+            quantities, transparent math, no sign-up — your inputs never leave your device.</p>
+        </div>
+        <nav class="footer-col" aria-label="Calculators">
+          <h4>Calculators</h4>
+          <ul>
+            <li><a href="/concrete-calculator/">Concrete Calculator</a></li>
+            <li><a href="/concrete-bags-calculator/">Concrete Bags Calculator</a></li>
+            <li><a href="/gravel-driveway-calculator/">Gravel for Driveway</a></li>
+            <li><a href="/concrete-fence-post-calculator/">Concrete for Fence Post</a></li>
+          </ul>
+        </nav>
+        <nav class="footer-col" aria-label="Company">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="/about/">About</a></li>
+            <li><a href="/contact/">Contact</a></li>
+            <li><a href="/privacy/">Privacy</a></li>
+            <li><a href="/terms/">Terms</a></li>
+            <li><a href="/affiliate-disclosure/">Affiliate disclosure</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="footer-bottom">
+        <span>© {year} {SITE_NAME}. All rights reserved.</span>
+        <span>Built for homeowners &amp; DIYers.</span>
+      </div>
     </div>
   </footer>
 </body>

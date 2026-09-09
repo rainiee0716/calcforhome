@@ -1,0 +1,53 @@
+---
+interface Props {
+  slug: string;
+}
+
+const { slug } = Astro.props;
+---
+
+{slug === 'concrete-calculator' && (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M12 2 2 7l10 5 10-5-10-5Z" />
+    <path d="m2 17 10 5 10-5" />
+    <path d="m2 12 10 5 10-5" />
+  </svg>
+)}
+{slug === 'concrete-bags-calculator' && (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z" />
+    <path d="M12 22V12" />
+    <path d="m3.3 7 7.7 4.41a2 2 0 0 0 2 0L20.7 7" />
+    <path d="m7.5 4.27 9 5.15" />
+  </svg>
+)}
+{slug === 'gravel-driveway-calculator' && (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="m8 3 4 8 5-5 5 15H2L8 3z" />
+  </svg>
+)}
+{slug === 'concrete-fence-post-calculator' && (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M4 3 2 5v15l2 2 2-2V5L4 3Z" />
+    <path d="M12 3l-2 2v15l2 2 2-2V5l-2-2Z" />
+    <path d="M20 3l-2 2v15l2 2 2-2V5l-2-2Z" />
+    <path d="M4 8h4" />
+    <path d="M12 8h4" />
+    <path d="M4 16h4" />
+    <path d="M12 16h4" />
+  </svg>
+)}
+{!['concrete-calculator', 'concrete-bags-calculator', 'gravel-driveway-calculator', 'concrete-fence-post-calculator'].includes(slug) && (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <rect width="16" height="20" x="4" y="2" rx="2" />
+    <line x1="8" x2="16" y1="6" y2="6" />
+    <line x1="16" x2="16" y1="14" y2="18" />
+    <path d="M16 10h.01" />
+    <path d="M12 10h.01" />
+    <path d="M8 10h.01" />
+    <path d="M12 14h.01" />
+    <path d="M8 14h.01" />
+    <path d="M12 18h.01" />
+    <path d="M8 18h.01" />
+  </svg>
+)}

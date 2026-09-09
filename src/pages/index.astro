@@ -1,10 +1,29 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import ToolIcon from '../components/ToolIcon.astro';
 import { tools } from '../lib/tools';
 import { SITE_NAME } from '../lib/site';
 import { websiteSchema } from '../lib/schema';
 
 const schema = websiteSchema(Astro.site ?? new URL(Astro.url.origin));
+
+const features = [
+  {
+    title: 'Exact quantities',
+    text: 'Bags, cubic yards, or tons — precise numbers you can hand straight to the supplier, with waste already built in.',
+    icon: 'target',
+  },
+  {
+    title: 'Math you can audit',
+    text: 'Every tool shows its formula and assumptions, so you can verify the figure instead of trusting a black box.',
+    icon: 'formula',
+  },
+  {
+    title: 'Free & private',
+    text: 'No accounts, no sign-up. Calculations run instantly in your browser and your inputs never leave your device.',
+    icon: 'shield',
+  },
+];
 ---
 
 <BaseLayout
@@ -12,36 +31,90 @@ const schema = websiteSchema(Astro.site ?? new URL(Astro.url.origin));
   description="Free DIY calculators for concrete and gravel projects: how many bags of concrete you need, cubic yards for a slab, gravel for a driveway, and concrete per fence post. Fast, accurate, no sign-up."
   schema={schema}
 >
-  <section class="card">
-    <h1>Free Concrete &amp; Gravel Calculators</h1>
+  <section class="hero">
+    <span class="hero-badge"><span class="dot"></span>Free · Instant · No sign-up</span>
+    <h1>Order the right amount, <span class="accent">every time.</span></h1>
     <p class="lead">Before you buy, know exactly how much material to get. Each tool does one job,
       runs instantly in your browser, and shows its math — so you stop over-ordering or running short.</p>
+    <div class="hero-actions">
+      <a class="btn" href="#calculators">Browse calculators</a>
+      <a class="btn-ghost" href="#why">Why calculate first</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><b>{tools.length}</b><span>Pro-grade tools</span></div>
+      <div class="stat"><b>100%</b><span>Free, forever</span></div>
+      <div class="stat"><b>0</b><span>Sign-up required</span></div>
+      <div class="stat"><b>&lt;1s</b><span>Instant results</span></div>
+    </div>
   </section>
 
   <!-- ===== AdSense: top of page (replace comment block with your <ins> tag) =====
   <div class="ad"><div class="box">[AdSense — top banner]</div></div>
   -->
 
-  <section class="card">
-    <h2>Our calculators</h2>
-    <div class="tools">
-      {tools.map((t) => (
-        <a class="tool" href={`/${t.slug}/`}>
-          <b>{t.title}</b><span>{t.blurb}</span>
-        </a>
-      ))}
-    </div>
-  </section>
+  <div class="section-head" id="calculators">
+    <span class="eyebrow">Our calculators</span>
+    <h2>Pick a tool, get your number</h2>
+    <p>Purpose-built for the most common DIY concrete and gravel jobs around the house.</p>
+  </div>
+
+  <div class="tools">
+    {tools.map((t) => (
+      <a class="tool" href={`/${t.slug}/`}>
+        <span class="tool-icon"><ToolIcon slug={t.slug} /></span>
+        <b>{t.title}</b>
+        <span>{t.blurb}</span>
+        <span class="go">
+          Open tool
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14" />
+            <path d="m12 5 7 7-7 7" />
+          </svg>
+        </span>
+      </a>
+    ))}
+  </div>
 
   <!-- ===== AdSense: bottom of hub =====
   <div class="ad"><div class="box">[AdSense — bottom banner]</div></div>
   -->
 
-  <section class="card">
+  <div class="section-head" id="why">
+    <span class="eyebrow">Why it matters</span>
     <h2>Why calculate before you buy?</h2>
     <p>Concrete and gravel are sold by the bag or the cubic yard, and most people guess. A slab an
-      inch too thick or a driveway a foot too short wastes real money. These tools turn your
-      measurements into exact quantities — bags, cubic yards, or tons — using standard yield figures,
-      so you can order with confidence and adjust for waste.</p>
-  </section>
+      inch too thick or a driveway a foot too short wastes real money.</p>
+  </div>
+
+  <div class="features">
+    {features.map((f) => (
+      <div class="feature">
+        <span class="tool-icon">
+          {f.icon === 'target' && (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" />
+              <circle cx="12" cy="12" r="6" />
+              <circle cx="12" cy="12" r="2" />
+            </svg>
+          )}
+          {f.icon === 'formula' && (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect width="16" height="20" x="4" y="2" rx="2" />
+              <line x1="8" x2="16" y1="6" y2="6" />
+              <path d="m8 12 3 3-3 3" />
+              <path d="M13 18h4" />
+            </svg>
+          )}
+          {f.icon === 'shield' && (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+              <path d="m9 12 2 2 4-4" />
+            </svg>
+          )}
+        </span>
+        <h3>{f.title}</h3>
+        <p>{f.text}</p>
+      </div>
+    ))}
+  </div>
 </BaseLayout>

@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
+import ToolIcon from '../components/ToolIcon.astro';
 import { calculateFencePostConcrete } from '../lib/calculations';
 import { breadcrumbSchema, softwareApplicationSchema } from '../lib/schema';
 import { LAST_UPDATED } from '../lib/site';
@@ -26,9 +27,14 @@ const schema = [
   <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: 'Concrete for Fence Post Calculator' }]} />
 
   <section class="card">
-    <h1>Concrete for Fence Post Calculator</h1>
-    <p class="lead">How much concrete per fence post? Enter your post count, hole size, and post
-      dimensions — we'll subtract the buried post volume and give you bags per hole plus the total.</p>
+    <div class="page-head">
+      <span class="tool-icon"><ToolIcon slug="concrete-fence-post-calculator" /></span>
+      <div>
+        <h1>Concrete for Fence Post Calculator</h1>
+        <p class="lead">How much concrete per fence post? Enter your post count, hole size, and post
+          dimensions — we'll subtract the buried post volume and give you bags per hole plus the total.</p>
+      </div>
+    </div>
 
     <form id="calculator-form" class="calc" novalidate>
       <div class="row">
