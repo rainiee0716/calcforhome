@@ -1,0 +1,73 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const schema = {
+  '@context': 'https://schema.org', '@type': 'SoftwareApplication',
+  'name': 'Concrete Calculator', 'applicationCategory': 'UtilitiesApplication',
+  'operatingSystem': 'Web', 'offers': { '@type': 'Offer', 'price': '0', 'priceCurrency': 'USD' },
+};
+---
+
+<BaseLayout
+  title="Concrete Calculator — Slab & Footing Volume in Cubic Yards"
+  description="Free concrete calculator: enter slab length, width and thickness to get the volume in cubic feet and cubic yards, plus how many 80 lb bags you need. Works for slabs, footings and pads."
+  schema={schema}
+>
+  <section class="card">
+    <h1>Concrete Calculator</h1>
+    <p class="lead">How much concrete for your slab or footing? Enter the dimensions and we'll give
+      you the volume in cubic feet, cubic yards, and the number of 80&nbsp;lb bags.</p>
+
+    <div class="calc">
+      <div class="row"><label for="len">Length (ft)</label><input id="len" type="number" min="0.1" step="0.1" value="10"></div>
+      <div class="row"><label for="wid">Width (ft)</label><input id="wid" type="number" min="0.1" step="0.1" value="10"></div>
+      <div class="row"><label for="th">Thickness (in)</label><input id="th" type="number" min="0.5" step="0.5" value="4"></div>
+      <div class="row"><label for="waste">Waste (%)</label><input id="waste" type="number" min="0" max="30" step="1" value="10"></div>
+      <button class="btn" id="go">Calculate</button>
+    </div>
+
+    <div class="result" id="out" hidden>
+      <h3>You need about</h3>
+      <p><span class="big" id="cy">—</span> cubic yards</p>
+      <ul>
+        <li>Cubic feet: <b id="cf">—</b></li>
+        <li>80 lb bags: <b id="bags">—</b></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== AdSense: in-content =====
+  <div class="ad"><div class="box">[AdSense — in-article]</div></div>
+  -->
+
+  <section class="card">
+    <h2>How the concrete calculator works</h2>
+    <p><code>volume = length × width × (thickness ÷ 12)</code> gives cubic feet. Divide by 27 for
+      cubic yards. One 80&nbsp;lb bag of concrete mix yields about <b>0.60 cubic feet</b>, so we
+      divide the total volume by 0.60 and round up.</p>
+    <p>Add 10% waste for slabs poured on uneven ground, and 15% if you're a first-timer — it's cheaper
+      to have a little left than to stop mid-pour. For exact bag counts by size, use the
+      <a href="/concrete-bags-calculator/">Concrete Bags Calculator</a>.</p>
+    <h3>Related tools</h3>
+    <p><a href="/concrete-bags-calculator/">Concrete bags calculator</a> · <a href="/gravel-driveway-calculator/">Gravel for driveway</a> · <a href="/concrete-fence-post-calculator/">Concrete for fence post</a></p>
+  </section>
+</BaseLayout>
+
+<script>
+function calc(){
+  var L=parseFloat((document.getElementById('len') as HTMLInputElement).value),
+      W=parseFloat((document.getElementById('wid') as HTMLInputElement).value),
+      th=parseFloat((document.getElementById('th') as HTMLInputElement).value),
+      waste=parseFloat((document.getElementById('waste') as HTMLInputElement).value)||0;
+  if(!(L>0&&W>0&&th>0)) return;
+  var cf=L*W*(th/12);
+  var withWaste=cf*(1+waste/100);
+  var cy=withWaste/27;
+  var bags=Math.ceil(withWaste/0.60);
+  document.getElementById('cy')!.textContent=cy.toFixed(2);
+  document.getElementById('cf')!.textContent=cf.toFixed(1);
+  document.getElementById('bags')!.textContent=bags.toLocaleString();
+  document.getElementById('out')!.removeAttribute('hidden');
+}
+document.getElementById('go')!.addEventListener('click',calc);
+</script>

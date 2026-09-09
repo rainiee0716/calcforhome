@@ -1,0 +1,58 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE_NAME } from '../lib/site';
+---
+
+<BaseLayout
+  title={`Privacy Policy — ${SITE_NAME}`}
+  description={`How ${SITE_NAME} collects, uses, and protects your data, and how Google AdSense uses cookies.`}
+>
+  <section class="card">
+    <h1>Privacy Policy</h1>
+    <p class="lead">This page explains what data {SITE_NAME} collects, how it is used, and
+      how advertising partners (including Google AdSense) use cookies.</p>
+    <p>Last updated: 2026.</p>
+  </section>
+
+  <section class="card">
+    <h2>1. Information we collect</h2>
+    <p>{SITE_NAME} is a set of client-side tools. The calculators run entirely in your browser —
+      the numbers you type (project dimensions, etc.) are <b>not sent to our servers</b> and are
+      not stored. We do not require an account and do not collect personal information to use the tools.</p>
+    <p>We may collect anonymous, aggregated usage data (such as page views and country) through
+      privacy-friendly analytics to understand which tools are useful. This data cannot identify you.</p>
+  </section>
+
+  <section class="card">
+    <h2>2. Advertising and cookies (Google AdSense)</h2>
+    <p>This site uses Google AdSense to display ads. Google and its partners may use cookies (including
+      the DART cookie) to serve ads based on your prior visits to this or other websites.</p>
+    <ul>
+      <li>You can opt out of personalized advertising by visiting
+        <a href="https://www.google.com/settings/ads" rel="nofollow">Google Ads Settings</a>.</li>
+      <li>You can learn how Google uses data by reviewing
+        <a href="https://policies.google.com/technologies/ads" rel="nofollow">Google's advertising privacy policy</a>.</li>
+      <li>You may disable cookies in your browser settings at any time; this will not break the calculators.</li>
+    </ul>
+    <p>Third-party ad vendors may use cookies for measurement and targeting. We do not control their
+      data practices; please consult their respective privacy policies.</p>
+  </section>
+
+  <section class="card">
+    <h2>3. Children's privacy</h2>
+    <p>{SITE_NAME} is not directed at children under 13. We do not knowingly collect personal
+      information from children.</p>
+  </section>
+
+  <section class="card">
+    <h2>4. Your choices</h2>
+    <p>You may request removal of any data we hold about you by contacting us via the
+      <a href="/contact/">Contact page</a>. We will respond within a reasonable timeframe.</p>
+  </section>
+
+  <section class="card">
+    <h2>5. Changes</h2>
+    <p>We may update this policy. Material changes will be reflected by the "Last updated" date above.</p>
+    <p class="muted">Contact: see our <a href="/contact/">Contact page</a>.</p>
+  </section>
+</BaseLayout>

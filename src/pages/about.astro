@@ -1,0 +1,37 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE_NAME } from '../lib/site';
+---
+
+<BaseLayout
+  title={`About — ${SITE_NAME}`}
+  description={`Why ${SITE_NAME} exists: fast, transparent, free calculators for concrete and gravel projects, with the math shown.`}
+>
+  <section class="card">
+    <h1>About {SITE_NAME}</h1>
+    <p class="lead">A small collection of free, single-purpose calculators for DIY concrete and gravel
+      projects — how many bags of concrete you need, how much gravel for a driveway, concrete per fence post.</p>
+  </section>
+
+  <section class="card">
+    <h2>What we believe</h2>
+    <p>Most search results for these questions mix ads, long blog posts, and half-answers. We take a
+      different approach: each tool does <b>one job</b>, runs instantly in your browser, and
+      <b>shows its math</b> so you can trust the number and adjust it to your situation.</p>
+  </section>
+
+  <section class="card">
+    <h2>How the tools work</h2>
+    <p>Every calculator uses a published, standard formula (cubic volume for slabs and cylinders,
+      standard bag yields, and typical gravel weight) and states its assumptions on the page. They are
+      for general guidance, not a substitute for professional advice.</p>
+    <p>Tools are free, require no account, and your inputs never leave your device.</p>
+  </section>
+
+  <section class="card">
+    <h2>Who runs it</h2>
+    <p>{SITE_NAME} is an independent project built for homeowners and DIYers. We earn a small
+      amount from non-intrusive ads so the tools can stay free. Questions? Visit the
+      <a href="/contact/">Contact page</a>.</p>
+  </section>
+</BaseLayout>

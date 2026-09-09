@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { tools } from '../lib/tools';
+import { SITE_NAME, SITE_URL } from '../lib/site';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  'name': SITE_NAME,
+  'url': `${SITE_URL}/`,
+};
+---
+
+<BaseLayout
+  title={`${SITE_NAME} — Free Concrete & Gravel Calculators`}
+  description="Free DIY calculators for concrete and gravel projects: how many bags of concrete you need, cubic yards for a slab, gravel for a driveway, and concrete per fence post. Fast, accurate, no sign-up."
+  schema={schema}
+>
+  <section class="card">
+    <h1>Free Concrete &amp; Gravel Calculators</h1>
+    <p class="lead">Before you buy, know exactly how much material to get. Each tool does one job,
+      runs instantly in your browser, and shows its math — so you stop over-ordering or running short.</p>
+  </section>
+
+  <!-- ===== AdSense: top of page (replace comment block with your <ins> tag) =====
+  <div class="ad"><div class="box">[AdSense — top banner]</div></div>
+  -->
+
+  <section class="card">
+    <h2>Our calculators</h2>
+    <div class="tools">
+      {tools.map((t) => (
+        <a class="tool" href={`/${t.slug}/`}>
+          <b>{t.title}</b><span>{t.blurb}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- ===== AdSense: bottom of hub =====
+  <div class="ad"><div class="box">[AdSense — bottom banner]</div></div>
+  -->
+
+  <section class="card">
+    <h2>Why calculate before you buy?</h2>
+    <p>Concrete and gravel are sold by the bag or the cubic yard, and most people guess. A slab an
+      inch too thick or a driveway a foot too short wastes real money. These tools turn your
+      measurements into exact quantities — bags, cubic yards, or tons — using standard yield figures,
+      so you can order with confidence and adjust for waste.</p>
+  </section>
+</BaseLayout>

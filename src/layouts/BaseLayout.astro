@@ -1,0 +1,55 @@
+---
+import { SITE_NAME } from '../lib/site';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  schema?: Record<string, any>;
+}
+
+const { title, description, schema } = Astro.props;
+// Canonical is derived from the configured `site` + the page's own path, so it
+// stays correct no matter which page uses the layout.
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const year = new Date().getFullYear();
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonical} />
+  {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
+</head>
+<body>
+  <header class="site">
+    <div class="wrap">
+      <div class="logo">CalcFor<span>Home</span></div>
+      <nav class="top">
+        <a href="/">Home</a>
+        <a href="/concrete-calculator/">Concrete</a>
+        <a href="/concrete-bags-calculator/">Bags</a>
+        <a href="/gravel-driveway-calculator/">Gravel</a>
+        <a href="/concrete-fence-post-calculator/">Fence Post</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <slot />
+  </main>
+
+  <footer class="site">
+    <div class="wrap">
+      <span>© {year} {SITE_NAME}</span>
+      <span>
+        <a href="/">Home</a> · <a href="/concrete-calculator/">Concrete</a> · <a href="/concrete-bags-calculator/">Bags</a> · <a href="/gravel-driveway-calculator/">Gravel</a> · <a href="/concrete-fence-post-calculator/">Fence Post</a> · <a href="/about/">About</a> · <a href="/privacy/">Privacy</a> · <a href="/contact/">Contact</a>
+      </span>
+    </div>
+  </footer>
+</body>
+</html>

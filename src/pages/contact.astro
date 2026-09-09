@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { CONTACT_EMAIL, SITE_NAME } from '../lib/site';
+---
+
+<BaseLayout
+  title={`Contact — ${SITE_NAME}`}
+  description={`Get in touch with ${SITE_NAME} with questions, corrections, or tool suggestions.`}
+>
+  <section class="card">
+    <h1>Contact us</h1>
+    <p class="lead">Found a wrong number, a broken tool, or have an idea for a new calculator?
+      We'd like to hear from you.</p>
+  </section>
+
+  <section class="card">
+    <h2>Email</h2>
+    <p>The fastest way to reach us is by email:</p>
+    <p><a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></p>
+  </section>
+
+  <section class="card">
+    <h2>Suggest a tool</h2>
+    <p>Tell us which calculation you need and for what situation. If it fits the hub, we'll build it.</p>
+    <p>We read every message but may not reply to each one individually.</p>
+  </section>
+
+  <section class="card">
+    <h2>Corrections</h2>
+    <p>If a formula or assumption looks off, send the source and we'll review and update the page.</p>
+  </section>
+</BaseLayout>
