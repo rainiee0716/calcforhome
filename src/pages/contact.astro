@@ -1,12 +1,15 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
 import { CONTACT_EMAIL, SITE_NAME } from '../lib/site';
 ---
 
 <BaseLayout
   title={`Contact — ${SITE_NAME}`}
-  description={`Get in touch with ${SITE_NAME} with questions, corrections, or tool suggestions.`}
+  description={`Get in touch with ${SITE_NAME} about calculator corrections, data sources, or tool suggestions.`}
 >
+  <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: 'Contact' }]} />
+
   <section class="card">
     <h1>Contact us</h1>
     <p class="lead">Found a wrong number, a broken tool, or have an idea for a new calculator?

@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { SITE_NAME, LAST_UPDATED } from '../lib/site';
+---
+
+<BaseLayout
+  title={`Affiliate Disclosure — ${SITE_NAME}`}
+  description={`How ${SITE_NAME} earns commissions from affiliate links while keeping calculators free.`}
+>
+  <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: 'Affiliate Disclosure' }]} />
+
+  <section class="card">
+    <h1>Affiliate Disclosure</h1>
+    <p class="lead">{SITE_NAME} is reader-supported. Some links on this site are affiliate links.</p>
+    <p>Last updated: {LAST_UPDATED}</p>
+  </section>
+
+  <section class="card">
+    <h2>What this means</h2>
+    <p>If you click certain links to retailers such as Home Depot or Lowe's and make a purchase, we may
+      earn a small commission. This does not change the price you pay.</p>
+  </section>
+
+  <section class="card">
+    <h2>How we use it</h2>
+    <p>Commissions help pay for hosting, maintenance, and new calculators. They do not affect which
+      tools we build or the formulas we publish.</p>
+  </section>
+
+  <section class="card">
+    <h2>Questions</h2>
+    <p>If you have questions about this disclosure, contact us through the
+      <a href="/contact/">Contact page</a>.</p>
+  </section>
+</BaseLayout>

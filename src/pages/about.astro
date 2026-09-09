@@ -1,12 +1,15 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { SITE_NAME } from '../lib/site';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { SITE_NAME, LAST_UPDATED } from '../lib/site';
 ---
 
 <BaseLayout
   title={`About — ${SITE_NAME}`}
   description={`Why ${SITE_NAME} exists: fast, transparent, free calculators for concrete and gravel projects, with the math shown.`}
 >
+  <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: 'About' }]} />
+
   <section class="card">
     <h1>About {SITE_NAME}</h1>
     <p class="lead">A small collection of free, single-purpose calculators for DIY concrete and gravel
@@ -22,16 +25,24 @@ import { SITE_NAME } from '../lib/site';
 
   <section class="card">
     <h2>How the tools work</h2>
-    <p>Every calculator uses a published, standard formula (cubic volume for slabs and cylinders,
-      standard bag yields, and typical gravel weight) and states its assumptions on the page. They are
-      for general guidance, not a substitute for professional advice.</p>
+    <p>Every calculator uses a standard geometric formula — rectangular volume for slabs, cylindrical
+      volume for post holes, and manufacturer bag-yield figures for concrete mix. The fence-post tool
+      also subtracts the volume occupied by the buried post.</p>
     <p>Tools are free, require no account, and your inputs never leave your device.</p>
+  </section>
+
+  <section class="card">
+    <h2>Editorial standards</h2>
+    <p>Formulas are reviewed against manufacturer specification sheets and standard construction
+      references. When material density or yield varies by product, the page states the assumption
+      used and recommends confirming with the supplier.</p>
   </section>
 
   <section class="card">
     <h2>Who runs it</h2>
     <p>{SITE_NAME} is an independent project built for homeowners and DIYers. We earn a small
-      amount from non-intrusive ads so the tools can stay free. Questions? Visit the
-      <a href="/contact/">Contact page</a>.</p>
+      amount from non-intrusive ads and clearly disclosed affiliate links so the tools can stay free.
+      Questions? Visit the <a href="/contact/">Contact page</a>.</p>
+    <p class="muted">Last reviewed: {LAST_UPDATED}</p>
   </section>
 </BaseLayout>

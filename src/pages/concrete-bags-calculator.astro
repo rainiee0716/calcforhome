@@ -1,11 +1,41 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { calculateConcreteBags } from '../lib/calculations';
+import { breadcrumbSchema, faqSchema, softwareApplicationSchema } from '../lib/schema';
+import { LAST_UPDATED } from '../lib/site';
 
-const schema = {
-  '@context': 'https://schema.org', '@type': 'SoftwareApplication',
-  'name': 'Concrete Bags Calculator', 'applicationCategory': 'UtilitiesApplication',
-  'operatingSystem': 'Web', 'offers': { '@type': 'Offer', 'price': '0', 'priceCurrency': 'USD' },
-};
+const siteUrl = Astro.site ?? new URL(Astro.url.origin);
+const faqs = [
+  {
+    question: 'How many 80 lb bags of concrete do I need for a 10x10 slab?',
+    answer: 'A 10x10 slab at 4 inches thick needs about 56 80 lb bags before waste. With 10% waste, buy about 62 bags.',
+  },
+  {
+    question: 'How much concrete does a 60 lb bag make?',
+    answer: 'A standard 60 lb bag yields about 0.45 cubic feet of mixed concrete.',
+  },
+  {
+    question: 'Should I add extra concrete for waste?',
+    answer: 'Yes. For most DIY slabs, 10% is a sensible margin. Use 15% if the ground is uneven or you are mixing by hand for the first time.',
+  },
+  {
+    question: 'How many 80 lb bags equal one cubic yard?',
+    answer: 'One cubic yard is 27 cubic feet, so it takes about 45 80 lb bags.',
+  },
+];
+
+const schema = [
+  softwareApplicationSchema('Concrete Bags Calculator', '/concrete-bags-calculator/', siteUrl),
+  breadcrumbSchema(
+    [
+      { name: 'Home', path: '/' },
+      { name: 'Concrete Bags Calculator', path: '/concrete-bags-calculator/' },
+    ],
+    siteUrl,
+  ),
+  faqSchema(faqs),
+];
 ---
 
 <BaseLayout
@@ -13,70 +43,111 @@ const schema = {
   description="Free concrete bags calculator: enter your slab or footing size and see exactly how many 80 lb, 60 lb or 40 lb bags of concrete mix you need, with waste included. No guessing, no over-ordering."
   schema={schema}
 >
+  <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: 'Concrete Bags Calculator' }]} />
+
   <section class="card">
     <h1>How Many Bags of Concrete Do I Need?</h1>
     <p class="lead">Enter your project size and pick a bag weight — we'll tell you the exact number of
       bags to buy, rounded up and including a waste margin.</p>
 
-    <div class="calc">
-      <div class="row"><label for="len">Length (ft)</label><input id="len" type="number" min="0.1" step="0.1" value="10"></div>
-      <div class="row"><label for="wid">Width (ft)</label><input id="wid" type="number" min="0.1" step="0.1" value="10"></div>
-      <div class="row"><label for="th">Thickness (in)</label><input id="th" type="number" min="0.5" step="0.5" value="4"></div>
-      <div class="row"><label for="bag">Bag size</label>
-        <select id="bag">
+    <form id="calculator-form" class="calc" novalidate>
+      <div class="row">
+        <label for="length">Length (ft)</label>
+        <input id="length" name="length" type="number" min="0.1" step="0.1" value="10" required inputmode="decimal" autocomplete="off">
+      </div>
+      <div class="row">
+        <label for="width">Width (ft)</label>
+        <input id="width" name="width" type="number" min="0.1" step="0.1" value="10" required inputmode="decimal" autocomplete="off">
+      </div>
+      <div class="row">
+        <label for="thickness">Thickness (in)</label>
+        <input id="thickness" name="thickness" type="number" min="0.5" step="0.5" value="4" required inputmode="decimal" autocomplete="off">
+      </div>
+      <div class="row">
+        <label for="bag-size">Bag size</label>
+        <select id="bag-size" name="bag-size" required>
           <option value="0.60">80 lb (~0.60 cu ft)</option>
           <option value="0.45">60 lb (~0.45 cu ft)</option>
           <option value="0.30">40 lb (~0.30 cu ft)</option>
         </select>
       </div>
-      <div class="row"><label for="waste">Waste (%)</label><input id="waste" type="number" min="0" max="30" step="1" value="10"></div>
-      <button class="btn" id="go">Calculate</button>
-    </div>
+      <div class="row">
+        <label for="waste">Waste (%)</label>
+        <input id="waste" name="waste" type="number" min="0" max="30" step="1" value="10" required inputmode="decimal" autocomplete="off" aria-describedby="waste-help">
+        <p id="waste-help" class="field-help">Allowed range: 0–30%.</p>
+      </div>
+      <p id="form-error" class="error" role="alert" hidden></p>
+      <button class="btn" type="submit">Calculate</button>
+    </form>
 
-    <div class="result" id="out" hidden>
+    <div class="result" id="result" aria-live="polite" hidden>
       <h3>You need about</h3>
-      <p><span class="big" id="bags">—</span> bags</p>
+      <p><span class="big" id="selected-bags">—</span> bags</p>
       <ul>
-        <li>Cubic yards: <b id="cy">—</b></li>
-        <li>80 lb bags equivalent: <b id="bags80">—</b></li>
+        <li>Cubic yards: <b id="cubic-yards">—</b></li>
+        <li>80 lb bags equivalent: <b id="eighty-pound-bags">—</b></li>
       </ul>
     </div>
   </section>
-
-  <!-- ===== AdSense: in-content =====
-  <div class="ad"><div class="box">[AdSense — in-article]</div></div>
-  -->
 
   <section class="card">
     <h2>How many bags — the math</h2>
     <p><code>volume (cu ft) = length × width × (thickness ÷ 12)</code>. Each bag yields a fixed volume:
       an <b>80&nbsp;lb</b> bag ≈ 0.60&nbsp;cu&nbsp;ft, a <b>60&nbsp;lb</b> bag ≈ 0.45&nbsp;cu&nbsp;ft, and a
-      <b>40&nbsp;lb</b> bag ≈ 0.30&nbsp;cu&nbsp;ft (Quikrete / standard mix figures). We divide your total
-      volume by the chosen bag yield and round up, then add your waste margin.</p>
+      <b>40&nbsp;lb</b> bag ≈ 0.30&nbsp;cu&nbsp;ft. We divide your total volume by the chosen bag yield,
+      round up, then add your waste margin.</p>
     <p>Most home-center mixes are 80&nbsp;lb, so that's the default. If you're mixing by hand or have a
       smaller drill, 60&nbsp;lb bags are easier to handle; 40&nbsp;lb bags suit small repairs.</p>
+
+    <h2>Concrete bag FAQ</h2>
+    <div class="faq">
+      {faqs.map(({ question, answer }) => (
+        <details>
+          <summary>{question}</summary>
+          <p>{answer}</p>
+        </details>
+      ))}
+    </div>
+
     <h3>Related tools</h3>
     <p><a href="/concrete-calculator/">Concrete calculator (cubic yards)</a> · <a href="/concrete-fence-post-calculator/">Concrete for fence post</a> · <a href="/gravel-driveway-calculator/">Gravel for driveway</a></p>
+    <p class="muted">Last updated: {LAST_UPDATED}</p>
   </section>
 </BaseLayout>
 
 <script>
-function calc(){
-  var L=parseFloat((document.getElementById('len') as HTMLInputElement).value),
-      W=parseFloat((document.getElementById('wid') as HTMLInputElement).value),
-      th=parseFloat((document.getElementById('th') as HTMLInputElement).value),
-      yield_=parseFloat((document.getElementById('bag') as HTMLSelectElement).value),
-      waste=parseFloat((document.getElementById('waste') as HTMLInputElement).value)||0;
-  if(!(L>0&&W>0&&th>0)) return;
-  var cf=L*W*(th/12);
-  var withWaste=cf*(1+waste/100);
-  var bags=Math.ceil(withWaste/yield_);
-  var cy=withWaste/27;
-  var bags80=Math.ceil(withWaste/0.60);
-  document.getElementById('bags')!.textContent=bags.toLocaleString();
-  document.getElementById('cy')!.textContent=cy.toFixed(2);
-  document.getElementById('bags80')!.textContent=bags80.toLocaleString();
-  document.getElementById('out')!.removeAttribute('hidden');
-}
-document.getElementById('go')!.addEventListener('click',calc);
+  import { calculateConcreteBags } from '../lib/calculations';
+
+  const form = document.querySelector<HTMLFormElement>('#calculator-form')!;
+  const error = document.querySelector<HTMLElement>('#form-error')!;
+  const result = document.querySelector<HTMLElement>('#result')!;
+
+  function showError(message: string) {
+    error.textContent = message;
+    error.removeAttribute('hidden');
+    result.setAttribute('hidden', '');
+  }
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    try {
+      const values = calculateConcreteBags({
+        lengthFt: Number((form.elements.namedItem('length') as HTMLInputElement).value),
+        widthFt: Number((form.elements.namedItem('width') as HTMLInputElement).value),
+        thicknessIn: Number((form.elements.namedItem('thickness') as HTMLInputElement).value),
+        bagYieldCubicFeet: Number((form.elements.namedItem('bag-size') as HTMLSelectElement).value),
+        wastePercent: Number((form.elements.namedItem('waste') as HTMLInputElement).value),
+      });
+
+      document.querySelector('#selected-bags')!.textContent = values.selectedBagCount.toLocaleString();
+      document.querySelector('#cubic-yards')!.textContent = values.cubicYards.toFixed(2);
+      document.querySelector('#eighty-pound-bags')!.textContent =
+        values.eightyPoundBags.toLocaleString();
+
+      error.setAttribute('hidden', '');
+      result.removeAttribute('hidden');
+    } catch (err) {
+      showError(err instanceof Error ? err.message : 'Please check your measurements.');
+    }
+  });
 </script>

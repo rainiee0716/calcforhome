@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { tools } from '../lib/tools';
+---
+
+<BaseLayout
+  title="Page not found — CalcForHome"
+  description="The page you requested could not be found. Browse CalcForHome's concrete and gravel calculators."
+  noindex
+>
+  <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: 'Page not found' }]} />
+
+  <section class="card">
+    <h1>Page not found</h1>
+    <p class="lead">We couldn't find that page. It may have moved, or the link may be incorrect.</p>
+    <p><a class="btn" href="/">Back to home</a></p>
+  </section>
+
+  <section class="card">
+    <h2>Popular calculators</h2>
+    <div class="tools">
+      {tools.map((tool) => (
+        <a class="tool" href={`/${tool.slug}/`}>
+          <b>{tool.title}</b>
+          <span>{tool.blurb}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

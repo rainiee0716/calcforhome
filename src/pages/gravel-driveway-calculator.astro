@@ -1,11 +1,21 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { calculateGravel } from '../lib/calculations';
+import { breadcrumbSchema, softwareApplicationSchema } from '../lib/schema';
+import { LAST_UPDATED } from '../lib/site';
 
-const schema = {
-  '@context': 'https://schema.org', '@type': 'SoftwareApplication',
-  'name': 'Gravel for Driveway Calculator', 'applicationCategory': 'UtilitiesApplication',
-  'operatingSystem': 'Web', 'offers': { '@type': 'Offer', 'price': '0', 'priceCurrency': 'USD' },
-};
+const siteUrl = Astro.site ?? new URL(Astro.url.origin);
+const schema = [
+  softwareApplicationSchema('Gravel for Driveway Calculator', '/gravel-driveway-calculator/', siteUrl),
+  breadcrumbSchema(
+    [
+      { name: 'Home', path: '/' },
+      { name: 'Gravel for Driveway Calculator', path: '/gravel-driveway-calculator/' },
+    ],
+    siteUrl,
+  ),
+];
 ---
 
 <BaseLayout
@@ -13,32 +23,44 @@ const schema = {
   description="Free gravel calculator for driveways: enter length, width and depth to get cubic yards and tons of gravel needed, with a waste margin. Works for driveways, paths and patio bases."
   schema={schema}
 >
+  <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: 'Gravel for Driveway Calculator' }]} />
+
   <section class="card">
     <h1>Gravel for Driveway Calculator</h1>
     <p class="lead">How much gravel do you need for a driveway? Enter the size and depth — we'll give
       you cubic yards and tons, plus a sensible waste margin.</p>
 
-    <div class="calc">
-      <div class="row"><label for="len">Driveway length (ft)</label><input id="len" type="number" min="0.1" step="0.1" value="50"></div>
-      <div class="row"><label for="wid">Driveway width (ft)</label><input id="wid" type="number" min="0.1" step="0.1" value="10"></div>
-      <div class="row"><label for="dep">Depth (in)</label><input id="dep" type="number" min="0.5" step="0.5" value="4"></div>
-      <div class="row"><label for="waste">Waste (%)</label><input id="waste" type="number" min="0" max="30" step="1" value="10"></div>
-      <button class="btn" id="go">Calculate</button>
-    </div>
+    <form id="calculator-form" class="calc" novalidate>
+      <div class="row">
+        <label for="length">Driveway length (ft)</label>
+        <input id="length" name="length" type="number" min="0.1" step="0.1" value="50" required inputmode="decimal" autocomplete="off">
+      </div>
+      <div class="row">
+        <label for="width">Driveway width (ft)</label>
+        <input id="width" name="width" type="number" min="0.1" step="0.1" value="10" required inputmode="decimal" autocomplete="off">
+      </div>
+      <div class="row">
+        <label for="depth">Depth (in)</label>
+        <input id="depth" name="depth" type="number" min="0.5" step="0.5" value="4" required inputmode="decimal" autocomplete="off">
+      </div>
+      <div class="row">
+        <label for="waste">Waste (%)</label>
+        <input id="waste" name="waste" type="number" min="0" max="30" step="1" value="10" required inputmode="decimal" autocomplete="off" aria-describedby="waste-help">
+        <p id="waste-help" class="field-help">Allowed range: 0–30%.</p>
+      </div>
+      <p id="form-error" class="error" role="alert" hidden></p>
+      <button class="btn" type="submit">Calculate</button>
+    </form>
 
-    <div class="result" id="out" hidden>
+    <div class="result" id="result" aria-live="polite" hidden>
       <h3>You need about</h3>
-      <p><span class="big" id="cy">—</span> cubic yards</p>
+      <p><span class="big" id="cubic-yards">—</span> cubic yards</p>
       <ul>
         <li>Tons: <b id="tons">—</b></li>
-        <li>Cubic feet: <b id="cf">—</b></li>
+        <li>Cubic feet: <b id="cubic-feet">—</b></li>
       </ul>
     </div>
   </section>
-
-  <!-- ===== AdSense: in-content =====
-  <div class="ad"><div class="box">[AdSense — in-article]</div></div>
-  -->
 
   <section class="card">
     <h2>How the gravel calculator works</h2>
@@ -47,26 +69,46 @@ const schema = {
     <p>A 4-inch base is standard for a driveway over firm soil; use 6–8 inches if the ground is soft or
       you'll park heavy vehicles. Always round the final order up — suppliers sell by the yard and you
       can't return the excess easily.</p>
+    <h3>Assumptions and sources</h3>
+    <p>The default density is a common bulk estimate for loose crushed gravel. Local aggregate weight can
+      vary, so confirm the density with your supplier for a precise order.</p>
     <h3>Related tools</h3>
     <p><a href="/concrete-calculator/">Concrete calculator</a> · <a href="/concrete-bags-calculator/">Concrete bags calculator</a> · <a href="/concrete-fence-post-calculator/">Concrete for fence post</a></p>
+    <p class="muted">Last updated: {LAST_UPDATED}</p>
   </section>
 </BaseLayout>
 
 <script>
-function calc(){
-  var L=parseFloat((document.getElementById('len') as HTMLInputElement).value),
-      W=parseFloat((document.getElementById('wid') as HTMLInputElement).value),
-      dep=parseFloat((document.getElementById('dep') as HTMLInputElement).value),
-      waste=parseFloat((document.getElementById('waste') as HTMLInputElement).value)||0;
-  if(!(L>0&&W>0&&dep>0)) return;
-  var cf=L*W*(dep/12);
-  var withWaste=cf*(1+waste/100);
-  var cy=withWaste/27;
-  var tons=cy*1.4;
-  document.getElementById('cy')!.textContent=cy.toFixed(2);
-  document.getElementById('tons')!.textContent=tons.toFixed(1);
-  document.getElementById('cf')!.textContent=cf.toFixed(1);
-  document.getElementById('out')!.removeAttribute('hidden');
-}
-document.getElementById('go')!.addEventListener('click',calc);
+  import { calculateGravel } from '../lib/calculations';
+
+  const form = document.querySelector<HTMLFormElement>('#calculator-form')!;
+  const error = document.querySelector<HTMLElement>('#form-error')!;
+  const result = document.querySelector<HTMLElement>('#result')!;
+
+  function showError(message: string) {
+    error.textContent = message;
+    error.removeAttribute('hidden');
+    result.setAttribute('hidden', '');
+  }
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    try {
+      const values = calculateGravel({
+        lengthFt: Number((form.elements.namedItem('length') as HTMLInputElement).value),
+        widthFt: Number((form.elements.namedItem('width') as HTMLInputElement).value),
+        thicknessIn: Number((form.elements.namedItem('depth') as HTMLInputElement).value),
+        wastePercent: Number((form.elements.namedItem('waste') as HTMLInputElement).value),
+      });
+
+      document.querySelector('#cubic-yards')!.textContent = values.cubicYards.toFixed(2);
+      document.querySelector('#tons')!.textContent = values.tons.toFixed(1);
+      document.querySelector('#cubic-feet')!.textContent = values.cubicFeet.toFixed(1);
+
+      error.setAttribute('hidden', '');
+      result.removeAttribute('hidden');
+    } catch (err) {
+      showError(err instanceof Error ? err.message : 'Please check your measurements.');
+    }
+  });
 </script>

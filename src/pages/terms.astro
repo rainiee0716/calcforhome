@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { SITE_NAME, LAST_UPDATED } from '../lib/site';
+---
+
+<BaseLayout
+  title={`Terms & Disclaimer — ${SITE_NAME}`}
+  description={`Terms of use and calculation disclaimer for ${SITE_NAME}, including limits on estimates and professional advice.`}
+>
+  <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: 'Terms & Disclaimer' }]} />
+
+  <section class="card">
+    <h1>Terms &amp; Disclaimer</h1>
+    <p class="lead">These terms apply to your use of {SITE_NAME}. By using the site, you accept them.</p>
+    <p>Last updated: {LAST_UPDATED}</p>
+  </section>
+
+  <section class="card">
+    <h2>1. Estimates only</h2>
+    <p>All calculator results are estimates based on standard formulas and typical material yields.
+      Actual material needs can vary because of site conditions, mixing, compaction, product
+      specifications, and installation method.</p>
+  </section>
+
+  <section class="card">
+    <h2>2. Not professional advice</h2>
+    <p>{SITE_NAME} does not provide engineering, construction, legal, or financial advice. For
+      structural work, permits, load-bearing slabs, retaining walls, or commercial projects, consult a
+      licensed professional.</p>
+  </section>
+
+  <section class="card">
+    <h2>3. No warranty</h2>
+    <p>The site is provided “as is” without warranty of accuracy, completeness, or fitness for a
+      particular purpose. We are not liable for damages arising from use of the calculators or site.</p>
+  </section>
+
+  <section class="card">
+    <h2>4. Changes</h2>
+    <p>We may update these terms or the calculators at any time. Continued use of the site after changes
+      means you accept the updated terms.</p>
+  </section>
+</BaseLayout>

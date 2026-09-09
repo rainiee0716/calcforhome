@@ -1,71 +1,138 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { calculateFencePostConcrete } from '../lib/calculations';
+import { breadcrumbSchema, softwareApplicationSchema } from '../lib/schema';
+import { LAST_UPDATED } from '../lib/site';
 
-const schema = {
-  '@context': 'https://schema.org', '@type': 'SoftwareApplication',
-  'name': 'Concrete for Fence Post Calculator', 'applicationCategory': 'UtilitiesApplication',
-  'operatingSystem': 'Web', 'offers': { '@type': 'Offer', 'price': '0', 'priceCurrency': 'USD' },
-};
+const siteUrl = Astro.site ?? new URL(Astro.url.origin);
+const schema = [
+  softwareApplicationSchema('Concrete for Fence Post Calculator', '/concrete-fence-post-calculator/', siteUrl),
+  breadcrumbSchema(
+    [
+      { name: 'Home', path: '/' },
+      { name: 'Concrete for Fence Post Calculator', path: '/concrete-fence-post-calculator/' },
+    ],
+    siteUrl,
+  ),
+];
 ---
 
 <BaseLayout
   title="Concrete for Fence Post Calculator — Bags per Post Hole"
-  description="Free fence post concrete calculator: enter the number of posts, hole diameter and depth to get total concrete in cubic feet and the number of 80 lb bags needed, per post and for the whole fence."
+  description="Free fence post concrete calculator: enter the number of posts, hole size, and post dimensions to get concrete volume and 80 lb bags needed, per post and for the whole fence."
   schema={schema}
 >
+  <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: 'Concrete for Fence Post Calculator' }]} />
+
   <section class="card">
     <h1>Concrete for Fence Post Calculator</h1>
-    <p class="lead">How much concrete per fence post? Enter your post count and hole size — we'll give
-      you bags per hole and the total for the whole run.</p>
+    <p class="lead">How much concrete per fence post? Enter your post count, hole size, and post
+      dimensions — we'll subtract the buried post volume and give you bags per hole plus the total.</p>
 
-    <div class="calc">
-      <div class="row"><label for="posts">Number of posts</label><input id="posts" type="number" min="1" step="1" value="10"></div>
-      <div class="row"><label for="dia">Hole diameter (in)</label><input id="dia" type="number" min="2" step="0.5" value="12"></div>
-      <div class="row"><label for="dep">Hole depth (in)</label><input id="dep" type="number" min="6" step="1" value="30"></div>
-      <button class="btn" id="go">Calculate</button>
-    </div>
+    <form id="calculator-form" class="calc" novalidate>
+      <div class="row">
+        <label for="post-count">Number of posts</label>
+        <input id="post-count" name="post-count" type="number" min="1" step="1" value="10" required inputmode="numeric" autocomplete="off">
+      </div>
+      <div class="row">
+        <label for="hole-diameter">Hole diameter (in)</label>
+        <input id="hole-diameter" name="hole-diameter" type="number" min="2" step="0.5" value="12" required inputmode="decimal" autocomplete="off">
+      </div>
+      <div class="row">
+        <label for="hole-depth">Hole depth (in)</label>
+        <input id="hole-depth" name="hole-depth" type="number" min="6" step="1" value="30" required inputmode="decimal" autocomplete="off">
+      </div>
+      <div class="row">
+        <label for="post-shape">Post shape</label>
+        <select id="post-shape" name="post-shape" required>
+          <option value="square">Square or rectangular</option>
+          <option value="round">Round</option>
+        </select>
+      </div>
+      <div class="row">
+        <label for="post-width">Post width (in)</label>
+        <input id="post-width" name="post-width" type="number" min="0.5" step="0.25" value="3.5" required inputmode="decimal" autocomplete="off">
+      </div>
+      <div class="row">
+        <label for="post-thickness">Post thickness (in)</label>
+        <input id="post-thickness" name="post-thickness" type="number" min="0.5" step="0.25" value="3.5" required inputmode="decimal" autocomplete="off">
+      </div>
+      <div class="row">
+        <label for="post-buried-depth">Post buried depth (in)</label>
+        <input id="post-buried-depth" name="post-buried-depth" type="number" min="6" step="1" value="30" required inputmode="decimal" autocomplete="off" aria-describedby="buried-help">
+        <p id="buried-help" class="field-help">Usually the same as the hole depth.</p>
+      </div>
+      <div class="row">
+        <label for="waste">Waste (%)</label>
+        <input id="waste" name="waste" type="number" min="0" max="30" step="1" value="10" required inputmode="decimal" autocomplete="off" aria-describedby="waste-help">
+        <p id="waste-help" class="field-help">Allowed range: 0–30%.</p>
+      </div>
+      <p id="form-error" class="error" role="alert" hidden></p>
+      <button class="btn" type="submit">Calculate</button>
+    </form>
 
-    <div class="result" id="out" hidden>
+    <div class="result" id="result" aria-live="polite" hidden>
       <h3>You need about</h3>
-      <p><span class="big" id="bags">—</span> 80 lb bags total</p>
+      <p><span class="big" id="total-bags">—</span> 80 lb bags total</p>
       <ul>
-        <li>Per post: <b id="per">—</b> bags</li>
-        <li>Total cubic feet: <b id="cf">—</b></li>
+        <li>Per post: <b id="bags-per-post">—</b> bags</li>
+        <li>Total cubic feet: <b id="total-cubic-feet">—</b></li>
       </ul>
     </div>
   </section>
 
-  <!-- ===== AdSense: in-content =====
-  <div class="ad"><div class="box">[AdSense — in-article]</div></div>
-  -->
-
   <section class="card">
     <h2>How the fence post concrete calculator works</h2>
-    <p>A post hole is a cylinder: <code>volume per hole = π × (diameter ÷ 2 ÷ 12)² × (depth ÷ 12)</code>
-      in cubic feet. Multiply by the number of posts for the total, then divide by <b>0.60</b> (one 80&nbsp;lb
-      bag) and round up.</p>
+    <p>A post hole is a cylinder: <code>volume per hole = π × (diameter ÷ 2 ÷ 12)² × (depth ÷ 12)</code>.
+      We subtract the buried portion of the post, multiply by the number of posts, then divide by
+      <b>0.60</b> — one 80&nbsp;lb bag — and round up.</p>
     <p>A common rule is to set posts one-third of their height into the ground and dig the hole three
       times the post width. For a 4×4 post, a 12-inch hole is typical; a 6×6 needs about 18 inches.</p>
+    <h3>Assumptions and sources</h3>
+    <p>The calculator assumes the post is fully buried for the entered depth and uses a standard
+      80&nbsp;lb bag yield of 0.60 cubic feet.</p>
     <h3>Related tools</h3>
     <p><a href="/concrete-bags-calculator/">Concrete bags calculator</a> · <a href="/concrete-calculator/">Concrete calculator</a> · <a href="/gravel-driveway-calculator/">Gravel for driveway</a></p>
+    <p class="muted">Last updated: {LAST_UPDATED}</p>
   </section>
 </BaseLayout>
 
 <script>
-function calc(){
-  var posts=parseFloat((document.getElementById('posts') as HTMLInputElement).value),
-      dia=parseFloat((document.getElementById('dia') as HTMLInputElement).value),
-      dep=parseFloat((document.getElementById('dep') as HTMLInputElement).value);
-  if(!(posts>0&&dia>0&&dep>0)) return;
-  var r=dia/2/12;
-  var perHole=Math.PI*r*r*(dep/12);
-  var total=perHole*posts;
-  var bags=Math.ceil(total/0.60);
-  var per=Math.ceil(perHole/0.60);
-  document.getElementById('bags')!.textContent=bags.toLocaleString();
-  document.getElementById('per')!.textContent=per.toLocaleString();
-  document.getElementById('cf')!.textContent=total.toFixed(2);
-  document.getElementById('out')!.removeAttribute('hidden');
-}
-document.getElementById('go')!.addEventListener('click',calc);
+  import { calculateFencePostConcrete } from '../lib/calculations';
+
+  const form = document.querySelector<HTMLFormElement>('#calculator-form')!;
+  const error = document.querySelector<HTMLElement>('#form-error')!;
+  const result = document.querySelector<HTMLElement>('#result')!;
+
+  function showError(message: string) {
+    error.textContent = message;
+    error.removeAttribute('hidden');
+    result.setAttribute('hidden', '');
+  }
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    try {
+      const values = calculateFencePostConcrete({
+        postCount: Number((form.elements.namedItem('post-count') as HTMLInputElement).value),
+        holeDiameterIn: Number((form.elements.namedItem('hole-diameter') as HTMLInputElement).value),
+        holeDepthIn: Number((form.elements.namedItem('hole-depth') as HTMLInputElement).value),
+        postShape: (form.elements.namedItem('post-shape') as HTMLSelectElement).value as 'square' | 'round',
+        postWidthIn: Number((form.elements.namedItem('post-width') as HTMLInputElement).value),
+        postThicknessIn: Number((form.elements.namedItem('post-thickness') as HTMLInputElement).value),
+        postBuriedDepthIn: Number((form.elements.namedItem('post-buried-depth') as HTMLInputElement).value),
+        wastePercent: Number((form.elements.namedItem('waste') as HTMLInputElement).value),
+      });
+
+      document.querySelector('#total-bags')!.textContent = values.totalEightyPoundBags.toLocaleString();
+      document.querySelector('#bags-per-post')!.textContent = values.bagsPerPost.toLocaleString();
+      document.querySelector('#total-cubic-feet')!.textContent = values.totalConcreteCubicFeet.toFixed(2);
+
+      error.setAttribute('hidden', '');
+      result.removeAttribute('hidden');
+    } catch (err) {
+      showError(err instanceof Error ? err.message : 'Please check your measurements.');
+    }
+  });
 </script>

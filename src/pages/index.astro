@@ -1,14 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { tools } from '../lib/tools';
-import { SITE_NAME, SITE_URL } from '../lib/site';
+import { SITE_NAME } from '../lib/site';
+import { websiteSchema } from '../lib/schema';
 
-const schema = {
-  '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  'name': SITE_NAME,
-  'url': `${SITE_URL}/`,
-};
+const schema = websiteSchema(Astro.site ?? new URL(Astro.url.origin));
 ---
 
 <BaseLayout
