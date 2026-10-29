@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import ToolIcon from '../components/ToolIcon.astro';
-import { breadcrumbSchema, faqSchema, softwareApplicationSchema } from '../lib/schema';
+import { breadcrumbSchema, faqSchema, imageObjectSchema, softwareApplicationSchema } from '../lib/schema';
 import { calculateFootingDepth } from '../lib/calculations';
 import { AFI_TABLE, FROST_REGIONS, regionsByState } from '../lib/frost';
 
@@ -108,6 +108,16 @@ const schema = [
     siteUrl,
   ),
   faqSchema(faqs),
+  imageObjectSchema({
+    path: '/frost-depth-by-state.png',
+    name: 'Frost depth by state map',
+    description:
+      'US map shaded by the footing depth each state building code requires, from 12 inches in the Deep South to 72 inches in interior Alaska and the Maine mountains.',
+    width: 1200,
+    height: 1600,
+    licensePage: '/frost-depth-by-state/',
+    siteUrl,
+  }),
 ];
 ---
 
@@ -185,6 +195,29 @@ const schema = [
       </ul>
       <p class="muted" id="basis-line">—</p>
     </div>
+  </section>
+
+  <section class="card">
+    <h2>Frost depth by state, on one map</h2>
+    <p>The whole table below, shaded. Corners of the country where a footing barely clears the winter,
+      and corners where it has to go down six feet. Use the image anywhere you like — a blog post, a
+      spec sheet, a job bid — with the credit line that is already printed on it.</p>
+
+    <figure class="embed-figure">
+      <img
+        src="/frost-depth-by-state.png"
+        alt="Map of the United States shaded by required footing depth. Florida, Louisiana, Hawaii and the southern tier sit at 12 to 14 inches; most of the mid-latitudes run 18 to 42 inches; Montana, North Dakota, Minnesota, New York, Maine and interior Alaska reach 60 to 72 inches."
+        width="1200"
+        height="1600"
+        loading="lazy"
+        decoding="async"
+      />
+      <figcaption>
+        <span>1,200 × 1,600, free to reuse with attribution.</span>
+        <a href="/frost-depth-by-state.png" download>Download PNG</a>
+        <a href="/frost-depth-by-state.svg" download>SVG</a>
+      </figcaption>
+    </figure>
   </section>
 
   <section class="card">
