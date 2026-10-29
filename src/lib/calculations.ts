@@ -169,6 +169,113 @@ export function calculateFencePostConcrete(input: FencePostInput): FencePostResu
   };
 }
 
+export interface FramingInput {
+  wallLengthFt: number;
+  wallHeightFt: number;
+  /** Center-to-center stud spacing in inches: 12, 16, 19.2 or 24. */
+  studSpacingIn?: number;
+  /** Parallel runs of plate: 3 for a single bottom plus double top plate. */
+  plateRuns?: number;
+  /** Doors and windows. Each one replaces line studs with king and jack studs. */
+  openings?: number;
+  /** Average rough opening width in inches, used to drop the studs it covers. */
+  openingWidthIn?: number;
+  /** Corners and wall intersections. Each one adds a third stud. */
+  corners?: number;
+  wastePercent?: number;
+  /** Nominal width in inches: 4 for 2x4, 6 for 2x6. */
+  nominalWidthIn?: number;
+}
+
+export interface FramingResult {
+  /** Studs the layout spacing asks for, before openings, corners and waste. */
+  lineStuds: number;
+  /** Net studs added by openings and corners. */
+  extraStuds: number;
+  studsBeforeWaste: number;
+  /** Studs to buy, waste included. */
+  studs: number;
+  /** Shortest stock length that still covers the wall height, in feet. */
+  buyLengthFt: number;
+  plateLinearFeet: number;
+  /** Plate boards, bought at buyLengthFt and cut down. */
+  plateBoards: number;
+  totalBoards: number;
+  linearFeet: number;
+  boardFeet: number;
+}
+
+/** Stock lengths stocked by every yard and home center. */
+const LUMBER_LENGTHS_FT = [8, 10, 12, 14, 16];
+
+/**
+ * Framing takeoff for one straight wall.
+ *
+ * Studs land on a layout spacing measured from one end, plus one closing stud
+ * at the far end, which is why an 8 ft wall at 16 in on center takes 7 and not
+ * 6. Openings are handled as a swap rather than an addition: four studs (two
+ * king, two jack) go in around the opening, and the layout studs the opening
+ * covers come out. Plates are bought as whole boards at the same stock length
+ * as the studs, so a 20 ft wall at 8 ft stock means three boards per run no
+ * matter how the cuts fall.
+ */
+export function calculateFraming(input: FramingInput): FramingResult {
+  const {
+    wallLengthFt,
+    wallHeightFt,
+    studSpacingIn = 16,
+    plateRuns = 3,
+    openings = 0,
+    openingWidthIn = 36,
+    corners = 0,
+    wastePercent = 10,
+    nominalWidthIn = 4,
+  } = input;
+
+  assertPositive(wallLengthFt, 'Wall length');
+  assertPositive(wallHeightFt, 'Wall height');
+  assertPositive(studSpacingIn, 'Stud spacing');
+  assertPositive(plateRuns, 'Plate runs');
+  assertNonNegative(openings, 'Openings');
+  assertNonNegative(corners, 'Corners');
+  assertNonNegative(wastePercent, 'Waste');
+
+  const buyLengthFt = LUMBER_LENGTHS_FT.find((length) => length >= wallHeightFt);
+  if (buyLengthFt === undefined) {
+    throw new RangeError('Wall height above 16 ft needs engineered studs, not stock lumber.');
+  }
+
+  const lineStuds = Math.ceil((wallLengthFt * 12) / studSpacingIn) + 1;
+
+  // A 36 in door at 16 in on center covers two layout studs; the four that
+  // frame it back in are the net addition. Windows behave the same way.
+  const studsReplacedPerOpening = Math.floor(openingWidthIn / studSpacingIn);
+  const extraPerOpening = Math.max(4 - studsReplacedPerOpening, 1);
+  const extraStuds = openings * extraPerOpening + corners;
+
+  const studsBeforeWaste = lineStuds + extraStuds;
+  const studs = Math.ceil(studsBeforeWaste * (1 + wastePercent / 100));
+
+  const plateLinearFeet = plateRuns * wallLengthFt;
+  const plateBoards = Math.ceil(wallLengthFt / buyLengthFt) * plateRuns;
+
+  const linearFeet = studs * buyLengthFt + plateLinearFeet;
+  const boardFeet = (linearFeet * 2 * nominalWidthIn) / 12;
+
+  return {
+    lineStuds,
+    extraStuds,
+    studsBeforeWaste,
+    studs,
+    buyLengthFt,
+    plateLinearFeet,
+    plateBoards,
+    totalBoards: studs + plateBoards,
+    linearFeet,
+    boardFeet,
+  };
+}
+
 export interface FootingDepthInput {
   /** Frost depth the jurisdiction enforces, in inches. */
   frostDepthIn: number;

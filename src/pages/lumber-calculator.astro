@@ -1,0 +1,405 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import ToolIcon from '../components/ToolIcon.astro';
+import { breadcrumbSchema, faqSchema, softwareApplicationSchema } from '../lib/schema';
+
+const siteUrl = Astro.site ?? new URL(Astro.url.origin);
+const UPDATED = '2026-10-29';
+
+const faqs = [
+  {
+    question: 'How many 2x4 studs do I need for a 10 foot wall?',
+    answer:
+      'Nine studs at 16 inches on center, and six plate boards if you buy 8 foot stock. The studs come from 120 inches divided by 16, which is 7.5 spaces rounded up to 8, plus the closing stud at the end. The plates are three runs of 10 feet, and each run takes two 8 foot boards. Add 10% waste and you carry 10 studs and 6 plates.',
+  },
+  {
+    question: 'How many studs are in a 24 foot wall?',
+    answer:
+      'Nineteen at 16 inches on center, thirteen at 24 inches. The count is the wall length in inches divided by the spacing, rounded up, plus one. Twenty-eight feet of plates at 8 foot stock adds 12 boards, three per run.',
+  },
+  {
+    question: 'Should I use 16 inch or 24 inch stud spacing?',
+    answer:
+      'Sixteen inches for bearing walls, walls that carry tile or cabinets, and anything you might hang a shelf from. Twenty-four inches is code for interior non-bearing walls and uses a third fewer studs, but a 24 inch ceiling needs 5/8 inch drywall instead of 1/2 inch, so part of the saving goes into the board.',
+  },
+  {
+    question: 'Do I count corner studs separately?',
+    answer:
+      'Yes. The layout spacing puts one stud at each end of a wall, but a corner where two walls meet needs a third stud so both walls have something to nail their drywall to. Count one extra stud per outside corner and per wall intersection.',
+  },
+  {
+    question: 'How much lumber do I need to frame a 12x12 room?',
+    answer:
+      'About 40 studs and 18 plate boards of 8 foot stock, before openings and waste. Each of the four walls is 12 feet long, which is 10 studs at 16 inches on center; the four shared corners reuse studs rather than adding them, so the total lands near 40 rather than 44. Subtract the layout studs your doors and windows cover, add four per opening, then add 10%.',
+  },
+  {
+    question: 'What is a precut stud?',
+    answer:
+      'A stud cut at the mill to a length that builds a specific wall height: 92 5/8 inches for an 8 foot wall, 104 5/8 for 9 foot, 116 5/8 for 10 foot. Add the 4 1/2 inches of plates and a precut 92 5/8 stud frames a wall that measures 97 1/8 inches, or 8 feet 1 inch, to the top of the top plate.',
+  },
+  {
+    question: 'How many board feet is a 2x4x8?',
+    answer:
+      'Five and a third board feet, using nominal dimensions. Board feet is thickness times width times length in feet, divided by 12, so a 2x4x8 is 2 x 4 x 8 / 12 = 5.33. The piece actually measures 1.5 by 3.5 inches, so you are paying for 5.33 board feet of nominal lumber that contains about 3.5 board feet of wood.',
+  },
+  {
+    question: 'Do I need a double top plate?',
+    answer:
+      'On any bearing wall, yes. The second plate ties intersecting walls to the one you are building and lets you lap the joints, so no two plate breaks land on the same stud. A single top plate is allowed on some non-bearing partitions, which is where the three-run count drops to two.',
+  },
+];
+
+const schema = [
+  softwareApplicationSchema('Lumber Calculator', '/lumber-calculator/', siteUrl),
+  breadcrumbSchema(
+    [
+      { name: 'Home', path: '/' },
+      { name: 'Lumber Calculator', path: '/lumber-calculator/' },
+    ],
+    siteUrl,
+  ),
+  faqSchema(faqs),
+];
+
+// Studs to buy for a plain wall, before openings and waste
+const studRows = [
+  { length: 8, s16: 7, s24: 5 },
+  { length: 10, s16: 9, s24: 6 },
+  { length: 12, s16: 10, s24: 7 },
+  { length: 16, s16: 13, s24: 9 },
+  { length: 20, s16: 16, s24: 11 },
+  { length: 24, s16: 19, s24: 13 },
+  { length: 30, s16: 24, s24: 16 },
+  { length: 40, s16: 31, s24: 21 },
+];
+
+// Nominal size against what the tape measure says
+const sizeRows = [
+  { nominal: '1x4', actual: '3/4 x 3 1/2', bf: 0.33 },
+  { nominal: '2x4', actual: '1 1/2 x 3 1/2', bf: 0.67 },
+  { nominal: '2x6', actual: '1 1/2 x 5 1/2', bf: 1.0 },
+  { nominal: '2x8', actual: '1 1/2 x 7 1/4', bf: 1.33 },
+  { nominal: '2x10', actual: '1 1/2 x 9 1/4', bf: 1.67 },
+  { nominal: '2x12', actual: '1 1/2 x 11 1/4', bf: 2.0 },
+  { nominal: '4x4', actual: '3 1/2 x 3 1/2', bf: 1.33 },
+  { nominal: '6x6', actual: '5 1/2 x 5 1/2', bf: 3.0 },
+];
+
+const precutRows = [
+  { wall: '8 ft', stud: '92 5/8 in', total: '97 1/8 in' },
+  { wall: '9 ft', stud: '104 5/8 in', total: '109 1/8 in' },
+  { wall: '10 ft', stud: '116 5/8 in', total: '121 1/8 in' },
+];
+---
+
+<BaseLayout
+  title="Lumber Calculator — Studs, Plates and Board Feet for a Wall"
+  description="Work out how many studs, plate boards and board feet a wall needs. Handles stud spacing, door and window openings, corners, 2x4 or 2x6, and waste."
+  schema={schema}
+>
+  <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: 'Lumber Calculator' }]} />
+
+  <section class="card">
+    <div class="page-head">
+      <span class="tool-icon"><ToolIcon slug="lumber-calculator" /></span>
+      <div>
+        <h1>Lumber Calculator</h1>
+        <p class="lead">Lumber for a wall is three purchases, not one: studs on a layout spacing, plates
+          that run the full length, and stock long enough to reach the ceiling. Enter the wall and this
+          gives you the piece count to hand the yard.</p>
+      </div>
+    </div>
+
+    <form id="calculator-form" class="calc" novalidate>
+      <div class="row">
+        <label for="wall-length">Wall length (ft)</label>
+        <input id="wall-length" name="wall-length" type="number" min="1" step="0.5" value="20" required inputmode="decimal" autocomplete="off">
+      </div>
+      <div class="row">
+        <label for="wall-height">Wall height (ft)</label>
+        <input id="wall-height" name="wall-height" type="number" min="6" max="16" step="0.5" value="8" required inputmode="decimal" autocomplete="off" aria-describedby="height-help">
+        <p id="height-help" class="field-help">Stock goes up to 16 ft. Above that the wall needs engineering.</p>
+      </div>
+      <div class="row">
+        <label for="stud-spacing">Stud spacing</label>
+        <select id="stud-spacing" name="stud-spacing" required>
+          <option value="12">12 in on center</option>
+          <option value="16" selected>16 in on center</option>
+          <option value="19.2">19.2 in on center</option>
+          <option value="24">24 in on center</option>
+        </select>
+      </div>
+      <div class="row">
+        <label for="lumber-size">Lumber size</label>
+        <select id="lumber-size" name="lumber-size" required>
+          <option value="4" selected>2x4</option>
+          <option value="6">2x6</option>
+        </select>
+      </div>
+      <div class="row">
+        <label for="openings">Doors and windows</label>
+        <input id="openings" name="openings" type="number" min="0" step="1" value="1" required inputmode="numeric" autocomplete="off" aria-describedby="openings-help">
+        <p id="openings-help" class="field-help">Each opening adds four studs and removes the ones it covers.</p>
+      </div>
+      <div class="row">
+        <label for="opening-width">Average opening width (in)</label>
+        <input id="opening-width" name="opening-width" type="number" min="12" step="2" value="36" required inputmode="decimal" autocomplete="off">
+      </div>
+      <div class="row">
+        <label for="corners">Corners and intersections</label>
+        <input id="corners" name="corners" type="number" min="0" step="1" value="2" required inputmode="numeric" autocomplete="off" aria-describedby="corners-help">
+        <p id="corners-help" class="field-help">One extra stud where two walls meet.</p>
+      </div>
+      <div class="row">
+        <label for="waste">Waste (%)</label>
+        <input id="waste" name="waste" type="number" min="0" max="25" step="1" value="10" required inputmode="decimal" autocomplete="off" aria-describedby="waste-help">
+        <p id="waste-help" class="field-help">Allowed range: 0–25%.</p>
+      </div>
+      <p id="form-error" class="error" role="alert" hidden></p>
+      <button class="btn" type="submit">Calculate</button>
+    </form>
+
+    <div class="result" id="result" aria-live="polite" hidden>
+      <h3>Buy about</h3>
+      <p><span class="big" id="total-boards">—</span> boards in total</p>
+      <ul>
+        <li>Studs: <b id="stud-count">—</b></li>
+        <li>Plate boards: <b id="plate-boards">—</b> (<span id="plate-feet">—</span> linear ft of plate)</li>
+        <li>Stock length: <b id="buy-length">—</b> ft</li>
+        <li>Board feet: <b id="board-feet">—</b></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>How many studs do I need for a wall?</h2>
+    <p>A 20 foot wall with studs 16 inches on center takes <b>16 studs</b>. The arithmetic is 240 inches
+      of wall divided by 16, which is 15 spaces, and 15 spaces need 16 studs because every space is
+      bounded by a stud at each end. That closing stud is the one people forget, and on a four wall room
+      it is four studs short.</p>
+    <p>So the formula is wall length in inches divided by the spacing, rounded up, plus one. Round up
+      because a wall is never an exact multiple: 10 feet is 120 inches, 120 divided by 16 is 7.5, so you
+      need 8 spaces and 9 studs.</p>
+    <p>Openings move the number in both directions. A 36 inch door at 16 inches on center covers two
+      layout studs, and framing the opening back in takes four: two king studs running full height
+      beside it and two jack studs under the header. The net gain is two per opening, not four. Adding
+      four blind is how a wall with six windows ends up with a dozen leftover studs in the garage.</p>
+
+    <div class="table-wrap">
+      <table class="data center">
+        <caption>Studs for a plain wall, before openings, corner studs and waste.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Wall length</th>
+            <th scope="col">16 in O.C.</th>
+            <th scope="col">24 in O.C.</th>
+            <th scope="col">Plate boards at 8 ft</th>
+          </tr>
+        </thead>
+        <tbody>
+          {studRows.map((r) => (
+            <tr>
+              <td>{r.length} ft</td>
+              <td class="hl">{r.s16}</td>
+              <td>{r.s24}</td>
+              <td>{Math.ceil(r.length / 8) * 3}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>16 inches on center or 24, and what the gap costs</h2>
+    <p>Sixteen inches is the default for bearing walls and for anything that will carry tile, cabinets
+      or a heavy mirror. Twenty four is legal for interior non-bearing walls, and it uses a third fewer
+      studs: half a stud per foot instead of three quarters.</p>
+    <p>The saving tends to move into the drywall. On walls, half inch board is rated for 24 inch
+      spacing, so nothing changes there. On ceilings it is not, and a 24 inch ceiling needs five eighths
+      board, which is heavier per sheet and harder to hang alone. If you are working without a second
+      pair of hands, that usually decides it before the stud count does.</p>
+    <p>Two other things 24 inches buys less of. Insulation at 24 inches doesn't change the R value of
+      the cavity, but wider spacing means a wall that flexes more under a shoulder, which matters if the
+      drywall is thin. And a wall with a vanity, a grab bar or a wall hung TV bolted to it wants a stud
+      where the fastener lands, not 12 inches to either side.</p>
+  </section>
+
+  <section class="card">
+    <h2>Studs, plates and headers are three separate orders</h2>
+    <p>Plates run the length of the wall and there are usually three runs: one bottom plate and a double
+      top plate. The second top plate is not decoration on a bearing wall. It ties intersecting walls
+      into the one you are building, and it lets you lap the joints so no two plate breaks land on the
+      same stud.</p>
+    <p>Plate stock is bought long and cut once. A 20 foot wall with 8 foot boards takes 3 boards per run,
+      so nine boards, and the drops are 4 feet long — long enough for blocking, too short for anything
+      structural. That is why the calculator counts plate boards at stock length instead of converting
+      60 linear feet into some ideal number of pieces.</p>
+    <p>Headers are not 2x4 and are not in the stud count. A 36 inch door in a bearing wall needs a
+      header sized off a span table, usually a double 2x8 or 2x10 depending on what sits above it. Those
+      come in their own lengths and they are the one line item a stud calculator will always miss.</p>
+  </section>
+
+  <section class="card">
+    <h2>What length board to buy</h2>
+    <p>Buy the shortest stock that covers the wall height: 8, 10, 12, 14 or 16 feet. A 9 foot wall needs
+      10 foot studs, and that is 25% more board feet per stud to gain 12 inches of length — you pay for
+      the extra on every piece and cut most of it off.</p>
+
+    <div class="table-wrap">
+      <table class="data center">
+        <caption>Precut studs, sold already cut for the wall height.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Wall height</th>
+            <th scope="col">Precut stud</th>
+            <th scope="col">Framed height</th>
+          </tr>
+        </thead>
+        <tbody>
+          {precutRows.map((r) => (
+            <tr>
+              <td>{r.wall}</td>
+              <td class="hl">{r.stud}</td>
+              <td>{r.total}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <p>Precuts exist because the plates eat length. A 92 5/8 inch stud plus four and a half inches of
+      plates frames a wall that measures 97 1/8 inches to the top of the top plate, not 96. Buy 8 foot
+      studs instead and the wall comes out an inch and a half tall, which shows up as a gap at the
+      ceiling or a fight with the door frame.</p>
+    <p>Grade matters more than length. Stud grade is fine for a non-bearing partition. Anything carrying
+      a load wants number 2 or better, which is straighter and dries harder. Framing lumber also shrinks
+      as it dries, so buy it a week before you frame and let it sit flat and stickered — a wall built
+      from green studs crowns and pops drywall screws by winter.</p>
+  </section>
+
+  <section class="card">
+    <h2>Board feet, and why a 2x4 is not 2x4</h2>
+    <p>Board feet is nominal thickness times nominal width times length in feet, divided by 12. A 2x4x8
+      is 2 x 4 x 8 / 12 = <b>5.33 board feet</b>, even though the piece in your hand measures 1.5 by 3.5
+      inches. The nominal number is what the price is built on.</p>
+
+    <div class="table-wrap">
+      <table class="data center">
+        <caption>Nominal size against actual dressed size, and board feet per foot of length.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Nominal</th>
+            <th scope="col">Actual (in)</th>
+            <th scope="col">Board ft / ft</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sizeRows.map((r) => (
+            <tr>
+              <td>{r.nominal}</td>
+              <td>{r.actual}</td>
+              <td class="hl">{r.bf.toFixed(2)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <p>Framing lumber is sold by the piece, not the board foot, so this only matters when you price
+      rough sawn hardwood or order from a mill. If a quote comes back in board feet and your takeoff is
+      in pieces, the two numbers will never agree and neither one is wrong — one is measuring wood, the
+      other is counting boards you can carry.</p>
+  </section>
+
+  <section class="card">
+    <h2>Where the waste actually goes</h2>
+    <p>Ten percent is normal on a wall. Five percent is possible on a plain rectangle where you can
+      reuse drops, and fifteen is more honest on a wall with six openings, because every opening
+      generates cripples and trimmers that come out of short scraps you may not be able to reuse.</p>
+    <p>The bigger waste is not the saw blade, it is the plate layout. A 20 foot wall built from 8 foot
+      boards throws away 4 feet on every third board, and a 24 foot wall at 12 foot stock has no waste
+      at all on plates. Matching stock length to wall length is worth more than trimming the waste
+      percentage by two points.</p>
+  </section>
+
+  <section class="card">
+    <h2>Lumber calculator FAQ</h2>
+    <div class="faq">
+      {faqs.map((f) => (
+        <details>
+          <summary>{f.question}</summary>
+          <p>{f.answer}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Where these numbers come from</h2>
+    <div class="sources">
+      <p>Stud counts follow the layout rule in the code: studs at a maximum spacing, one at each end of
+        the wall, doubled or tripled where walls meet and where openings are framed.</p>
+      <ul>
+        <li><a href="https://www.iccsafe.org/" target="_blank" rel="noopener">International Code Council</a> — IRC wall framing spacing, top plate and drywall thickness tables adopted by most US jurisdictions</li>
+        <li><a href="https://www.awc.org/" target="_blank" rel="noopener">American Wood Council</a> — span tables for headers and joists, and the sizing that a stud calculator does not cover</li>
+        <li><a href="https://www.wwpa.org/" target="_blank" rel="noopener">Western Wood Products Association</a> — nominal and dressed dimensions, and lumber grading rules</li>
+        <li><a href="https://www.fpl.fs.usda.gov/" target="_blank" rel="noopener">USDA Forest Products Laboratory</a> — Wood Handbook data on shrinkage and moisture content</li>
+      </ul>
+      <p>Local amendments change spacing and bracing requirements, and wind and seismic zones add
+        hardware this page does not count. Check with your building department before you frame.</p>
+    </div>
+
+    <h3>Related calculators</h3>
+    <div class="related">
+      <a href="/concrete-calculator/">Concrete slab & footing volume</a>
+      <a href="/concrete-fence-post-calculator/">Concrete for fence posts</a>
+      <a href="/frost-depth-by-state/">Frost depth by state</a>
+      <a href="/concrete-bags-calculator/">How many bags of concrete</a>
+    </div>
+    <p class="muted">Last updated: {UPDATED}</p>
+  </section>
+</BaseLayout>
+
+<script>
+  import { calculateFraming } from '../lib/calculations';
+
+  const form = document.querySelector<HTMLFormElement>('#calculator-form')!;
+  const error = document.querySelector<HTMLElement>('#form-error')!;
+  const result = document.querySelector<HTMLElement>('#result')!;
+
+  function showError(message: string) {
+    error.textContent = message;
+    error.removeAttribute('hidden');
+    result.setAttribute('hidden', '');
+  }
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    try {
+      const values = calculateFraming({
+        wallLengthFt: Number((form.elements.namedItem('wall-length') as HTMLInputElement).value),
+        wallHeightFt: Number((form.elements.namedItem('wall-height') as HTMLInputElement).value),
+        studSpacingIn: Number((form.elements.namedItem('stud-spacing') as HTMLSelectElement).value),
+        nominalWidthIn: Number((form.elements.namedItem('lumber-size') as HTMLSelectElement).value),
+        openings: Number((form.elements.namedItem('openings') as HTMLInputElement).value),
+        openingWidthIn: Number((form.elements.namedItem('opening-width') as HTMLInputElement).value),
+        corners: Number((form.elements.namedItem('corners') as HTMLInputElement).value),
+        wastePercent: Number((form.elements.namedItem('waste') as HTMLInputElement).value),
+      });
+
+      document.querySelector('#total-boards')!.textContent = values.totalBoards.toLocaleString();
+      document.querySelector('#stud-count')!.textContent = `${values.studs.toLocaleString()} @ ${values.buyLengthFt} ft`;
+      document.querySelector('#plate-boards')!.textContent = values.plateBoards.toLocaleString();
+      document.querySelector('#plate-feet')!.textContent = values.plateLinearFeet.toLocaleString();
+      document.querySelector('#buy-length')!.textContent = String(values.buyLengthFt);
+      document.querySelector('#board-feet')!.textContent = Math.round(values.boardFeet).toLocaleString();
+
+      error.setAttribute('hidden', '');
+      result.removeAttribute('hidden');
+    } catch (err) {
+      showError(err instanceof Error ? err.message : 'Please check your measurements.');
+    }
+  });
+</script>

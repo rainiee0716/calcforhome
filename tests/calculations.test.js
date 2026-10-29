@@ -6,6 +6,7 @@ import {
   calculateFencePostConcrete,
   calculateGravel,
   calculateFootingDepth,
+  calculateFraming,
 } from '../dist-test/calculations.js';
 import { AFI_TABLE, FROST_REGIONS, designFrostDepthFromAfi } from '../dist-test/frost.js';
 
@@ -145,4 +146,80 @@ test('frost region table is internally consistent', () => {
   for (let i = 1; i < AFI_TABLE.length; i += 1) {
     assert.ok(AFI_TABLE[i].afi > AFI_TABLE[i - 1].afi, 'AFI table must ascend');
   }
+});
+
+test('framing takeoff counts the closing stud and buys plate stock in whole boards', () => {
+  const wall = calculateFraming({
+    wallLengthFt: 20,
+    wallHeightFt: 8,
+    studSpacingIn: 16,
+    openings: 0,
+    corners: 0,
+    wastePercent: 0,
+  });
+
+  // 240 in / 16 = 15 spaces, and 15 spaces take 16 studs.
+  assert.equal(wall.lineStuds, 16);
+  assert.equal(wall.studs, 16);
+  assert.equal(wall.buyLengthFt, 8);
+  assert.equal(wall.plateLinearFeet, 60);
+  // Three plate runs, each needing three 8 ft boards for a 20 ft wall.
+  assert.equal(wall.plateBoards, 9);
+  assert.equal(wall.totalBoards, 25);
+  assert.equal(wall.linearFeet, 188);
+  assert.equal(wall.boardFeet.toFixed(2), '125.33');
+});
+
+test('openings swap studs instead of adding four blind', () => {
+  const wall = calculateFraming({
+    wallLengthFt: 20,
+    wallHeightFt: 8,
+    studSpacingIn: 16,
+    openings: 2,
+    openingWidthIn: 36,
+    corners: 2,
+    wastePercent: 10,
+  });
+
+  // A 36 in opening covers two layout studs, so four framing studs net two.
+  assert.equal(wall.extraStuds, 6);
+  assert.equal(wall.studsBeforeWaste, 22);
+  assert.equal(wall.studs, 25);
+});
+
+test('stud spacing and stock length follow the wall', () => {
+  const wide = calculateFraming({
+    wallLengthFt: 10,
+    wallHeightFt: 8,
+    studSpacingIn: 24,
+    openings: 0,
+    corners: 0,
+    wastePercent: 0,
+  });
+  assert.equal(wide.lineStuds, 6);
+
+  // A 9 ft wall cannot use 8 ft studs; it jumps to 10 ft stock.
+  const tall = calculateFraming({
+    wallLengthFt: 12,
+    wallHeightFt: 9,
+    wastePercent: 0,
+  });
+  assert.equal(tall.buyLengthFt, 10);
+
+  // 2x6 carries 50% more board feet than 2x4 over the same linear footage.
+  const deep = calculateFraming({
+    wallLengthFt: 12,
+    wallHeightFt: 9,
+    nominalWidthIn: 6,
+    wastePercent: 0,
+  });
+  assert.equal(deep.boardFeet.toFixed(2), (tall.boardFeet * 1.5).toFixed(2));
+});
+
+test('a wall taller than stock lumber is rejected', () => {
+  assert.throws(
+    () => calculateFraming({ wallLengthFt: 20, wallHeightFt: 18 }),
+    /engineered studs/,
+  );
+  assert.throws(() => calculateFraming({ wallLengthFt: 0, wallHeightFt: 8 }), RangeError);
 });

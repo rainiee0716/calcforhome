@@ -37,7 +37,15 @@ const { slug } = Astro.props;
     <path d="M12 16h4" />
   </svg>
 )}
-{!['concrete-calculator', 'concrete-bags-calculator', 'gravel-driveway-calculator', 'concrete-fence-post-calculator'].includes(slug) && (
+{slug === 'lumber-calculator' && (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M2 9.5 20.5 4l1.5 5.5L3.5 15 2 9.5Z" />
+    <path d="M9 8.2v2.4" />
+    <path d="M13.5 7v2.4" />
+    <path d="M18 5.8v2.4" />
+  </svg>
+)}
+{!['concrete-calculator', 'concrete-bags-calculator', 'gravel-driveway-calculator', 'concrete-fence-post-calculator', 'lumber-calculator'].includes(slug) && (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <rect width="16" height="20" x="4" y="2" rx="2" />
     <line x1="8" x2="16" y1="6" y2="6" />

@@ -1095,3 +1095,12 @@ footer.site .wrap {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+/* ===== Numeric tables: every column but the label centred ===== */
+/* The default rule left-aligns the first two columns, which suits a
+   label-plus-value table. A three or four column count table needs one
+   consistent axis instead of a column that jumps. */
+table.data.center th:not(:first-child),
+table.data.center td:not(:first-child) {
+  text-align: center;
+}

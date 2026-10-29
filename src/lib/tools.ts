@@ -39,4 +39,10 @@ export const tools: Tool[] = [
     blurb: 'Code footing depth, dig depth and bags for all 50 states',
     updated: '2026-10-29',
   },
+  {
+    slug: 'lumber-calculator',
+    title: 'Lumber Calculator',
+    blurb: 'Studs, plate boards and board feet for a wall',
+    updated: '2026-10-29',
+  },
 ];
