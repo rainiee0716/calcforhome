@@ -1,0 +1,87 @@
+---
+import LongTailCalculator from '../components/LongTailCalculator.astro';
+
+const fields = [
+  { id: 'length', label: 'Length (ft)', type: 'number', min: 0.5, step: 0.1, value: '10' },
+  { id: 'width', label: 'Width (ft)', type: 'number', min: 0.5, step: 0.1, value: '10' },
+  { id: 'thickness', label: 'Thickness (in)', type: 'number', min: 2, step: 0.5, value: '4' },
+  { id: 'price', label: 'Ready-mix price ($/cu yd)', type: 'number', min: 50, step: 5, value: '150' },
+  { id: 'waste', label: 'Waste (%)', type: 'number', min: 0, max: 30, step: 1, value: '10' },
+];
+
+const results = [
+  { key: 'cubicYards', label: 'Concrete needed', unit: 'cu yd', format: 'fixed2' },
+  { key: 'eightyPoundBags', label: '80 lb bag equivalent' },
+  { key: 'materialCost', label: 'Material cost', format: 'money' },
+];
+---
+
+<LongTailCalculator
+  title="Concrete Slab Cost Calculator"
+  description="Free concrete slab cost calculator: enter size, thickness and local ready-mix price to estimate cubic yards, bag equivalent and total material cost."
+  slug="concrete-slab-cost-calculator"
+  calcType="concrete-slab-cost"
+  quickAnswer="A 10x10 slab at 4 inches thick needs about 1.36 cubic yards with 10% waste. At $150 per cubic yard, ready-mix material costs about $204."
+  formula="Volume = length × width × (thickness ÷ 12) ÷ 27. Cost = cubic yards × price per cubic yard."
+  fields={fields}
+  results={results}
+  table={{
+    caption: 'Concrete slab material cost at $150 per cubic yard, including 10% waste.',
+    headers: ['Slab size', 'Thickness', 'Cu yd', '80 lb bags', 'Material cost'],
+    rows: [
+      ['4 x 4', '4"', '0.22', '10', '$33'],
+      ['8 x 8', '4"', '0.87', '40', '$130'],
+      ['10 x 10', '4"', '1.36', '62', '$204'],
+      ['12 x 12', '4"', '1.96', '89', '$294'],
+      ['20 x 20', '4"', '5.43', '245', '$815'],
+      ['24 x 24', '6"', '11.73', '528', '$1,760'],
+    ],
+  }}
+  note="This is material cost only. Add grading, forms, wire mesh, delivery, and finishing labor separately."
+  guide={[
+    {
+      heading: 'What the price per cubic yard includes',
+      paragraphs: [
+        'Ready-mix is quoted per cubic yard before delivery, taxes, and short-load fees. A “short load” is any pour below the supplier’s minimum, and it usually adds a flat fee.',
+        'This calculator uses material cost only. Site prep, forms, reinforcement, finish labor, and permits are separate line items.',
+      ],
+    },
+    {
+      heading: 'Bagged concrete vs ready-mix',
+      paragraphs: [
+        'Bagged mix makes sense for repairs, footings, and small pads under about half a cubic yard.',
+        'For a 10x10 slab, 62 eighty-pound bags cost more in materials than ready-mix and take several hours to mix and place. Ready-mix is usually the better choice once you pass one yard.',
+      ],
+    },
+    {
+      heading: 'How to reduce slab cost without weakening it',
+      paragraphs: [
+        'Keep the subgrade flat and compacted. Concrete does not compensate for bad base preparation; it simply cracks over soft spots.',
+        'Use the correct thickness for the load. A 4-inch slab is standard for patios and walkways, while driveways often need 5 to 6 inches and reinforcement.',
+      ],
+    },
+  ]}
+  faqs={[
+    {
+      question: 'How much does a 10x10 concrete slab cost in materials?',
+      answer: 'About $204 in ready-mix at $150 per cubic yard, or about $434 if you use 62 eighty-pound bags at $7 each.',
+    },
+    {
+      question: 'Is bagged concrete cheaper than ready-mix?',
+      answer: 'Not for large slabs. Bagged concrete usually costs $11 to $15 per cubic foot, while ready-mix is $5 to $7 per cubic foot before delivery.',
+    },
+    {
+      question: 'How much does thickness affect cost?',
+      answer: 'Cost rises almost linearly with thickness. A 6-inch slab uses 50% more concrete than a 4-inch slab of the same size.',
+    },
+    {
+      question: 'What price should I use for ready-mix?',
+      answer: 'Use your local supplier’s quoted price. In 2026, typical ready-mix ranges from $125 to $200 per cubic yard before delivery.',
+    },
+  ]}
+  related={[
+    { label: 'Concrete bags calculator', href: '/concrete-bags-calculator/' },
+    { label: 'Concrete bag coverage', href: '/concrete-bag-coverage-calculator/' },
+    { label: 'Concrete calculator', href: '/concrete-calculator/' },
+  ]}
+/>

@@ -6,11 +6,18 @@ testable TypeScript modules.
 
 ## Features
 
-- Four focused calculators:
+- 13 focused calculators:
   - Concrete slab/footing volume
-  - Concrete bags by 80/60/40 lb bag size
-  - Gravel driveway volume and weight
+  - Concrete bags by 80/60/50/40 lb bag size
+  - Concrete bag coverage
+  - Concrete slab cost
+  - Gravel driveway volume, weight, depth, and cost
   - Fence post concrete, including buried-post volume subtraction
+  - Frost depth by state
+  - Lumber framing takeoff
+  - Deck board takeoff
+  - Paver sand
+  - Mulch
 - Shared calculation module with Node tests
 - Semantic forms, keyboard submission, validation errors, and `aria-live` results
 - Canonical URLs, sitemap, JSON-LD, breadcrumbs, FAQ schema, Open Graph, and Twitter metadata
@@ -42,8 +49,14 @@ astro-site/
 │   ├── pages/
 │   │   ├── index.astro
 │   │   ├── concrete-calculator.astro
+│   │   ├── concrete-bag-coverage-calculator.astro
 │   │   ├── concrete-bags-calculator.astro
+│   │   ├── concrete-slab-cost-calculator.astro
 │   │   ├── gravel-driveway-calculator.astro
+│   │   ├── gravel-driveway-cost-calculator.astro
+│   │   ├── gravel-driveway-depth-calculator.astro
+│   │   ├── mulch-calculator.astro
+│   │   ├── paver-sand-calculator.astro
 │   │   ├── concrete-fence-post-calculator.astro
 │   │   ├── about.astro
 │   │   ├── privacy.astro
@@ -74,22 +87,23 @@ npm run preview
 Tests compile `src/lib/calculations.ts` to `dist-test/` and run the Node test runner. The `dist-test/`
 directory is ignored.
 
-## Deploy to Cloudflare Pages
+## Deploy
 
-When connecting this GitHub repository to Cloudflare Pages, use:
+The production deployment is on Vercel. Use:
 
 - **Framework preset:** Astro
 - **Build command:** `npm run build`
 - **Build output directory:** `dist`
 - **Node version:** 20
 
-Cloudflare will read `.nvmrc`, and `public/_headers` will be copied into the deployment.
+Vercel reads `.nvmrc` and `vercel.json`. Security headers and immutable asset caching are configured in
+`vercel.json`.
 
 ## Launch checklist
 
 1. Register and connect `calcforhome.com`.
 2. Create or forward `hello@calcforhome.com`; update `CONTACT_EMAIL` in `src/lib/site.ts` if needed.
-3. Submit `https://calcforhome.com/sitemap.xml` to Google Search Console.
+3. Submit `https://www.calcforhome.com/sitemap.xml` to Google Search Console.
 4. After AdSense approval, replace the placeholder publisher ID in `public/ads.txt`.
 5. Add real Home Depot or Lowe's affiliate links with clear disclosure.
 6. Update `LAST_UPDATED` in `src/lib/site.ts` when formulas or content change.

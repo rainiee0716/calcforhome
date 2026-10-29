@@ -28,6 +28,42 @@ export const tools: Tool[] = [
     updated: '2026-10-29',
   },
   {
+    slug: 'concrete-bag-coverage-calculator',
+    title: 'Concrete Bag Coverage Calculator',
+    blurb: 'Square feet per 80, 60, 50 or 40 lb bag',
+    updated: '2026-10-29',
+  },
+  {
+    slug: 'concrete-slab-cost-calculator',
+    title: 'Concrete Slab Cost Calculator',
+    blurb: 'Yards, bags and material cost for any slab',
+    updated: '2026-10-29',
+  },
+  {
+    slug: 'gravel-driveway-cost-calculator',
+    title: 'Gravel Driveway Cost Calculator',
+    blurb: 'Tons and material cost for your driveway',
+    updated: '2026-10-29',
+  },
+  {
+    slug: 'gravel-driveway-depth-calculator',
+    title: 'Gravel Driveway Depth Calculator',
+    blurb: 'Base and surface layers for cars or trucks',
+    updated: '2026-10-29',
+  },
+  {
+    slug: 'paver-sand-calculator',
+    title: 'Paver Sand Calculator',
+    blurb: 'Cubic yards, cubic feet and bags for pavers',
+    updated: '2026-10-29',
+  },
+  {
+    slug: 'mulch-calculator',
+    title: 'Mulch Calculator',
+    blurb: 'Cubic yards and bags for garden beds',
+    updated: '2026-10-29',
+  },
+  {
     slug: 'concrete-fence-post-calculator',
     title: 'Concrete for Fence Post Calculator',
     blurb: 'Bags of concrete per post hole',

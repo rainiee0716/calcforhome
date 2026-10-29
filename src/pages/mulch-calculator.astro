@@ -1,0 +1,89 @@
+---
+import LongTailCalculator from '../components/LongTailCalculator.astro';
+
+const fields = [
+  { id: 'length', label: 'Bed length (ft)', type: 'number', min: 1, step: 0.5, value: '10' },
+  { id: 'width', label: 'Bed width (ft)', type: 'number', min: 1, step: 0.5, value: '10' },
+  { id: 'depth', label: 'Mulch depth (in)', type: 'number', min: 0.5, max: 6, step: 0.5, value: '2' },
+  { id: 'bag-size', label: 'Bag size', type: 'select', options: [
+    { value: '2', label: '2 cu ft bag' },
+    { value: '3', label: '3 cu ft bag' },
+  ]},
+  { id: 'waste', label: 'Waste (%)', type: 'number', min: 0, max: 30, step: 1, value: '10' },
+];
+
+const results = [
+  { key: 'cubicYards', label: 'Mulch needed', unit: 'cu yd', format: 'fixed2' },
+  { key: 'volumeWithWasteCubicFeet', label: 'Cubic feet', format: 'fixed2' },
+  { key: 'bags', label: 'Bags to buy' },
+];
+---
+
+<LongTailCalculator
+  title="Mulch Calculator"
+  description="Free mulch calculator: enter garden bed size, mulch depth and bag size to get cubic yards, cubic feet and number of bags to buy."
+  slug="mulch-calculator"
+  calcType="mulch"
+  quickAnswer="A 10x10 bed at 2 inches deep needs about 0.62 cubic yards of mulch, or 9 two-cubic-foot bags without waste."
+  formula="Volume = length × width × (depth ÷ 12). Divide by 27 for yards, or by the bag size for bags."
+  fields={fields}
+  results={results}
+  table={{
+    caption: 'Two-cubic-foot bags of mulch by bed size and depth, with 10% waste.',
+    headers: ['Bed size', '2"', '3"', '4"'],
+    rows: [
+      ['4 x 8', '4', '5', '7'],
+      ['8 x 8', '7', '10', '13'],
+      ['10 x 10', '10', '14', '19'],
+      ['12 x 12', '15', '21', '28'],
+      ['20 x 20', '25', '37', '49'],
+    ],
+  }}
+  note="Keep mulch 2 to 3 inches deep around shrubs and 2 to 4 inches in open beds. Pull it away from trunks and stems."
+  guide={[
+    {
+      heading: 'How much mulch is too much',
+      paragraphs: [
+        'More mulch is not better. Over 4 inches can block water and air from reaching roots.',
+        'Keep mulch a few inches away from trunks, stems, and the foundation of the house so it does not hold moisture against wood or masonry.',
+      ],
+    },
+    {
+      heading: 'When to refresh mulch',
+      paragraphs: [
+        'Top up once a year in spring or fall, not every season. The goal is to maintain depth, not bury last year’s mulch.',
+        'If the old layer has compacted, fluff it with a rake before adding more.',
+      ],
+    },
+    {
+      heading: 'Bagged vs bulk mulch',
+      paragraphs: [
+        'Bags are easier for small beds and stairway gardens. Bulk delivery is much cheaper for large areas.',
+        'Use this calculator to compare both: if you need more than about 14 two-cubic-foot bags, bulk is often the better price.',
+      ],
+    },
+  ]}
+  faqs={[
+    {
+      question: 'How many bags of mulch do I need?',
+      answer: 'A 10x10 bed at 2 inches needs 10 two-cubic-foot bags with 10% waste.',
+    },
+    {
+      question: 'How deep should mulch be?',
+      answer: '2 to 3 inches around shrubs and flowers. Deeper mulch can suffocate roots and trap moisture against trunks.',
+    },
+    {
+      question: 'How many bags equal a cubic yard?',
+      answer: 'Fourteen two-cubic-foot bags, or nine three-cubic-foot bags.',
+    },
+    {
+      question: 'Should I remove old mulch first?',
+      answer: 'No, just loosen it and keep total depth under 4 inches. If it has matted or grown mold, remove some.',
+    },
+  ]}
+  related={[
+    { label: 'Paver sand calculator', href: '/paver-sand-calculator/' },
+    { label: 'Concrete bag coverage', href: '/concrete-bag-coverage-calculator/' },
+    { label: 'Gravel driveway cost calculator', href: '/gravel-driveway-cost-calculator/' },
+  ]}
+/>

@@ -1,0 +1,98 @@
+---
+import LongTailCalculator from '../components/LongTailCalculator.astro';
+
+const fields = [
+  {
+    id: 'bag-size',
+    label: 'Bag size',
+    type: 'select',
+    options: [
+      { value: '0.60', label: '80 lb (~0.60 cu ft)' },
+      { value: '0.45', label: '60 lb (~0.45 cu ft)' },
+      { value: '0.375', label: '50 lb (~0.375 cu ft)' },
+      { value: '0.30', label: '40 lb (~0.30 cu ft)' },
+    ],
+  },
+  {
+    id: 'depth',
+    label: 'Thickness (in)',
+    type: 'number',
+    min: 0.5,
+    step: 0.25,
+    value: '4',
+  },
+];
+
+const results = [
+  { key: 'coverageSquareFeet', label: 'Coverage', unit: 'sq ft', format: 'fixed2' },
+];
+---
+
+<LongTailCalculator
+  title="Concrete Bag Coverage Calculator"
+  description="Free concrete bag coverage calculator: enter bag size and pour thickness to get exact square feet of coverage, plus a full yield table for 80, 60, 50 and 40 lb bags."
+  slug="concrete-bag-coverage-calculator"
+  calcType="bag-coverage"
+  quickAnswer="An 80 lb bag of concrete covers about 1.8 square feet at 4 inches thick. A 60 lb bag covers about 1.35 square feet, and a 40 lb bag covers about 0.9 square feet."
+  formula="Coverage = bag yield in cubic feet ÷ (thickness in feet). Example: 0.60 cu ft ÷ (4 ÷ 12) = 1.8 sq ft."
+  fields={fields}
+  results={results}
+  table={{
+    caption: 'Square feet covered by one bag at common pour thicknesses.',
+    headers: ['Bag size', '2"', '3"', '4"', '6"'],
+    rows: [
+      ['80 lb', '3.60', '2.40', '1.80', '1.20'],
+      ['60 lb', '2.70', '1.80', '1.35', '0.90'],
+      ['50 lb', '2.25', '1.50', '1.13', '0.75'],
+      ['40 lb', '1.80', '1.20', '0.90', '0.60'],
+    ],
+  }}
+  note="Coverage is for mixed concrete, not dry mix. A bag that yields 0.60 cubic feet of concrete does not cover 0.60 cubic feet of dry volume after water is added."
+  guide={[
+    {
+      heading: 'What “bag yield” really means',
+      paragraphs: [
+        'Concrete bags are labeled by dry weight, not by finished volume. The number that matters for coverage is yield: the cubic feet of mixed concrete the bag produces after water is added.',
+        'An 80 lb bag yields about 0.60 cubic feet, a 60 lb bag about 0.45, a 50 lb bag about 0.375, and a 40 lb bag about 0.30. These are manufacturer figures for standard preblended mix, not estimates.',
+        'If you switch bag sizes, recalculate rather than guessing. A 60 lb bag is not “a little less” than an 80 lb bag — it is 25% less concrete by volume.',
+      ],
+    },
+    {
+      heading: 'How to use this calculator',
+      paragraphs: [
+        'Enter the bag size you plan to buy and the finished pour thickness. The result is the square feet one bag will cover at that depth.',
+        'If you already know your slab area, divide that area by the coverage number to get the number of bags before waste. Then add 10% for normal jobs or 15% for uneven ground.',
+      ],
+    },
+    {
+      heading: 'When to buy more than the calculator says',
+      paragraphs: [
+        'Buy extra if your forms are uneven, the subgrade is soft, or you are mixing by hand for the first time.',
+        'For small pours, one spare bag is cheap insurance. For larger slabs, order by the cubic yard instead of carrying dozens of bags.',
+      ],
+    },
+  ]}
+  faqs={[
+    {
+      question: 'How many square feet does an 80 lb bag of concrete cover?',
+      answer: 'About 1.8 square feet at 4 inches thick, 2.4 square feet at 3 inches, and 3.6 square feet at 2 inches.',
+    },
+    {
+      question: 'How many 80 lb bags do I need for 100 square feet at 4 inches?',
+      answer: 'About 56 bags, or 62 with a 10% waste margin.',
+    },
+    {
+      question: 'Does a 60 lb bag cover less than an 80 lb bag?',
+      answer: 'Yes. A 60 lb bag yields about 0.45 cubic feet, so it covers about 25% less area than an 80 lb bag at the same thickness.',
+    },
+    {
+      question: 'Why does thickness matter more than bag weight?',
+      answer: 'Because coverage is volume divided by depth. A thin pour spreads the same bag over more square feet, but a thick pour uses it up faster.',
+    },
+  ]}
+  related={[
+    { label: 'Concrete bags calculator', href: '/concrete-bags-calculator/' },
+    { label: 'Concrete slab cost', href: '/concrete-slab-cost-calculator/' },
+    { label: 'Concrete calculator', href: '/concrete-calculator/' },
+  ]}
+/>

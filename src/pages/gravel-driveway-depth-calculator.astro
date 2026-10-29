@@ -1,0 +1,87 @@
+---
+import LongTailCalculator from '../components/LongTailCalculator.astro';
+
+const fields = [
+  { id: 'length', label: 'Length (ft)', type: 'number', min: 1, step: 0.5, value: '50' },
+  { id: 'width', label: 'Width (ft)', type: 'number', min: 1, step: 0.5, value: '10' },
+  { id: 'base-depth', label: 'Base depth (in)', type: 'number', min: 2, max: 12, step: 0.5, value: '4' },
+  { id: 'surface-depth', label: 'Surface depth (in)', type: 'number', min: 0.5, max: 6, step: 0.5, value: '2' },
+  { id: 'base-density', label: 'Base density (tons/cu yd)', type: 'number', min: 1.2, max: 1.8, step: 0.05, value: '1.5' },
+  { id: 'surface-density', label: 'Surface density (tons/cu yd)', type: 'number', min: 1.2, max: 1.8, step: 0.05, value: '1.4' },
+  { id: 'waste', label: 'Waste (%)', type: 'number', min: 0, max: 30, step: 1, value: '10' },
+];
+
+const results = [
+  { key: 'baseCubicYards', label: 'Base gravel', unit: 'cu yd', format: 'fixed2' },
+  { key: 'surfaceCubicYards', label: 'Surface gravel', unit: 'cu yd', format: 'fixed2' },
+  { key: 'totalTons', label: 'Total gravel', unit: 'tons', format: 'fixed2' },
+];
+---
+
+<LongTailCalculator
+  title="Gravel Driveway Depth Calculator"
+  description="Free gravel driveway depth calculator: enter driveway size and base plus surface layer depth to get separate base, surface and total gravel tonnage."
+  slug="gravel-driveway-depth-calculator"
+  calcType="layered-gravel"
+  quickAnswer="A normal car driveway uses a 4-inch compacted base plus a 2-inch surface layer, for 6 inches total. Heavy trucks or soft soil often need 8 to 10 inches."
+  formula="Base volume = length × width × (base depth ÷ 12) ÷ 27. Surface volume is the same formula with surface depth. Each layer is converted to tons using its own density."
+  fields={fields}
+  results={results}
+  table={{
+    caption: 'Recommended gravel driveway depth by use.',
+    headers: ['Use', 'Base', 'Surface', 'Total'],
+    rows: [
+      ['Walking path', '3"', '1"', '4"'],
+      ['Car driveway', '4"', '2"', '6"'],
+      ['Light truck', '6"', '2"', '8"'],
+      ['Heavy truck / soft soil', '8"', '2"', '10"'],
+    ],
+  }}
+  note="Depth is measured after compaction, not loose. A 6-inch loose base can settle to about 5 inches."
+  guide={[
+    {
+      heading: 'How to build the two layers',
+      paragraphs: [
+        'Excavate to the finished depth, compact the subgrade, then spread the base stone in 2 to 3 inch lifts.',
+        'Compact each lift before adding the next. The surface layer goes on last and should be screeded and compacted lightly, not crushed into dust.',
+      ],
+    },
+    {
+      heading: 'Why base stone and surface stone differ',
+      paragraphs: [
+        'Base stone includes fines that lock together under a plate compactor. Surface stone is cleaner, drains faster, and is more comfortable to drive on.',
+        'If you use one stone for both jobs, the driveway either stays loose or packs into a muddy surface.',
+      ],
+    },
+    {
+      heading: 'Drainage and fabric',
+      paragraphs: [
+        'Crown the driveway slightly so water runs to the edges rather than pooling in the middle.',
+        'On clay or soft soil, use geotextile fabric between the ground and the base. It keeps the stone from mixing with mud and doubles the life of the base.',
+      ],
+    },
+  ]}
+  faqs={[
+    {
+      question: 'How deep should a gravel driveway be?',
+      answer: 'At least 6 inches total for cars: a 4-inch compacted base and 2-inch surface layer.',
+    },
+    {
+      question: 'Can I use one layer instead of two?',
+      answer: 'A single layer of clean stone will not lock together. A compacted base plus a surface layer lasts much longer.',
+    },
+    {
+      question: 'Why does the base need different stone than the surface?',
+      answer: 'Base stone includes fines that compact into a solid layer. Surface stone is cleaner and drains better but does not lock by itself.',
+    },
+    {
+      question: 'What happens if the gravel is too thin?',
+      answer: 'It ruts, mixes with soil, and pushes out at the edges. Thin driveways often need rebuilding within a season.',
+    },
+  ]}
+  related={[
+    { label: 'Gravel driveway cost', href: '/gravel-driveway-cost-calculator/' },
+    { label: 'Gravel driveway calculator', href: '/gravel-driveway-calculator/' },
+    { label: 'Concrete slab cost', href: '/concrete-slab-cost-calculator/' },
+  ]}
+/>

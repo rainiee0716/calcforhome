@@ -1,0 +1,330 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import ToolIcon from '../components/ToolIcon.astro';
+import { breadcrumbSchema, faqSchema, softwareApplicationSchema } from '../lib/schema';
+
+export interface FormField {
+  id: string;
+  label: string;
+  type: 'number' | 'select';
+  min?: number;
+  max?: number;
+  step?: number;
+  value?: string;
+  required?: boolean;
+  help?: string;
+  options?: Array<{ value: string; label: string }>;
+}
+
+export interface ResultField {
+  key: string;
+  label: string;
+  unit?: string;
+  format?: 'number' | 'money' | 'fixed2';
+}
+
+export interface Props {
+  title: string;
+  description: string;
+  slug: string;
+  quickAnswer: string;
+  formula: string;
+  fields: FormField[];
+  results: ResultField[];
+  calcType: string;
+  faqs: Array<{ question: string; answer: string }>;
+  related: Array<{ label: string; href: string }>;
+  table?: {
+    caption: string;
+    headers: string[];
+    rows: Array<Array<string | number>>;
+  };
+  note?: string;
+  guide?: Array<{ heading: string; paragraphs: string[] }>;
+  updated?: string;
+}
+
+const {
+  title,
+  description,
+  slug,
+  quickAnswer,
+  formula,
+  fields,
+  results,
+  calcType,
+  faqs,
+  related,
+  table,
+  note,
+  guide,
+  updated = '2026-10-29',
+} = Astro.props;
+
+const siteUrl = Astro.site ?? new URL(Astro.url.origin);
+const path = `/${slug}/`;
+
+const schema = [
+  softwareApplicationSchema(title, path, siteUrl),
+  breadcrumbSchema(
+    [
+    { name: 'Home', path: '/' },
+    { name: title, path },
+  ],
+    siteUrl,
+  ),
+  faqSchema(faqs),
+];
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: title }]} />
+
+  <section class="card">
+    <div class="page-head">
+      <span class="tool-icon"><ToolIcon slug={slug} /></span>
+      <div>
+        <h1>{title}</h1>
+        <p class="lead">{quickAnswer}</p>
+      </div>
+    </div>
+
+    <form id="calculator-form" class="calc" novalidate data-calc-type={calcType}>
+      {fields.map((field) => (
+        <div class="row">
+          <label for={field.id}>{field.label}</label>
+          {field.type === 'select' ? (
+            <select id={field.id} name={field.id} required={field.required ?? true}>
+              {field.options?.map((option) => (
+                <option value={option.value}>{option.label}</option>
+              ))}
+            </select>
+          ) : (
+            <input
+              id={field.id}
+              name={field.id}
+              type="number"
+              min={field.min}
+              max={field.max}
+              step={field.step}
+              value={field.value}
+              required={field.required ?? true}
+              inputmode="decimal"
+              autocomplete="off"
+              aria-describedby={field.help ? `${field.id}-help` : undefined}
+            />
+          )}
+          {field.help && (
+            <p id={`${field.id}-help`} class="field-help">{field.help}</p>
+          )}
+        </div>
+      ))}
+      <p id="form-error" class="error" role="alert" hidden></p>
+      <button class="btn" type="submit">Calculate</button>
+    </form>
+
+    <div class="result" id="result" aria-live="polite" hidden>
+      <h3>Your result</h3>
+      <ul>
+        {results.map((result) => (
+          <li>
+            {result.label}: <b id={result.key} data-result-key={result.key} data-result-format={result.format ?? 'number'}>—</b>{result.unit ? ` ${result.unit}` : ''}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Quick answer</h2>
+    <p>{quickAnswer}</p>
+    <h2>How the calculator works</h2>
+    <p>{formula}</p>
+    {guide?.map((section) => (
+      <>
+        <h2>{section.heading}</h2>
+        {section.paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+      </>
+    ))}
+    {note && (
+      <div class="note">
+        <p><strong>Note.</strong> {note}</p>
+      </div>
+    )}
+    {table && (
+      <div class="table-wrap">
+        <table class="data center">
+          <caption>{table.caption}</caption>
+          <thead>
+            <tr>
+              {table.headers.map((header) => (
+                <th scope="col">{header}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {table.rows.map((row) => (
+              <tr>
+                {row.map((cell) => (
+                  <td>{cell}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
+  </section>
+
+  <section class="card">
+    <h2>FAQ</h2>
+    <div class="faq">
+      {faqs.map((faq) => (
+        <details>
+          <summary>{faq.question}</summary>
+          <p>{faq.answer}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Related calculators</h2>
+    <div class="related">
+      {related.map((link) => (
+        <a href={link.href}>{link.label}</a>
+      ))}
+    </div>
+    <p class="muted">Last updated: {updated}</p>
+  </section>
+</BaseLayout>
+
+<script>
+  import {
+    calculateBagCoverage,
+    calculateConcreteSlabCost,
+    calculateGravelCost,
+    calculateLayeredGravel,
+    calculateMulch,
+    calculatePaverSand,
+  } from '../lib/calculations';
+
+  const form = document.querySelector('#calculator-form');
+  const error = document.querySelector('#form-error');
+  const resultBox = document.querySelector('#result');
+  const calcType = form.dataset.calcType;
+
+  function value(id) {
+    const input = form.elements.namedItem(id);
+    return Number(input.value);
+  }
+
+  function show(message) {
+    error.textContent = message;
+    error.removeAttribute('hidden');
+    resultBox.setAttribute('hidden', '');
+  }
+
+  async function calculate(input) {
+    switch (calcType) {
+      case 'bag-coverage':
+        return calculateBagCoverage(input);
+      case 'concrete-slab-cost':
+        return calculateConcreteSlabCost(input);
+      case 'gravel-cost':
+        return calculateGravelCost(input);
+      case 'layered-gravel':
+        return calculateLayeredGravel(input);
+      case 'paver-sand':
+        return calculatePaverSand(input);
+      case 'mulch':
+        return calculateMulch(input);
+      default:
+        throw new Error('Unknown calculator type.');
+    }
+  }
+
+  function buildInput() {
+    switch (calcType) {
+      case 'bag-coverage':
+        return {
+          bagYieldCubicFeet: value('bag-size'),
+          depthIn: value('depth'),
+        };
+      case 'concrete-slab-cost':
+        return {
+          lengthFt: value('length'),
+          widthFt: value('width'),
+          thicknessIn: value('thickness'),
+          pricePerCubicYard: value('price'),
+          wastePercent: value('waste'),
+        };
+      case 'gravel-cost':
+        return {
+          lengthFt: value('length'),
+          widthFt: value('width'),
+          depthIn: value('depth'),
+          thicknessIn: value('depth'),
+          densityTonsPerCubicYard: value('density'),
+          pricePerTon: value('price'),
+          wastePercent: value('waste'),
+        };
+      case 'layered-gravel':
+        return {
+          lengthFt: value('length'),
+          widthFt: value('width'),
+          baseDepthIn: value('base-depth'),
+          surfaceDepthIn: value('surface-depth'),
+          baseDensityTonsPerCubicYard: value('base-density'),
+          surfaceDensityTonsPerCubicYard: value('surface-density'),
+          wastePercent: value('waste'),
+        };
+      case 'paver-sand':
+        return {
+          lengthFt: value('length'),
+          widthFt: value('width'),
+          depthIn: value('depth'),
+          wastePercent: value('waste'),
+          bagYieldCubicFeet: value('bag-size'),
+        };
+      case 'mulch':
+        return {
+          lengthFt: value('length'),
+          widthFt: value('width'),
+          depthIn: value('depth'),
+          wastePercent: value('waste'),
+          bagYieldCubicFeet: value('bag-size'),
+        };
+      default:
+        throw new Error('Unknown calculator type.');
+    }
+  }
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    try {
+      const input = buildInput();
+      const output = await calculate(input);
+      for (const node of resultBox.querySelectorAll('[data-result-key]')) {
+        const key = node.dataset.resultKey;
+        const format = node.dataset.resultFormat;
+        const number = output[key];
+        if (node && Number.isFinite(number)) {
+          node.textContent =
+            format === 'money'
+              ? `$${number.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+              : format === 'fixed2'
+                ? number.toFixed(2)
+                : number.toLocaleString();
+        }
+      }
+      error.setAttribute('hidden', '');
+      resultBox.removeAttribute('hidden');
+    } catch (err) {
+      show(err instanceof Error ? err.message : 'Please check your measurements.');
+    }
+  });
+</script>

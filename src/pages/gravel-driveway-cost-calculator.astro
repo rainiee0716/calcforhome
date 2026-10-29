@@ -1,0 +1,88 @@
+---
+import LongTailCalculator from '../components/LongTailCalculator.astro';
+
+const fields = [
+  { id: 'length', label: 'Length (ft)', type: 'number', min: 1, step: 0.5, value: '50' },
+  { id: 'width', label: 'Width (ft)', type: 'number', min: 1, step: 0.5, value: '10' },
+  { id: 'depth', label: 'Depth (in)', type: 'number', min: 1, step: 0.5, value: '4' },
+  { id: 'density', label: 'Stone density (tons/cu yd)', type: 'number', min: 1.1, max: 1.8, step: 0.05, value: '1.4' },
+  { id: 'price', label: 'Price ($/ton)', type: 'number', min: 10, step: 5, value: '40' },
+  { id: 'waste', label: 'Waste (%)', type: 'number', min: 0, max: 30, step: 1, value: '10' },
+];
+
+const results = [
+  { key: 'cubicYards', label: 'Gravel volume', unit: 'cu yd', format: 'fixed2' },
+  { key: 'tons', label: 'Gravel weight', unit: 'tons', format: 'fixed2' },
+  { key: 'materialCost', label: 'Material cost', format: 'money' },
+];
+---
+
+<LongTailCalculator
+  title="Gravel Driveway Cost Calculator"
+  description="Free gravel driveway cost calculator: enter size, depth, stone density and price per ton to estimate cubic yards, tons and total material cost."
+  slug="gravel-driveway-cost-calculator"
+  calcType="gravel-cost"
+  quickAnswer="A 10x50 driveway at 4 inches deep needs about 9.5 tons of crushed stone with 10% waste. At $40 per ton, material alone is about $380."
+  formula="Volume = length × width × (depth ÷ 12) ÷ 27. Tons = volume × density. Cost = tons × price per ton."
+  fields={fields}
+  results={results}
+  table={{
+    caption: 'Gravel driveway material cost at 1.4 tons per cubic yard, $40 per ton, and 10% waste.',
+    headers: ['Driveway size', 'Depth', 'Tons', 'Material cost'],
+    rows: [
+      ['10 x 50', '4"', '9.5', '$380'],
+      ['12 x 50', '4"', '11.4', '$456'],
+      ['10 x 100', '4"', '19.0', '$760'],
+      ['12 x 100', '4"', '22.8', '$912'],
+      ['20 x 60', '6"', '30.5', '$1,220'],
+      ['20 x 100', '6"', '50.9', '$2,036'],
+    ],
+  }}
+  note="Most suppliers charge delivery separately. A local short-haul delivery is often $50 to $150; longer hauls can exceed $300."
+  guide={[
+    {
+      heading: 'What changes gravel price most',
+      paragraphs: [
+        'Stone type, distance from the quarry, and delivery minimums matter more than most people expect.',
+        'Crushed base stone is usually the cheapest per ton, while pea gravel, river rock, and decorative chip cost more because they are washed and sorted.',
+      ],
+    },
+    {
+      heading: 'How to order without overpaying',
+      paragraphs: [
+        'Get a delivered price per ton, not just the yard price. A low material price can disappear under a high delivery fee on a small order.',
+        'If your driveway needs more than 10 tons, ask about a full-truck discount. Suppliers often price partial loads higher per ton.',
+      ],
+    },
+    {
+      heading: 'What a gravel driveway really costs over time',
+      paragraphs: [
+        'Gravel is one of the cheapest driveways to install, but it needs grading and top-ups.',
+        'A well-built driveway with fabric, compacted base, and the right surface stone can last many years with light maintenance. A thin layer over mud will need rebuilding quickly.',
+      ],
+    },
+  ]}
+  faqs={[
+    {
+      question: 'How much does a gravel driveway cost per square foot?',
+      answer: 'About $0.70 to $1.20 per square foot for material at 4 inches deep and $30 to $60 per ton.',
+    },
+    {
+      question: 'How many tons of gravel do I need for a 10x50 driveway?',
+      answer: 'About 8.6 tons net, or 9.5 tons with 10% waste for compaction and spillage.',
+    },
+    {
+      question: 'Why do I need extra gravel?',
+      answer: 'Loose gravel compacts and spreads at the edges. A 10% waste margin is normal; 15% is better on soft ground or slopes.',
+    },
+    {
+      question: 'Does gravel type change the cost?',
+      answer: 'Yes. Dense base stone is heavier and often cheaper per ton than decorative pea gravel or river rock.',
+    },
+  ]}
+  related={[
+    { label: 'Gravel driveway depth', href: '/gravel-driveway-depth-calculator/' },
+    { label: 'Gravel driveway calculator', href: '/gravel-driveway-calculator/' },
+    { label: 'Concrete slab cost', href: '/concrete-slab-cost-calculator/' },
+  ]}
+/>

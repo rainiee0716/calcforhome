@@ -1,0 +1,90 @@
+---
+import LongTailCalculator from '../components/LongTailCalculator.astro';
+
+const fields = [
+  { id: 'length', label: 'Patio length (ft)', type: 'number', min: 1, step: 0.5, value: '10' },
+  { id: 'width', label: 'Patio width (ft)', type: 'number', min: 1, step: 0.5, value: '10' },
+  { id: 'depth', label: 'Sand depth (in)', type: 'number', min: 0.5, max: 4, step: 0.25, value: '1' },
+  { id: 'bag-size', label: 'Bag size', type: 'select', options: [
+    { value: '0.5', label: '50 lb (~0.5 cu ft)' },
+    { value: '0.75', label: '75 lb (~0.75 cu ft)' },
+    { value: '1.0', label: '1 cu ft' },
+  ]},
+  { id: 'waste', label: 'Waste (%)', type: 'number', min: 0, max: 30, step: 1, value: '10' },
+];
+
+const results = [
+  { key: 'cubicYards', label: 'Sand needed', unit: 'cu yd', format: 'fixed2' },
+  { key: 'volumeWithWasteCubicFeet', label: 'Cubic feet', format: 'fixed2' },
+  { key: 'bags', label: 'Bags to buy' },
+];
+---
+
+<LongTailCalculator
+  title="Paver Sand Calculator"
+  description="Free paver sand calculator: enter patio size and bedding depth to get cubic yards, cubic feet and bags of paver sand to buy."
+  slug="paver-sand-calculator"
+  calcType="paver-sand"
+  quickAnswer="A 10x10 patio with 1 inch of bedding sand needs about 0.34 cubic yards, or about 19 fifty-pound bags with 10% waste."
+  formula="Volume = length × width × (depth ÷ 12), then add waste and divide by the bag yield."
+  fields={fields}
+  results={results}
+  table={{
+    caption: 'Paver sand for a 1-inch bedding layer, with 10% waste and 0.5 cu ft bags.',
+    headers: ['Patio size', 'Cubic yards', 'Bags'],
+    rows: [
+      ['8 x 8', '0.22', '13'],
+      ['10 x 10', '0.34', '19'],
+      ['12 x 12', '0.49', '27'],
+      ['16 x 16', '0.87', '48'],
+      ['20 x 20', '1.36', '76'],
+    ],
+  }}
+  note="Use concrete sand for the bedding layer, not play sand. Concrete sand is angular and locks pavers better."
+  guide={[
+    {
+      heading: 'Bedding sand vs joint sand',
+      paragraphs: [
+        'Bedding sand sits under the pavers and is screeded to a consistent 1-inch layer before the pavers are laid.',
+        'Joint sand is swept into the gaps after installation. Polymeric sand is best there because it hardens and resists washout.',
+      ],
+    },
+    {
+      heading: 'How to screed sand correctly',
+      paragraphs: [
+        'Set screed rails or pipes to the right depth, spread the sand, then drag a straight board across them.',
+        'Do not walk on the finished sand bed. Place pavers from one side and work outward so the bed stays level.',
+      ],
+    },
+    {
+      heading: 'Common paver sand mistakes',
+      paragraphs: [
+        'Using play sand, laying pavers on loose sand deeper than 1.5 inches, or forgetting the base are the three most common causes of uneven pavers.',
+        'Always compact the gravel base first. Sand is not a substitute for base; it is only a bedding layer.',
+      ],
+    },
+  ]}
+  faqs={[
+    {
+      question: 'How deep should paver sand be?',
+      answer: 'About 1 inch after screeding. More than 1.5 inches can make pavers settle unevenly.',
+    },
+    {
+      question: 'How many bags of paver sand do I need?',
+      answer: 'A 10x10 patio at 1 inch needs about 19 fifty-pound bags with waste.',
+    },
+    {
+      question: 'Can I use play sand for pavers?',
+      answer: 'No. Play sand is too round and washes out. Use concrete sand or paver base sand.',
+    },
+    {
+      question: 'Do I need sand for the joints too?',
+      answer: 'Yes, use polymeric sand for joints after the pavers are set. It locks better than plain sand.',
+    },
+  ]}
+  related={[
+    { label: 'Concrete bag coverage', href: '/concrete-bag-coverage-calculator/' },
+    { label: 'Gravel driveway depth', href: '/gravel-driveway-depth-calculator/' },
+    { label: 'Mulch calculator', href: '/mulch-calculator/' },
+  ]}
+/>

@@ -5,6 +5,13 @@ import {
   calculateConcreteBags,
   calculateFencePostConcrete,
   calculateGravel,
+  calculateAreaMaterial,
+  calculateBagCoverage,
+  calculateConcreteSlabCost,
+  calculateGravelCost,
+  calculateLayeredGravel,
+  calculatePaverSand,
+  calculateMulch,
   calculateFootingDepth,
   calculateFraming,
   calculateDeckBoards,
@@ -50,6 +57,94 @@ test('gravel calculator converts volume to tons', () => {
 
   assert.equal(result.cubicYards.toFixed(3), '1.235');
   assert.equal(result.tons.toFixed(3), '1.728');
+});
+
+test('area material calculator handles depth, area and waste', () => {
+  const result = calculateAreaMaterial({
+    lengthFt: 10,
+    widthFt: 10,
+    depthIn: 2,
+    wastePercent: 10,
+  });
+  assert.equal(result.squareFeet, 100);
+  assert.equal(result.cubicFeet.toFixed(2), '16.67');
+  assert.equal(result.volumeWithWasteCubicFeet.toFixed(2), '18.33');
+  assert.equal(result.cubicYards.toFixed(3), '0.679');
+});
+
+test('bag coverage calculator turns yield into square feet', () => {
+  const result = calculateBagCoverage({
+    bagYieldCubicFeet: 0.6,
+    depthIn: 4,
+  });
+  assert.equal(result.coverageSquareFeet.toFixed(2), '1.80');
+});
+
+test('concrete slab cost calculator prices a pour', () => {
+  const result = calculateConcreteSlabCost({
+    lengthFt: 10,
+    widthFt: 10,
+    thicknessIn: 4,
+    wastePercent: 10,
+    pricePerCubicYard: 150,
+  });
+  assert.equal(result.cubicYards.toFixed(2), '1.36');
+  assert.equal(result.materialCost.toFixed(2), '203.70');
+});
+
+test('gravel cost calculator prices a driveway', () => {
+  const result = calculateGravelCost({
+    lengthFt: 10,
+    widthFt: 50,
+    depthIn: 4,
+    thicknessIn: 4,
+    wastePercent: 10,
+    densityTonsPerCubicYard: 1.4,
+    pricePerTon: 40,
+  });
+  assert.equal(result.cubicYards.toFixed(2), '6.79');
+  assert.equal(result.tons.toFixed(2), '9.51');
+  assert.equal(result.materialCost.toFixed(2), '380.25');
+});
+
+test('layered gravel calculator separates base and surface', () => {
+  const result = calculateLayeredGravel({
+    lengthFt: 10,
+    widthFt: 50,
+    baseDepthIn: 4,
+    surfaceDepthIn: 2,
+    baseDensityTonsPerCubicYard: 1.5,
+    surfaceDensityTonsPerCubicYard: 1.4,
+    wastePercent: 10,
+  });
+  assert.equal(result.baseCubicYards.toFixed(2), '6.79');
+  assert.equal(result.surfaceCubicYards.toFixed(2), '3.40');
+  assert.equal(result.totalCubicYards.toFixed(2), '10.19');
+  assert.equal(result.baseTons.toFixed(2), '10.19');
+  assert.equal(result.surfaceTons.toFixed(2), '4.75');
+  assert.equal(result.totalTons.toFixed(2), '14.94');
+});
+
+test('paver sand and mulch calculators convert to bags', () => {
+  const pavers = calculatePaverSand({
+    lengthFt: 10,
+    widthFt: 10,
+    depthIn: 1,
+    wastePercent: 10,
+    bagYieldCubicFeet: 0.5,
+  });
+  assert.equal(pavers.cubicYards.toFixed(3), '0.340');
+  assert.equal(pavers.bags, 19);
+
+  const mulch = calculateMulch({
+    lengthFt: 10,
+    widthFt: 10,
+    depthIn: 2,
+    wastePercent: 0,
+    bagYieldCubicFeet: 2,
+  });
+  assert.equal(mulch.cubicYards.toFixed(3), '0.617');
+  assert.equal(mulch.bags, 9);
 });
 
 test('fence post calculator subtracts the buried post volume', () => {

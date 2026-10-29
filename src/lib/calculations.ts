@@ -117,6 +117,172 @@ export function calculateGravel(input: GravelInput): GravelResult {
   };
 }
 
+export interface AreaMaterialInput {
+  lengthFt: number;
+  widthFt: number;
+  depthIn: number;
+  wastePercent?: number;
+}
+
+export interface AreaMaterialResult {
+  squareFeet: number;
+  cubicFeet: number;
+  volumeWithWasteCubicFeet: number;
+  cubicYards: number;
+}
+
+export function calculateAreaMaterial(input: AreaMaterialInput): AreaMaterialResult {
+  const squareFeet = input.lengthFt * input.widthFt;
+  const cubicFeet = calculateConcreteVolume({
+    lengthFt: input.lengthFt,
+    widthFt: input.widthFt,
+    thicknessIn: input.depthIn,
+  });
+  const volumeWithWasteCubicFeet = applyWaste(cubicFeet, input.wastePercent ?? 0);
+  return {
+    squareFeet,
+    cubicFeet,
+    volumeWithWasteCubicFeet,
+    cubicYards: volumeWithWasteCubicFeet / CUBIC_FEET_PER_CUBIC_YARD,
+  };
+}
+
+export interface BagCoverageInput {
+  bagYieldCubicFeet: number;
+  depthIn: number;
+}
+
+export interface BagCoverageResult {
+  coverageSquareFeet: number;
+}
+
+export function calculateBagCoverage(input: BagCoverageInput): BagCoverageResult {
+  assertPositive(input.bagYieldCubicFeet, 'Bag yield');
+  assertPositive(input.depthIn, 'Depth');
+  return {
+    coverageSquareFeet: input.bagYieldCubicFeet / (input.depthIn / 12),
+  };
+}
+
+export interface ConcreteSlabCostInput extends ConcreteInput {
+  pricePerCubicYard: number;
+}
+
+export interface ConcreteSlabCostResult extends ConcreteResult {
+  materialCost: number;
+}
+
+export function calculateConcreteSlabCost(input: ConcreteSlabCostInput): ConcreteSlabCostResult {
+  assertPositive(input.pricePerCubicYard, 'Price per cubic yard');
+  const concrete = calculateConcrete(input);
+  return {
+    ...concrete,
+    materialCost: concrete.cubicYards * input.pricePerCubicYard,
+  };
+}
+
+export interface GravelCostInput extends GravelInput {
+  pricePerTon: number;
+}
+
+export interface GravelCostResult extends GravelResult {
+  materialCost: number;
+}
+
+export function calculateGravelCost(input: GravelCostInput): GravelCostResult {
+  assertPositive(input.pricePerTon, 'Price per ton');
+  const gravel = calculateGravel(input);
+  return {
+    ...gravel,
+    materialCost: gravel.tons * input.pricePerTon,
+  };
+}
+
+export interface LayeredGravelInput {
+  lengthFt: number;
+  widthFt: number;
+  baseDepthIn: number;
+  surfaceDepthIn: number;
+  baseDensityTonsPerCubicYard?: number;
+  surfaceDensityTonsPerCubicYard?: number;
+  wastePercent?: number;
+}
+
+export interface LayeredGravelResult {
+  squareFeet: number;
+  baseCubicYards: number;
+  surfaceCubicYards: number;
+  totalCubicYards: number;
+  baseTons: number;
+  surfaceTons: number;
+  totalTons: number;
+}
+
+export function calculateLayeredGravel(input: LayeredGravelInput): LayeredGravelResult {
+  const baseDensity = input.baseDensityTonsPerCubicYard ?? 1.5;
+  const surfaceDensity = input.surfaceDensityTonsPerCubicYard ?? 1.4;
+  assertPositive(baseDensity, 'Base density');
+  assertPositive(surfaceDensity, 'Surface density');
+
+  const base = calculateAreaMaterial({
+    lengthFt: input.lengthFt,
+    widthFt: input.widthFt,
+    depthIn: input.baseDepthIn,
+    wastePercent: input.wastePercent,
+  });
+  const surface = calculateAreaMaterial({
+    lengthFt: input.lengthFt,
+    widthFt: input.widthFt,
+    depthIn: input.surfaceDepthIn,
+    wastePercent: input.wastePercent,
+  });
+
+  return {
+    squareFeet: base.squareFeet,
+    baseCubicYards: base.cubicYards,
+    surfaceCubicYards: surface.cubicYards,
+    totalCubicYards: base.cubicYards + surface.cubicYards,
+    baseTons: base.cubicYards * baseDensity,
+    surfaceTons: surface.cubicYards * surfaceDensity,
+    totalTons: base.cubicYards * baseDensity + surface.cubicYards * surfaceDensity,
+  };
+}
+
+export interface PaverSandInput extends AreaMaterialInput {
+  bagYieldCubicFeet?: number;
+}
+
+export interface PaverSandResult extends AreaMaterialResult {
+  bags: number;
+}
+
+export function calculatePaverSand(input: PaverSandInput): PaverSandResult {
+  const bagYield = input.bagYieldCubicFeet ?? 0.5;
+  assertPositive(bagYield, 'Bag yield');
+  const material = calculateAreaMaterial(input);
+  return {
+    ...material,
+    bags: Math.ceil(material.volumeWithWasteCubicFeet / bagYield),
+  };
+}
+
+export interface MulchInput extends AreaMaterialInput {
+  bagYieldCubicFeet: number;
+}
+
+export interface MulchResult extends AreaMaterialResult {
+  bags: number;
+}
+
+export function calculateMulch(input: MulchInput): MulchResult {
+  assertPositive(input.bagYieldCubicFeet, 'Bag yield');
+  const material = calculateAreaMaterial(input);
+  return {
+    ...material,
+    bags: Math.ceil(material.volumeWithWasteCubicFeet / input.bagYieldCubicFeet),
+  };
+}
+
 export function calculateFencePostConcrete(input: FencePostInput): FencePostResult {
   const {
     postCount,
