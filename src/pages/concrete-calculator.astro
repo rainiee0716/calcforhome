@@ -2,11 +2,54 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import ToolIcon from '../components/ToolIcon.astro';
-import { calculateConcrete } from '../lib/calculations';
-import { breadcrumbSchema, softwareApplicationSchema } from '../lib/schema';
-import { LAST_UPDATED } from '../lib/site';
+import { breadcrumbSchema, faqSchema, softwareApplicationSchema } from '../lib/schema';
 
 const siteUrl = Astro.site ?? new URL(Astro.url.origin);
+const UPDATED = '2026-10-29';
+
+const faqs = [
+  {
+    question: 'How much concrete do I need for a 10x10 slab?',
+    answer:
+      'A 10x10 slab at 4 inches thick needs 1.23 cubic yards, or about 56 bags of 80 lb mix. At 5 inches it is 1.54 cubic yards and at 6 inches it is 1.85 cubic yards. Add 10% for waste on uneven ground and order 1.36 cubic yards.',
+  },
+  {
+    question: 'How many cubic feet are in a cubic yard of concrete?',
+    answer:
+      'Twenty-seven. A cubic yard is 3 feet by 3 feet by 3 feet. Concrete is ordered in cubic yards, so any volume calculated in cubic feet gets divided by 27 before you call the plant.',
+  },
+  {
+    question: 'How thick should a concrete slab be?',
+    answer:
+      'Four inches for footpaths, shed floors, and patios that only see foot traffic. Five inches for a driveway carrying cars and pickups. Six inches or more for RVs, dumpsters, or heavy equipment. Anything under 4 inches cracks under normal use.',
+  },
+  {
+    question: 'How many 80 lb bags of concrete equal a yard?',
+    answer:
+      'About 45 bags. An 80 lb bag yields 0.60 cubic feet and a cubic yard is 27 cubic feet, so 27 divided by 0.60 is 45. In 60 lb bags it takes 60, and in 40 lb bags it takes 90.',
+  },
+  {
+    question: 'At what point is ready-mix cheaper than bags?',
+    answer:
+      'Around 1.5 cubic yards, which is 68 bags of 80 lb. Below that, bags win on price and you avoid the short-load fee. Above 2 cubic yards the bags cost more than delivered concrete and the mixing time alone makes it impractical.',
+  },
+  {
+    question: 'Do I need rebar in a concrete slab?',
+    answer:
+      'For a 4-inch patio or shed floor, welded wire mesh or synthetic fiber is enough. For driveways and anything 5 inches or thicker, use #3 or #4 rebar on a 18 to 24 inch grid, set at mid-depth. Rebar does not stop cracking; it holds the slab together after it cracks.',
+  },
+  {
+    question: 'How much does a yard of concrete cost?',
+    answer:
+      'Ready-mix delivered runs about $150 to $200 per cubic yard in 2026, plus a short-load fee of $100 to $250 if you order less than a full truck. Bags work out to roughly $315 to $405 per cubic yard, so bags cost about twice as much per yard.',
+  },
+  {
+    question: 'How long before I can walk on a new slab?',
+    answer:
+      'You can walk on it after 24 hours and drive on it after 7 days. Full design strength takes 28 days. Keep it wet or covered for the first 7 days in hot weather, because concrete that dries too fast loses most of its final strength.',
+  },
+];
+
 const schema = [
   softwareApplicationSchema('Concrete Calculator', '/concrete-calculator/', siteUrl),
   breadcrumbSchema(
@@ -16,12 +59,41 @@ const schema = [
     ],
     siteUrl,
   ),
+  faqSchema(faqs),
+];
+
+// 常见板尺寸的净体积（不含损耗），与页面计算器同一套口径
+const slabRows = [
+  { slab: '8 x 8', sqft: 64, y4: 0.79, f4: 21.3, y5: 0.99, f5: 26.7, y6: 1.19, f6: 32.0 },
+  { slab: '10 x 10', sqft: 100, y4: 1.23, f4: 33.3, y5: 1.54, f5: 41.7, y6: 1.85, f6: 50.0 },
+  { slab: '12 x 12', sqft: 144, y4: 1.78, f4: 48.0, y5: 2.22, f5: 60.0, y6: 2.67, f6: 72.0 },
+  { slab: '10 x 20', sqft: 200, y4: 2.47, f4: 66.7, y5: 3.09, f5: 83.3, y6: 3.7, f6: 100.0 },
+  { slab: '20 x 20', sqft: 400, y4: 4.94, f4: 133.3, y5: 6.17, f5: 166.7, y6: 7.41, f6: 200.0 },
+  { slab: '24 x 24', sqft: 576, y4: 7.11, f4: 192.0, y5: 8.89, f5: 240.0, y6: 10.67, f6: 288.0 },
+  { slab: '24 x 30', sqft: 720, y4: 8.89, f4: 240.0, y5: 11.11, f5: 300.0, y6: 13.33, f6: 360.0 },
+  { slab: '30 x 30', sqft: 900, y4: 11.11, f4: 300.0, y5: 13.89, f5: 375.0, y6: 16.67, f6: 450.0 },
+];
+
+const thicknessRows = [
+  { use: 'Footpath, patio, shed floor', depth: '4 in', mesh: 'Wire mesh or fiber', note: 'Foot traffic only' },
+  { use: 'Driveway, car parking', depth: '5 in', mesh: '#3 rebar at 24 in', note: 'Cars and half-ton pickups' },
+  { use: 'RV pad, heavy equipment', depth: '6 in', mesh: '#4 rebar at 18 in', note: 'Over 10,000 lb axle loads' },
+  { use: 'Footing under a wall', depth: '8–12 in', mesh: 'Rebar cage', note: 'Width is 2x wall width' },
+];
+
+const bagRows = [
+  { yards: '0.5', cuft: 13.5, bags: 23, cost: '$160–$210' },
+  { yards: '1.0', cuft: 27, bags: 45, cost: '$315–$405' },
+  { yards: '1.5', cuft: 40.5, bags: 68, cost: '$475–$610' },
+  { yards: '2.0', cuft: 54, bags: 90, cost: '$630–$810' },
+  { yards: '3.0', cuft: 81, bags: 135, cost: '$945–$1,215' },
+  { yards: '5.0', cuft: 135, bags: 225, cost: '$1,575–$2,025' },
 ];
 ---
 
 <BaseLayout
   title="Concrete Calculator — Slab & Footing Volume in Cubic Yards"
-  description="Free concrete calculator: enter slab length, width and thickness to get the volume in cubic feet and cubic yards, plus how many 80 lb bags you need. Works for slabs, footings and pads."
+  description="Free concrete calculator: enter length, width and thickness to get slab volume in cubic feet and cubic yards, plus the bags of mix it takes. Includes a slab size and thickness chart."
   schema={schema}
 >
   <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: 'Concrete Calculator' }]} />
@@ -31,8 +103,8 @@ const schema = [
       <span class="tool-icon"><ToolIcon slug="concrete-calculator" /></span>
       <div>
         <h1>Concrete Calculator</h1>
-        <p class="lead">How much concrete for your slab or footing? Enter the dimensions and we'll give
-          you the volume in cubic feet, cubic yards, and the number of 80&nbsp;lb bags.</p>
+        <p class="lead">Enter your slab or footing dimensions to get the volume in cubic feet and cubic
+          yards, plus how many 80&nbsp;lb bags it takes if you are mixing rather than ordering.</p>
       </div>
     </div>
 
@@ -60,28 +132,219 @@ const schema = [
 
     <div class="result" id="result" aria-live="polite" hidden>
       <h3>You need about</h3>
-      <p><span class="big" id="cubic-yards">—</span> cubic yards</p>
+      <p><span class="big" id="cubic-yards">—</span> cubic yards with waste</p>
       <ul>
-        <li>Cubic feet: <b id="cubic-feet">—</b></li>
+        <li>Cubic feet before waste: <b id="cubic-feet">—</b></li>
         <li>80 lb bags: <b id="eighty-pound-bags">—</b></li>
+        <li>Weight: <b id="weight-lb">—</b></li>
       </ul>
     </div>
   </section>
 
   <section class="card">
+    <h2>How much concrete do you need?</h2>
+    <p>A 10x10 slab at 4 inches thick is <b>1.23 cubic yards</b> — about 56 bags of 80 lb mix, or one
+      short-load delivery. Go to 6 inches for the same footprint and it is 1.85 cubic yards, a 50%
+      jump for two extra inches of thickness. The chart below covers the sizes people actually pour.</p>
+
+    <div class="table-wrap">
+      <table class="data">
+        <caption>Slab volume by size and thickness. Net volume — add 10% waste unless the ground is
+          perfectly flat and formed.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Slab (ft)</th>
+            <th scope="col">Sq ft</th>
+            <th scope="col">4" cu yd</th>
+            <th scope="col">4" cu ft</th>
+            <th scope="col">5" cu yd</th>
+            <th scope="col">5" cu ft</th>
+            <th scope="col">6" cu yd</th>
+            <th scope="col">6" cu ft</th>
+          </tr>
+        </thead>
+        <tbody>
+          {slabRows.map((r) => (
+            <tr>
+              <td>{r.slab}</td>
+              <td>{r.sqft}</td>
+              <td>{r.y4.toFixed(2)}</td>
+              <td>{r.f4.toFixed(1)}</td>
+              <td>{r.y5.toFixed(2)}</td>
+              <td>{r.f5.toFixed(1)}</td>
+              <td>{r.y6.toFixed(2)}</td>
+              <td>{r.f6.toFixed(1)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <p>Two things move the number more than people expect: thickness, because it multiplies everything,
+      and the waste allowance. A 20x20 slab formed by hand over uneven ground can easily run 10% over
+      on thickness alone, which is another half yard. Order the extra; concrete that runs short mid-pour
+      leaves you with a cold joint that never fully bonds.</p>
+  </section>
+
+  <section class="card">
     <h2>How the concrete calculator works</h2>
-    <p><code>volume = length × width × (thickness ÷ 12)</code> gives cubic feet. Divide by 27 for
-      cubic yards. One 80&nbsp;lb bag of concrete mix yields about <b>0.60 cubic feet</b>, so we
-      divide the total volume by 0.60 and round up.</p>
-    <p>Add 10% waste for slabs poured on uneven ground, and 15% if you're a first-timer — it's cheaper
-      to have a little left than to stop mid-pour. For exact bag counts by size, use the
-      <a href="/concrete-bags-calculator/">Concrete Bags Calculator</a>.</p>
-    <h3>Assumptions and sources</h3>
-    <p>Bag yields use standard manufacturer data for 80&nbsp;lb concrete mix. Results are estimates;
-      verify local mix specifications before ordering.</p>
-    <h3>Related tools</h3>
-    <p><a href="/concrete-bags-calculator/">Concrete bags calculator</a> · <a href="/gravel-driveway-calculator/">Gravel for driveway</a> · <a href="/concrete-fence-post-calculator/">Concrete for fence post</a></p>
-    <p class="muted">Last updated: {LAST_UPDATED}</p>
+    <p><code>volume (cu ft) = length × width × (thickness ÷ 12)</code>. Divide by 27 for cubic yards.
+      Nothing else is involved — no density correction, no shape factor, because a formed slab is a
+      box.</p>
+    <p>For bags, we divide the volume plus waste by 0.60 cubic feet, which is the yield of one 80 lb
+      bag of pre-blended mix, and round up. If you are buying 60 lb or 40 lb bags instead, use the
+      <a href="/concrete-bags-calculator/">concrete bags calculator</a> — the count changes but the
+      volume does not.</p>
+
+    <h3>Why waste is not optional</h3>
+    <p>Formwork bows, subgrade settles, and a slab poured 1/4 inch thick on a 400 square foot pour
+      costs a third of a cubic yard before anyone notices. 10% covers normal ground. Use 15% if you
+      are forming on dirt rather than a compacted base, or if this is your first pour and the screeding
+      will be slow.</p>
+
+    <h3>What the calculator does not cover</h3>
+    <p>Rectangular slabs and footings only. Circular pads, sonotubes, and post holes need the cylinder
+      formula <code>π × r² × depth</code> — the
+      <a href="/concrete-fence-post-calculator/">fence post calculator</a> already does that maths for
+      post holes. Stepped footings and sloped slabs should be broken into rectangles and calculated
+      one step at a time.</p>
+  </section>
+
+  <section class="card">
+    <h2>How thick should the slab be?</h2>
+    <p>Thickness is the single biggest driver of cost, and the most common place people either overbuild
+      or underbuild. The rule that matters: thickness is set by what drives on it, and reinforcement is
+      set by span and soil, not by wishful thinking.</p>
+
+    <div class="table-wrap">
+      <table class="data">
+        <caption>Slab thickness and reinforcement by use. Local code governs anything structural.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Use</th>
+            <th scope="col">Depth</th>
+            <th scope="col">Reinforcement</th>
+            <th scope="col">Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {thicknessRows.map((r) => (
+            <tr>
+              <td>{r.use}</td>
+              <td>{r.depth}</td>
+              <td>{r.mesh}</td>
+              <td>{r.note}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <p>Under the slab, 4 inches of compacted crushed stone is standard and does more for slab life than
+      another inch of concrete. Cut control joints every 8 to 10 feet, or at least every 24 to 30 times
+      the slab thickness, to a depth of one quarter the slab thickness. Those joints are where the slab
+      is supposed to crack, and a slab with no joints will crack wherever it wants.</p>
+    <p>Pouring in cold weather changes the mix, not the volume — but it does change the waste you need,
+      because frozen ground and slow set let more mix disappear into the subgrade.</p>
+  </section>
+
+  <section class="card">
+    <h2>Bags or a ready-mix truck?</h2>
+    <p>This is a price question with a clear answer near 1.5 cubic yards. Below it, bags are cheaper and
+      you avoid the short-load fee. Above it, delivered concrete wins on both price and labor — mixing
+      90 bags by hand in a wheelbarrow is a full day and a wrecked back.</p>
+
+    <div class="table-wrap">
+      <table class="data">
+        <caption>Bag count and bag cost by volume, at $7–$9 per 80 lb bag. Delivered ready-mix runs
+          about $150–$200 per cubic yard plus a short-load fee under a full load.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Volume</th>
+            <th scope="col">Cu ft</th>
+            <th scope="col">80 lb bags</th>
+            <th scope="col">Bag cost</th>
+          </tr>
+        </thead>
+        <tbody>
+          {bagRows.map((r) => (
+            <tr>
+              <td>{r.yards} cu yd</td>
+              <td>{r.cuft}</td>
+              <td>{r.bags}</td>
+              <td>{r.cost}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <p>Read the last column carefully. Three cubic yards in bags is $945 to $1,215, and delivered
+      concrete for the same pour is roughly $450 to $600 plus a short-load fee. Bags cost about twice
+      as much per yard and they are the right choice only when the pour is small or the truck cannot
+      reach the site.</p>
+  </section>
+
+  <section class="card">
+    <h2>Common projects and what they take</h2>
+    <p>Most home pours fall into a handful of shapes. These are the numbers, ready to use:</p>
+    <ul>
+      <li><b>Shed floor, 10x10 at 4 inches:</b> 1.23 cu yd — the classic bag job.</li>
+      <li><b>One-car garage slab, 12x24 at 5 inches:</b> 4.44 cu yd — ready-mix, no question.</li>
+      <li><b>Two-car garage, 24x24 at 5 inches:</b> 8.89 cu yd — ready-mix.</li>
+      <li><b>Footpath, 3 ft wide and 40 ft long at 4 inches:</b> 1.48 cu yd — bags are viable.</li>
+      <li><b>AC pad, 3x3 at 4 inches:</b> 0.11 cu yd — 5 bags of 80 lb, a half-hour job.</li>
+      <li><b>Porch step, 4x6 at 6 inches:</b> 0.44 cu yd — about 20 bags.</li>
+    </ul>
+    <p>If your project is a footing rather than a slab, measure width and depth of the trench and treat
+      it as a long thin slab. A 12 inch wide, 12 inch deep footing 40 feet long is 1.48 cubic yards —
+      same arithmetic, different shape.</p>
+  </section>
+
+  <section class="card">
+    <h2>What concrete costs</h2>
+    <p>Ready-mix delivered to a residential site runs $150 to $200 per cubic yard in 2026, and most
+      plants charge a short-load fee of $100 to $250 when you order under 5 yards. Bagged mix at $7 to
+      $9 per 80 lb bag works out to $315 to $405 per cubic yard. Add $30 to $60 per yard for a pump
+      truck if the truck cannot chute to the forms.</p>
+    <p>Labor is the other half. A flatwork crew charges $6 to $12 per square foot finished, so a 400
+      square foot driveway slab is $2,400 to $4,800 including material — versus roughly $900 in material
+      if you form, pour and finish it yourself.</p>
+  </section>
+
+  <section class="card">
+    <h2>Concrete calculator FAQ</h2>
+    <div class="faq">
+      {faqs.map((f) => (
+        <details>
+          <summary>{f.question}</summary>
+          <p>{f.answer}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Where these numbers come from</h2>
+    <div class="sources">
+      <p>Bag yields, slab thickness guidance and reinforcement practice follow manufacturer and
+        industry publications. Structural requirements are set by your local code.</p>
+      <ul>
+        <li><a href="https://www.quikrete.com/calculator/main.asp" target="_blank" rel="noopener">QUIKRETE concrete calculator</a> — bag yield reference for pre-blended mix</li>
+        <li><a href="https://www.concretenetwork.com/concrete/howmuch/calculator.htm" target="_blank" rel="noopener">Concrete Network</a> — slab thickness and reinforcement guidance for residential work</li>
+        <li><a href="https://www.nrmca.org/" target="_blank" rel="noopener">National Ready Mixed Concrete Association</a> — ready-mix ordering, yield and delivery practice</li>
+        <li><a href="https://www.iccsafe.org/" target="_blank" rel="noopener">International Code Council</a> — IRC provisions for slabs, footings and frost depth</li>
+      </ul>
+      <p>Prices are 2026 US residential averages and vary by region, plant distance and order size.</p>
+    </div>
+
+    <h3>Related calculators</h3>
+    <div class="related">
+      <a href="/concrete-bags-calculator/">How many bags of concrete</a>
+      <a href="/concrete-fence-post-calculator/">Concrete for fence posts</a>
+      <a href="/gravel-driveway-calculator/">Gravel for a driveway</a>
+    </div>
+    <p class="muted">Last updated: {UPDATED}</p>
   </section>
 </BaseLayout>
 
@@ -112,6 +375,9 @@ const schema = [
       document.querySelector('#cubic-feet')!.textContent = values.cubicFeet.toFixed(1);
       document.querySelector('#eighty-pound-bags')!.textContent =
         values.eightyPoundBags.toLocaleString();
+      // 混凝土容重约 150 lb/cu ft
+      document.querySelector('#weight-lb')!.textContent =
+        Math.round(values.volumeWithWaste * 150).toLocaleString() + ' lb';
 
       error.setAttribute('hidden', '');
       result.removeAttribute('hidden');

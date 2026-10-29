@@ -13,16 +13,19 @@ export const tools: Tool[] = [
     slug: 'concrete-calculator',
     title: 'Concrete Calculator',
     blurb: 'Slab & footing volume in cubic feet and cubic yards',
+    updated: '2026-10-29',
   },
   {
     slug: 'concrete-bags-calculator',
     title: 'Concrete Bags Calculator',
-    blurb: 'Exactly how many 80/60/40 lb bags you need',
+    blurb: 'Exactly how many 80/60/50/40 lb bags you need',
+    updated: '2026-10-29',
   },
   {
     slug: 'gravel-driveway-calculator',
-    title: 'Gravel for Driveway Calculator',
-    blurb: 'Cubic yards & tons of gravel for any driveway',
+    title: 'Gravel Calculator for Driveways',
+    blurb: 'Cubic yards & tons of gravel by stone type',
+    updated: '2026-10-29',
   },
   {
     slug: 'concrete-fence-post-calculator',

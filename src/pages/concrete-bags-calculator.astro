@@ -2,27 +2,51 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import ToolIcon from '../components/ToolIcon.astro';
-import { calculateConcreteBags } from '../lib/calculations';
 import { breadcrumbSchema, faqSchema, softwareApplicationSchema } from '../lib/schema';
-import { LAST_UPDATED } from '../lib/site';
 
 const siteUrl = Astro.site ?? new URL(Astro.url.origin);
+const UPDATED = '2026-10-29';
+
 const faqs = [
   {
     question: 'How many 80 lb bags of concrete do I need for a 10x10 slab?',
-    answer: 'A 10x10 slab at 4 inches thick needs about 56 80 lb bags before waste. With 10% waste, buy about 62 bags.',
+    answer:
+      'A 10x10 slab at 4 inches thick needs about 56 bags of 80 lb mix, or 62 with 10% waste. In 60 lb bags it is 75 without waste, and in 40 lb bags it is 112. The volume is the same either way — 33.3 cubic feet.',
+  },
+  {
+    question: 'How many bags of concrete make a yard?',
+    answer:
+      'Forty-five 80 lb bags, sixty 60 lb bags, seventy-two 50 lb bags, or ninety 40 lb bags. A cubic yard is 27 cubic feet, and you divide 27 by the yield of one bag.',
   },
   {
     question: 'How much concrete does a 60 lb bag make?',
-    answer: 'A standard 60 lb bag yields about 0.45 cubic feet of mixed concrete.',
+    answer:
+      'About 0.45 cubic feet of mixed concrete, which is roughly three quarters of a wheelbarrow load. A 50 lb bag yields 0.375 cubic feet and a 40 lb bag yields 0.30.',
+  },
+  {
+    question: 'Is it cheaper to buy 80 lb bags or 60 lb bags?',
+    answer:
+      'The 80 lb bag, usually by 5% to 10% per cubic foot of concrete. At typical 2026 prices the 80 lb bag costs about $11.70 per cubic foot and the 60 lb about $12.20. The 60 lb bag only wins if 80 pounds is more than you can safely carry or mix.',
   },
   {
     question: 'Should I add extra concrete for waste?',
-    answer: 'Yes. For most DIY slabs, 10% is a sensible margin. Use 15% if the ground is uneven or you are mixing by hand for the first time.',
+    answer:
+      'Yes, 10% for most DIY slabs. Use 15% if the ground is uneven, the forms are hand-built, or you are mixing for the first time. Running short mid-pour is far more expensive than one spare bag.',
   },
   {
-    question: 'How many 80 lb bags equal one cubic yard?',
-    answer: 'One cubic yard is 27 cubic feet, so it takes about 45 80 lb bags.',
+    question: 'How many bags of concrete fit in a wheelbarrow?',
+    answer:
+      'A standard 6 cubic foot contractor wheelbarrow holds the mixed output of about ten 80 lb bags, but you should mix two or three bags at a time. Mixing more than that in one batch means the first concrete starts setting before you get it placed.',
+  },
+  {
+    question: 'How much water do I add to a bag of concrete?',
+    answer:
+      'Roughly 3 quarts per 80 lb bag, 2.5 quarts per 60 lb bag, and 2 quarts per 40 lb bag. Add about two thirds first, mix, then add the rest. The mix should hold its shape when you squeeze a handful — if water pools in the bucket, you have gone too far.',
+  },
+  {
+    question: 'How long does bagged concrete take to cure?',
+    answer:
+      'It sets in 24 to 48 hours and reaches about 70% strength in 7 days. Full design strength takes 28 days. Keep it damp for the first 3 to 7 days — concrete that dries out early never reaches its rated strength.',
   },
 ];
 
@@ -37,11 +61,30 @@ const schema = [
   ),
   faqSchema(faqs),
 ];
+
+// 板尺寸 → 各规格整袋数（不含损耗）
+const bagRows = [
+  { slab: '4 x 8, 4"', cuft: 10.7, b40: 36, b50: 29, b60: 24, b80: 18 },
+  { slab: '8 x 8, 4"', cuft: 21.3, b40: 72, b50: 57, b60: 48, b80: 36 },
+  { slab: '10 x 10, 4"', cuft: 33.3, b40: 112, b50: 89, b60: 75, b80: 56 },
+  { slab: '12 x 12, 4"', cuft: 48.0, b40: 160, b50: 128, b60: 107, b80: 80 },
+  { slab: '10 x 20, 4"', cuft: 66.7, b40: 223, b50: 178, b60: 149, b80: 112 },
+  { slab: '20 x 20, 4"', cuft: 133.3, b40: 445, b50: 356, b60: 297, b80: 223 },
+  { slab: '24 x 24, 4"', cuft: 192.0, b40: 640, b50: 512, b60: 427, b80: 320 },
+  { slab: '24 x 24, 6"', cuft: 288.0, b40: 960, b50: 768, b60: 640, b80: 480 },
+];
+
+const yieldRows = [
+  { size: '80 lb', yield: '0.60', perCuFt: '1.67', perYard: 45, price: '$7.00', perCuFtCost: '$11.67' },
+  { size: '60 lb', yield: '0.45', perCuFt: '2.22', perYard: 60, price: '$5.50', perCuFtCost: '$12.22' },
+  { size: '50 lb', yield: '0.375', perCuFt: '2.67', perYard: 72, price: '$5.00', perCuFtCost: '$13.33' },
+  { size: '40 lb', yield: '0.30', perCuFt: '3.33', perYard: 90, price: '$4.50', perCuFtCost: '$15.00' },
+];
 ---
 
 <BaseLayout
   title="Concrete Bags Calculator — How Many Bags of Concrete Do I Need"
-  description="Free concrete bags calculator: enter your slab or footing size and see exactly how many 80 lb, 60 lb or 40 lb bags of concrete mix you need, with waste included. No guessing, no over-ordering."
+  description="Free concrete bags calculator: enter your slab size and pick 80, 60, 50 or 40 lb bags to get the exact count to buy, with waste included, plus which bag size is cheapest per cubic foot."
   schema={schema}
 >
   <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: 'Concrete Bags Calculator' }]} />
@@ -51,8 +94,8 @@ const schema = [
       <span class="tool-icon"><ToolIcon slug="concrete-bags-calculator" /></span>
       <div>
         <h1>How Many Bags of Concrete Do I Need?</h1>
-        <p class="lead">Enter your project size and pick a bag weight — we'll tell you the exact number of
-          bags to buy, rounded up and including a waste margin.</p>
+        <p class="lead">Enter your project size and pick a bag weight — we'll give you the exact number
+          of bags to buy, rounded up, with a waste margin already included.</p>
       </div>
     </div>
 
@@ -74,6 +117,7 @@ const schema = [
         <select id="bag-size" name="bag-size" required>
           <option value="0.60">80 lb (~0.60 cu ft)</option>
           <option value="0.45">60 lb (~0.45 cu ft)</option>
+          <option value="0.375">50 lb (~0.375 cu ft)</option>
           <option value="0.30">40 lb (~0.30 cu ft)</option>
         </select>
       </div>
@@ -90,34 +134,163 @@ const schema = [
       <h3>You need about</h3>
       <p><span class="big" id="selected-bags">—</span> bags</p>
       <ul>
-        <li>Cubic yards: <b id="cubic-yards">—</b></li>
+        <li>Cubic yards with waste: <b id="cubic-yards">—</b></li>
         <li>80 lb bags equivalent: <b id="eighty-pound-bags">—</b></li>
       </ul>
     </div>
   </section>
 
   <section class="card">
-    <h2>How many bags — the math</h2>
-    <p><code>volume (cu ft) = length × width × (thickness ÷ 12)</code>. Each bag yields a fixed volume:
-      an <b>80&nbsp;lb</b> bag ≈ 0.60&nbsp;cu&nbsp;ft, a <b>60&nbsp;lb</b> bag ≈ 0.45&nbsp;cu&nbsp;ft, and a
-      <b>40&nbsp;lb</b> bag ≈ 0.30&nbsp;cu&nbsp;ft. We divide your total volume by the chosen bag yield,
-      round up, then add your waste margin.</p>
-    <p>Most home-center mixes are 80&nbsp;lb, so that's the default. If you're mixing by hand or have a
-      smaller drill, 60&nbsp;lb bags are easier to handle; 40&nbsp;lb bags suit small repairs.</p>
+    <h2>How many bags of concrete do you need?</h2>
+    <p>A 10x10 slab at 4 inches thick is 33.3 cubic feet, which is <b>56 bags of 80 lb</b> mix or
+      <b>75 bags of 60 lb</b>. Carrying 80 lb bags means 56 trips from the truck; carrying 60 lb bags
+      means 75 trips. Higher price per cubic foot, more trips, but a weight that does not wreck your
+      back — that is the whole trade-off between bag sizes.</p>
 
+    <div class="table-wrap">
+      <table class="data">
+        <caption>Whole bags needed by slab size, at 4 inches unless noted. No waste allowance — the
+          calculator above adds it.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Slab</th>
+            <th scope="col">Cu ft</th>
+            <th scope="col">40 lb</th>
+            <th scope="col">50 lb</th>
+            <th scope="col">60 lb</th>
+            <th scope="col">80 lb</th>
+          </tr>
+        </thead>
+        <tbody>
+          {bagRows.map((r) => (
+            <tr>
+              <td>{r.slab}</td>
+              <td>{r.cuft.toFixed(1)}</td>
+              <td>{r.b40}</td>
+              <td>{r.b50}</td>
+              <td>{r.b60}</td>
+              <td class="hl">{r.b80}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <p>Past about 24x24 the numbers stop being useful. 480 bags of 80 lb is 19 tons of material, which
+      is more than a pickup can legally carry in three trips and about $3,400 in bags. That is the
+      point where you call a ready-mix plant, not the home center.</p>
+  </section>
+
+  <section class="card">
+    <h2>Bag yield: how much each bag makes</h2>
+    <p>Every bag size is the same concrete, just measured out differently. The yield is fixed by the
+      bag weight, and it is the only number you need to convert a volume into a bag count.</p>
+
+    <div class="table-wrap">
+      <table class="data">
+        <caption>Bag yield and cost per cubic foot, at typical 2026 home-center prices. Prices vary by
+          brand and region; the ranking between sizes does not.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Bag</th>
+            <th scope="col">Yield (cu ft)</th>
+            <th scope="col">Bags per cu ft</th>
+            <th scope="col">Bags per cu yd</th>
+            <th scope="col">Price</th>
+            <th scope="col">Cost per cu ft</th>
+          </tr>
+        </thead>
+        <tbody>
+          {yieldRows.map((r) => (
+            <tr>
+              <td>{r.size}</td>
+              <td>{r.yield}</td>
+              <td>{r.perCuFt}</td>
+              <td>{r.perYard}</td>
+              <td>{r.price}</td>
+              <td class="hl">{r.perCuFtCost}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Which bag size is actually cheapest</h3>
+    <p>Look at the last column: the 80 lb bag is the cheapest way to buy concrete by about 28% over the
+      40 lb bag. The gap is not small. On a 10x10 slab, 56 bags of 80 lb cost about $392, while the
+      same slab takes 112 bags of 40 lb at about $504 — a $112 difference for identical concrete.</p>
+    <p>So why does anyone buy 40 lb bags? Because 80 pounds is genuinely heavy, and if you are mixing in
+      a 5 gallon bucket with a drill, a 40 or 50 lb bag is the difference between a finished pour and a
+      strained back. Buy the 80 lb bags and split them with a helper, or buy 60 lb bags as the
+      compromise — never 40 lb for anything larger than a repair.</p>
+
+    <h3>Bags per cubic yard, in one line</h3>
+    <p>45 bags of 80 lb, 60 of 60 lb, 72 of 50 lb, or 90 of 40 lb. If someone quotes you a yard of
+      concrete in bags, that is the conversion.</p>
+  </section>
+
+  <section class="card">
+    <h2>When bags stop making sense</h2>
+    <p>Roughly 1.5 cubic yards. Below that, bags are cheaper than a short-load delivery and you can mix
+      at your own pace. Above it, the arithmetic flips hard:</p>
+    <ul>
+      <li><b>1.5 cu yd</b> — 68 bags, about $475 to $610. Delivered concrete starts around $350 here.</li>
+      <li><b>2 cu yd</b> — 90 bags, about $630 to $810. Delivered is $400 to $500.</li>
+      <li><b>3 cu yd</b> — 135 bags, about $945 to $1,215. Delivered is $550 to $700.</li>
+    </ul>
+    <p>The money is only half of it. Ninety bags is 7,200 pounds to lift, open and mix, and a two-person
+      crew mixing in a wheelbarrow places about half a cubic yard an hour. That 2 yard pour is a
+      four-hour mixing session with concrete setting in the first batch before the last one goes down.</p>
+    <p>Bags still win when the truck cannot reach the forms, when the pour is under a threshold of about
+      half a yard, or when you are working alone on a weekend and would rather do it in two sittings.</p>
+  </section>
+
+  <section class="card">
+    <h2>Mixing bagged concrete without ruining it</h2>
+    <p>Three things go wrong with bagged concrete, and all three are fixable before you open the bag.</p>
+    <p><b>Too much water.</b> About 3 quarts per 80 lb bag. Add two thirds, mix thoroughly, then add the
+      rest a splash at a time. The mix is right when it holds a shape in your hand and slides off a
+      shovel slowly. Watery mix is weak mix — every extra quart costs roughly 500 psi of strength.</p>
+    <p><b>Mixing too much at once.</b> Two or three bags per batch in a wheelbarrow or tub. A batch you
+      cannot place in 20 minutes is a batch you will be patching.</p>
+    <p><b>Not enough mixing.</b> Two minutes after the water is in, until the color is uniform and there
+      are no dry pockets. Dry pockets turn into crumbly spots that fail first.</p>
+    <p>For anything with a finish you care about, keep the surface damp for 3 to 7 days. Covering it with
+      plastic sheeting is the cheapest strength you will ever buy.</p>
+  </section>
+
+  <section class="card">
     <h2>Concrete bag FAQ</h2>
     <div class="faq">
-      {faqs.map(({ question, answer }) => (
+      {faqs.map((f) => (
         <details>
-          <summary>{question}</summary>
-          <p>{answer}</p>
+          <summary>{f.question}</summary>
+          <p>{f.answer}</p>
         </details>
       ))}
     </div>
+  </section>
 
-    <h3>Related tools</h3>
-    <p><a href="/concrete-calculator/">Concrete calculator (cubic yards)</a> · <a href="/concrete-fence-post-calculator/">Concrete for fence post</a> · <a href="/gravel-driveway-calculator/">Gravel for driveway</a></p>
-    <p class="muted">Last updated: {LAST_UPDATED}</p>
+  <section class="card">
+    <h2>Where these numbers come from</h2>
+    <div class="sources">
+      <p>Bag yields follow the manufacturers' published data for pre-blended concrete mix. Prices are
+        2026 US home-center averages.</p>
+      <ul>
+        <li><a href="https://www.quikrete.com/calculator/main.asp" target="_blank" rel="noopener">QUIKRETE concrete calculator</a> — yield per bag for 40, 50, 60 and 80 lb mixes</li>
+        <li><a href="https://www.quikrete.com/" target="_blank" rel="noopener">QUIKRETE product data</a> — mixing water and set times</li>
+        <li><a href="https://www.sakrete.com/" target="_blank" rel="noopener">SAKRETE</a> — alternate bag yields and coverage figures</li>
+        <li><a href="https://www.nrmca.org/" target="_blank" rel="noopener">National Ready Mixed Concrete Association</a> — when to move from bags to delivered concrete</li>
+      </ul>
+    </div>
+
+    <h3>Related calculators</h3>
+    <div class="related">
+      <a href="/concrete-calculator/">Concrete slab volume in yards</a>
+      <a href="/concrete-fence-post-calculator/">Bags per fence post hole</a>
+      <a href="/gravel-driveway-calculator/">Gravel for a driveway</a>
+    </div>
+    <p class="muted">Last updated: {UPDATED}</p>
   </section>
 </BaseLayout>
 
@@ -141,11 +314,14 @@ const schema = [
         lengthFt: Number((form.elements.namedItem('length') as HTMLInputElement).value),
         widthFt: Number((form.elements.namedItem('width') as HTMLInputElement).value),
         thicknessIn: Number((form.elements.namedItem('thickness') as HTMLInputElement).value),
-        bagYieldCubicFeet: Number((form.elements.namedItem('bag-size') as HTMLSelectElement).value),
         wastePercent: Number((form.elements.namedItem('waste') as HTMLInputElement).value),
+        bagYieldCubicFeet: Number(
+          (form.elements.namedItem('bag-size') as HTMLSelectElement).value,
+        ),
       });
 
-      document.querySelector('#selected-bags')!.textContent = values.selectedBagCount.toLocaleString();
+      document.querySelector('#selected-bags')!.textContent =
+        values.selectedBagCount.toLocaleString();
       document.querySelector('#cubic-yards')!.textContent = values.cubicYards.toFixed(2);
       document.querySelector('#eighty-pound-bags')!.textContent =
         values.eightyPoundBags.toLocaleString();

@@ -2,52 +2,139 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import ToolIcon from '../components/ToolIcon.astro';
-import { calculateGravel } from '../lib/calculations';
-import { breadcrumbSchema, softwareApplicationSchema } from '../lib/schema';
-import { LAST_UPDATED } from '../lib/site';
+import { breadcrumbSchema, faqSchema, softwareApplicationSchema } from '../lib/schema';
 
 const siteUrl = Astro.site ?? new URL(Astro.url.origin);
+const UPDATED = '2026-10-29';
+
+const faqs = [
+  {
+    question: 'How much gravel do I need for a 50 foot driveway?',
+    answer:
+      'A 10 foot wide, 50 foot long driveway at 4 inches deep needs 6.2 cubic yards, or about 8.6 tons of crushed stone. At 6 inches it is 9.3 cubic yards and 13 tons. Add 10% for compaction and spillage.',
+  },
+  {
+    question: 'How many tons are in a cubic yard of gravel?',
+    answer:
+      'About 1.4 tons for crushed stone, ranging from 1.3 tons for sand to 1.5 tons for dense graded base like #411. Ask your supplier for the number they use, because they sell by the ton and their stock varies by source.',
+  },
+  {
+    question: 'How deep should gravel be on a driveway?',
+    answer:
+      'Six inches minimum for a car, built as a 4 inch base of #304 or #411 topped with 2 inches of #57. Go to 8 to 10 inches total for heavy trucks or soft ground. Anything under 4 inches will rut and mix into the soil within a season.',
+  },
+  {
+    question: 'How many square feet does a ton of gravel cover?',
+    answer:
+      'At 2 inches deep, one ton of crushed stone covers about 116 square feet. At 1 inch it covers 231 square feet, and at 4 inches about 58. The exact figure depends on density, so a heavier stone covers less area per ton.',
+  },
+  {
+    question: 'What size gravel is best for a driveway?',
+    answer:
+      'Two layers, not one. A 4 inch base of #304 or #411, which has stone dust mixed in so it locks together, then 2 inches of #57 on top for a surface that drains and does not kick up. Single-size stone alone never locks and ravels under tires.',
+  },
+  {
+    question: 'Should I put fabric under driveway gravel?',
+    answer:
+      'Yes on soft or clay soil. A woven geotextile between the subgrade and the base stops soil pumping up into the stone, which is what turns a gravel driveway into a mud hole. It costs about $0.30 to $0.60 per square foot and doubles the life of the base.',
+  },
+  {
+    question: 'How much does a yard of gravel weigh, and what does it cost?',
+    answer:
+      'A cubic yard of crushed stone weighs about 2,800 lb, or 1.4 tons. Delivered crushed stone runs $30 to $60 per ton in 2026, so a cubic yard is roughly $42 to $84 before delivery, which is typically $100 to $300 depending on distance.',
+  },
+  {
+    question: 'How do I stop weeds growing through gravel?',
+    answer:
+      'Landscape fabric under the stone, not plastic. Plastic traps water and turns the base into a bathtub. Fabric plus 4 inches of stone blocks almost everything; the weeds that do appear are growing in dust that settled on top, and a rake handles them.',
+  },
+];
+
 const schema = [
-  softwareApplicationSchema('Gravel for Driveway Calculator', '/gravel-driveway-calculator/', siteUrl),
+  softwareApplicationSchema('Gravel Calculator for Driveways', '/gravel-driveway-calculator/', siteUrl),
   breadcrumbSchema(
     [
       { name: 'Home', path: '/' },
-      { name: 'Gravel for Driveway Calculator', path: '/gravel-driveway-calculator/' },
+      { name: 'Gravel Calculator for Driveways', path: '/gravel-driveway-calculator/' },
     ],
     siteUrl,
   ),
+  faqSchema(faqs),
+];
+
+// 车道尺寸 × 深度，按默认密度 1.4 t/cu yd（不含损耗）
+const driveRows = [
+  { size: '10 x 50', sqft: 500, y4: 6.2, t4: 8.6, y6: 9.3, t6: 13.0, y8: 12.3, t8: 17.3 },
+  { size: '12 x 50', sqft: 600, y4: 7.4, t4: 10.4, y6: 11.1, t6: 15.6, y8: 14.8, t8: 20.7 },
+  { size: '10 x 100', sqft: 1000, y4: 12.3, t4: 17.3, y6: 18.5, t6: 25.9, y8: 24.7, t8: 34.6 },
+  { size: '12 x 100', sqft: 1200, y4: 14.8, t4: 20.7, y6: 22.2, t6: 31.1, y8: 29.6, t8: 41.5 },
+  { size: '16 x 40', sqft: 640, y4: 7.9, t4: 11.1, y6: 11.9, t6: 16.6, y8: 15.8, t8: 22.1 },
+  { size: '20 x 60', sqft: 1200, y4: 14.8, t4: 20.7, y6: 22.2, t6: 31.1, y8: 29.6, t8: 41.5 },
+  { size: '20 x 100', sqft: 2000, y4: 24.7, t4: 34.6, y6: 37.0, t6: 51.9, y8: 49.4, t8: 69.1 },
+];
+
+const stoneRows = [
+  { name: '#57 crushed stone', size: '3/4 in', density: '1.35–1.45', use: 'Driveway surface, drainage' },
+  { name: '#411 / #304 base', size: '3/4 in to dust', density: '1.45–1.55', use: 'Base layer, compacts hard' },
+  { name: '#8 / #89 chip', size: '3/8 in', density: '1.35–1.45', use: 'Path topcoat, around plants' },
+  { name: 'Pea gravel', size: '3/8 in rounded', density: '1.30–1.40', use: 'Play areas, decorative beds' },
+  { name: 'River rock', size: '1–3 in rounded', density: '1.30–1.40', use: 'Dry creeks, borders' },
+  { name: 'Crushed limestone', size: '3/4 in', density: '1.40–1.50', use: 'Driveways, binds with water' },
+  { name: 'Decomposed granite', size: 'Fines with grit', density: '1.40–1.50', use: 'Paths, patio base, compacts firm' },
+  { name: 'Concrete sand', size: 'Fine', density: '1.25–1.35', use: 'Paver bedding, mixing' },
+];
+
+const coverRows = [
+  { depth: '1 in', perTon: 231, perYard: 324 },
+  { depth: '2 in', perTon: 116, perYard: 162 },
+  { depth: '3 in', perTon: 77, perYard: 108 },
+  { depth: '4 in', perTon: 58, perYard: 81 },
+  { depth: '6 in', perTon: 39, perYard: 54 },
 ];
 ---
 
 <BaseLayout
-  title="Gravel for Driveway Calculator — Cubic Yards & Tons"
-  description="Free gravel calculator for driveways: enter length, width and depth to get cubic yards and tons of gravel needed, with a waste margin. Works for driveways, paths and patio bases."
+  title="Gravel Calculator for Driveways — Cubic Yards & Tons"
+  description="Free gravel calculator: enter length, width and depth to get cubic yards and tons of crushed stone, pea gravel or base rock for a driveway, path or patio base."
   schema={schema}
 >
-  <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: 'Gravel for Driveway Calculator' }]} />
+  <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: 'Gravel Calculator for Driveways' }]} />
 
   <section class="card">
     <div class="page-head">
       <span class="tool-icon"><ToolIcon slug="gravel-driveway-calculator" /></span>
       <div>
-        <h1>Gravel for Driveway Calculator</h1>
-        <p class="lead">How much gravel do you need for a driveway? Enter the size and depth — we'll give
-          you cubic yards and tons, plus a sensible waste margin.</p>
+        <h1>Gravel Calculator for Driveways</h1>
+        <p class="lead">Enter the area and depth to get cubic yards and tons of gravel. Pick the stone
+          type — density varies by about 15% between materials, and that is the difference between
+          ordering enough and ordering short.</p>
       </div>
     </div>
 
     <form id="calculator-form" class="calc" novalidate>
       <div class="row">
-        <label for="length">Driveway length (ft)</label>
+        <label for="length">Length (ft)</label>
         <input id="length" name="length" type="number" min="0.1" step="0.1" value="50" required inputmode="decimal" autocomplete="off">
       </div>
       <div class="row">
-        <label for="width">Driveway width (ft)</label>
+        <label for="width">Width (ft)</label>
         <input id="width" name="width" type="number" min="0.1" step="0.1" value="10" required inputmode="decimal" autocomplete="off">
       </div>
       <div class="row">
         <label for="depth">Depth (in)</label>
         <input id="depth" name="depth" type="number" min="0.5" step="0.5" value="4" required inputmode="decimal" autocomplete="off">
+      </div>
+      <div class="row">
+        <label for="stone-type">Stone type</label>
+        <select id="stone-type" name="stone-type" required>
+          <option value="1.4">#57 crushed stone (1.4 t/cu yd)</option>
+          <option value="1.5">#411 / #304 base (1.5 t/cu yd)</option>
+          <option value="1.45">Crushed limestone (1.45 t/cu yd)</option>
+          <option value="1.45">Decomposed granite (1.45 t/cu yd)</option>
+          <option value="1.35">Pea gravel (1.35 t/cu yd)</option>
+          <option value="1.35">River rock (1.35 t/cu yd)</option>
+          <option value="1.3">Concrete sand (1.3 t/cu yd)</option>
+        </select>
       </div>
       <div class="row">
         <label for="waste">Waste (%)</label>
@@ -69,18 +156,203 @@ const schema = [
   </section>
 
   <section class="card">
+    <h2>How much gravel do you need?</h2>
+    <p>A 10 foot by 50 foot driveway at 4 inches deep takes <b>6.2 cubic yards</b>, which is about
+      <b>8.6 tons</b> of crushed stone. Build it the way driveways are actually built — 4 inches of base
+      plus 2 inches of surface — and the same driveway is 9.3 cubic yards and 13 tons.</p>
+    <p>Width matters more than length in most driveways because people underestimate it. A single
+      garage door needs 12 feet to open without clipping the edge, and two cars passing need 16 feet.
+      A 10 foot driveway works, but it is the narrowest thing you can reasonably call a driveway.</p>
+
+    <div class="table-wrap">
+      <table class="data">
+        <caption>Gravel for common driveway sizes, at 1.4 tons per cubic yard. Net figures — add the
+          waste margin for compaction and spillage.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Size (ft)</th>
+            <th scope="col">Sq ft</th>
+            <th scope="col">4" cu yd</th>
+            <th scope="col">4" tons</th>
+            <th scope="col">6" cu yd</th>
+            <th scope="col">6" tons</th>
+            <th scope="col">8" cu yd</th>
+            <th scope="col">8" tons</th>
+          </tr>
+        </thead>
+        <tbody>
+          {driveRows.map((r) => (
+            <tr>
+              <td>{r.size}</td>
+              <td>{r.sqft}</td>
+              <td>{r.y4.toFixed(1)}</td>
+              <td>{r.t4.toFixed(1)}</td>
+              <td>{r.y6.toFixed(1)}</td>
+              <td>{r.t6.toFixed(1)}</td>
+              <td>{r.y8.toFixed(1)}</td>
+              <td>{r.t8.toFixed(1)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <p><strong>Order by the ton, not the yard, when you can.</strong> Aggregate is sold by weight at
+        most yards because a yard of stone is a volume of air and stone together — the pile settles, and
+        what looked like 10 yards on the truck can weigh out at 9.5. Tons are what you actually get.</p>
+    </div>
+  </section>
+
+  <section class="card">
     <h2>How the gravel calculator works</h2>
-    <p><code>volume = length × width × (depth ÷ 12)</code> gives cubic feet; divide by 27 for cubic yards.
-      Loose gravel weighs about <b>1.4 tons per cubic yard</b>, so we multiply cubic yards by 1.4 for tons.</p>
-    <p>A 4-inch base is standard for a driveway over firm soil; use 6–8 inches if the ground is soft or
-      you'll park heavy vehicles. Always round the final order up — suppliers sell by the yard and you
-      can't return the excess easily.</p>
-    <h3>Assumptions and sources</h3>
-    <p>The default density is a common bulk estimate for loose crushed gravel. Local aggregate weight can
-      vary, so confirm the density with your supplier for a precise order.</p>
-    <h3>Related tools</h3>
-    <p><a href="/concrete-calculator/">Concrete calculator</a> · <a href="/concrete-bags-calculator/">Concrete bags calculator</a> · <a href="/concrete-fence-post-calculator/">Concrete for fence post</a></p>
-    <p class="muted">Last updated: {LAST_UPDATED}</p>
+    <p><code>volume (cu ft) = length × width × (depth ÷ 12)</code>, divided by 27 for cubic yards. Then
+      cubic yards × density = tons. The only judgment call in the whole thing is density, which is why
+      this calculator asks for the stone type instead of assuming one number for everything.</p>
+    <p>A cubic yard is a fixed volume. What changes is how much that yard weighs: pea gravel at 1.35
+      tons per yard and dense graded base at 1.5 tons per yard differ by 11%. On a 22 yard driveway
+      that is 3.3 tons — a whole extra delivery if you priced the wrong stone.</p>
+
+    <h3>Why the waste margin matters more here than with concrete</h3>
+    <p>Gravel compacts. A 6 inch loose layer settles to about 5 inches under a plate compactor, and the
+      edges spread into the soil. 10% is the minimum; 15% is realistic on a first driveway over uneven
+      ground, and any driveway on a slope needs more because stone migrates downhill.</p>
+  </section>
+
+  <section class="card">
+    <h2>Gravel types and what they weigh</h2>
+    <p>Two stones with the same look on a pile can differ by 15% in weight, and the name on the ticket
+      is not standardized across regions. What #57 means in Ohio is close to what #57 means in Texas,
+      but #304 in one yard is #411 in another. Buy by description and by the density your supplier
+      quotes.</p>
+
+    <div class="table-wrap">
+      <table class="data">
+        <caption>Common aggregate types, typical density in tons per cubic yard, and where each one
+          belongs. Ranges reflect different quarries and moisture.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Stone</th>
+            <th scope="col">Size</th>
+            <th scope="col">Tons / cu yd</th>
+            <th scope="col">Use</th>
+          </tr>
+        </thead>
+        <tbody>
+          {stoneRows.map((r) => (
+            <tr>
+              <td>{r.name}</td>
+              <td>{r.size}</td>
+              <td>{r.density}</td>
+              <td>{r.use}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <p>The one distinction that decides whether a driveway works: <b>single-size stone does not
+      compact</b>. #57 is all 3/4 inch with no fines, so it drains beautifully and locks not at all.
+      Dense graded base (#304, #411, sometimes called crusher run) has stone dust mixed in, and that
+      dust is what turns a loose pile into a surface you can drive on. Base first, single-size on top.</p>
+  </section>
+
+  <section class="card">
+    <h2>Driveway depth: base layer versus surface</h2>
+    <p>Depth is not one number, it is two layers doing different jobs. Get this right and a gravel
+      driveway lasts 15 years; skip the base and it is a mud hole by the second spring.</p>
+    <ul>
+      <li><b>Base layer, 4 inches of #304 or #411.</b> This is the structure. It goes on geotextile
+        over compacted subgrade and gets compacted in two 2-inch lifts, not one 4-inch lift.</li>
+      <li><b>Surface layer, 2 inches of #57.</b> This is the wearing course. It sheds water and
+        resists tire spin. It does not need compacting and it should not be mixed into the base.</li>
+      <li><b>Total, 6 inches for cars.</b> Go to 8 to 10 inches where the ground is soft, the slope is
+        steep, or trucks will use it.</li>
+    </ul>
+    <p>Crown the surface about 1 inch per 10 feet of width so water runs to the edges instead of
+      standing. A flat gravel driveway is a puddle with stones in it, and puddles are what turn into
+      potholes after the first freeze.</p>
+  </section>
+
+  <section class="card">
+    <h2>Coverage per ton</h2>
+    <p>When a supplier quotes by the ton and you know your square footage, this is the table you need.
+      Figures assume 1.4 tons per cubic yard; heavier stone covers less.</p>
+
+    <div class="table-wrap">
+      <table class="data">
+        <caption>Square feet covered by one ton and by one cubic yard, at 1.4 tons per cubic yard.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Depth</th>
+            <th scope="col">Sq ft per ton</th>
+            <th scope="col">Sq ft per cu yd</th>
+          </tr>
+        </thead>
+        <tbody>
+          {coverRows.map((r) => (
+            <tr>
+              <td>{r.depth}</td>
+              <td>{r.perTon}</td>
+              <td>{r.perYard}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <p>Sanity check with a real job: a 400 square foot parking pad at 6 inches needs 200 cubic feet,
+      which is 7.4 cubic yards, which is 10.4 tons. At 39 square feet per ton for 6 inches, 400 divided
+      by 39 is 10.3 tons. The two methods agree, which is the point of having both.</p>
+  </section>
+
+  <section class="card">
+    <h2>What gravel costs</h2>
+    <p>Crushed stone runs $30 to $60 per ton in 2026, or $42 to $84 per cubic yard. Pea gravel and
+      river rock sit at the top of that range because of the extra screening. Delivery is separate and
+      runs $100 to $300 for a tandem load within 20 miles — and a 10 yard load is the practical limit
+      before you are paying for a second truck.</p>
+    <p>A 12 by 100 foot driveway at 6 inches is 22 cubic yards and 31 tons. At $45 a ton that is about
+      $1,400 in stone plus $200 delivery — call it $1,600 in material. The same driveway in asphalt is
+      $5,000 to $8,000 installed, and gravel is the reason a quarter mile of rural driveway exists at
+      all.</p>
+    <p>One recurring cost people forget: gravel driveways need a fresh 1 inch topcoat of #57 every 3 to
+      5 years where tires run, which is roughly 15% of the original quantity.</p>
+  </section>
+
+  <section class="card">
+    <h2>Gravel calculator FAQ</h2>
+    <div class="faq">
+      {faqs.map((f) => (
+        <details>
+          <summary>{f.question}</summary>
+          <p>{f.answer}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Where these numbers come from</h2>
+    <div class="sources">
+      <p>Densities are typical bulk values for dry aggregate, and coverage figures are derived from
+        them. Local quarries vary, so confirm the density with whoever is loading your truck.</p>
+      <ul>
+        <li><a href="https://www.nrmca.org/" target="_blank" rel="noopener">National Ready Mixed Concrete Association</a> — aggregate weight and volume reference data</li>
+        <li><a href="https://www.fhwa.dot.gov/" target="_blank" rel="noopener">Federal Highway Administration</a> — aggregate base gradation and compaction guidance</li>
+        <li><a href="https://www.astm.org/" target="_blank" rel="noopener">ASTM International</a> — C33 aggregate specifications and standard size designations</li>
+        <li><a href="https://www.usda.gov/" target="_blank" rel="noopener">USDA</a> — soil and drainage guidance for unpaved access roads</li>
+      </ul>
+      <p>Prices are 2026 US averages for delivered aggregate and vary by region and haul distance.</p>
+    </div>
+
+    <h3>Related calculators</h3>
+    <div class="related">
+      <a href="/concrete-calculator/">Concrete slab volume</a>
+      <a href="/concrete-bags-calculator/">How many bags of concrete</a>
+      <a href="/concrete-fence-post-calculator/">Concrete for fence posts</a>
+    </div>
+    <p class="muted">Last updated: {UPDATED}</p>
   </section>
 </BaseLayout>
 
@@ -100,16 +372,21 @@ const schema = [
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     try {
+      const lengthFt = Number((form.elements.namedItem('length') as HTMLInputElement).value);
+      const thicknessIn = Number((form.elements.namedItem('depth') as HTMLInputElement).value);
       const values = calculateGravel({
-        lengthFt: Number((form.elements.namedItem('length') as HTMLInputElement).value),
+        lengthFt,
         widthFt: Number((form.elements.namedItem('width') as HTMLInputElement).value),
-        thicknessIn: Number((form.elements.namedItem('depth') as HTMLInputElement).value),
+        thicknessIn,
         wastePercent: Number((form.elements.namedItem('waste') as HTMLInputElement).value),
+        densityTonsPerCubicYard: Number(
+          (form.elements.namedItem('stone-type') as HTMLSelectElement).value,
+        ),
       });
 
-      document.querySelector('#cubic-yards')!.textContent = values.cubicYards.toFixed(2);
+      document.querySelector('#cubic-yards')!.textContent = values.cubicYards.toFixed(1);
       document.querySelector('#tons')!.textContent = values.tons.toFixed(1);
-      document.querySelector('#cubic-feet')!.textContent = values.cubicFeet.toFixed(1);
+      document.querySelector('#cubic-feet')!.textContent = values.volumeWithWaste.toFixed(1);
 
       error.setAttribute('hidden', '');
       result.removeAttribute('hidden');

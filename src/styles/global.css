@@ -266,7 +266,7 @@ table.data tbody tr:hover {
   background: var(--brand-soft);
 }
 
-table.data td:last-child {
+table.data td.hl {
   font-weight: 700;
   color: var(--brand-ink);
 }
