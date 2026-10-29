@@ -7,7 +7,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "test": "tsc -p tsconfig.test.json && node --test tests/calculations.test.js"
+    "test": "tsc -p tsconfig.test.json && node --test tests/calculations.test.js",
+    "indexnow": "node tools/indexnow.mjs"
   },
   "dependencies": {
     "astro": "^4.16.18"

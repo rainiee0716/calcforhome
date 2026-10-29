@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://calcforhome.com/sitemap.xml
+Sitemap: https://www.calcforhome.com/sitemap.xml
