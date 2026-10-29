@@ -45,4 +45,10 @@ export const tools: Tool[] = [
     blurb: 'Studs, plate boards and board feet for a wall',
     updated: '2026-10-29',
   },
+  {
+    slug: 'deck-board-calculator',
+    title: 'Deck Board Calculator',
+    blurb: 'Courses, boards per course and stock length for a deck',
+    updated: '2026-10-29',
+  },
 ];

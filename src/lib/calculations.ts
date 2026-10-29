@@ -276,6 +276,85 @@ export function calculateFraming(input: FramingInput): FramingResult {
   };
 }
 
+export interface DeckBoardInput {
+  /** The dimension the boards run along, in feet. */
+  deckLengthFt: number;
+  /** The dimension the rows march across, in feet. */
+  deckWidthFt: number;
+  /** Actual dressed board width in inches: 5.5 for 5/4x6 and 2x6, 3.5 for 2x4. */
+  boardWidthIn?: number;
+  /** Gap between boards in inches. 0 for a grooved board butted tight. */
+  gapIn?: number;
+  /** Stock length in feet. */
+  boardLengthFt?: number;
+  /** Boards run square to the joists, or at 45 degrees. */
+  layout?: 'straight' | 'diagonal';
+  wastePercent?: number;
+}
+
+export interface DeckBoardResult {
+  /** Courses of decking across the deck. */
+  rows: number;
+  /** Boards per course at the chosen stock length. */
+  boardsPerRow: number;
+  boardsBeforeWaste: number;
+  /** Boards to buy, waste and diagonal allowance included. */
+  boards: number;
+  /** Deck face area in square feet. */
+  coverageSqFt: number;
+  /** Decking material bought, in linear feet. */
+  linearFeet: number;
+  /** Offcut per course, in feet: boardsPerRow * stock - deck length. */
+  offcutPerRowFt: number;
+}
+
+/**
+ * Decking takeoff.
+ *
+ * Rows are computed from the actual dressed board width, not the nominal size,
+ * and the gap counts as occupied width. A 12 ft wide deck at 5.5 in plus a
+ * 1/8 in gap needs 26 courses; running 6 in through the same arithmetic gives
+ * 24 and leaves the deck two rows short. Diagonal layouts waste more because
+ * every course ends in a mitre that cannot be reused.
+ */
+export function calculateDeckBoards(input: DeckBoardInput): DeckBoardResult {
+  const {
+    deckLengthFt,
+    deckWidthFt,
+    boardWidthIn = 5.5,
+    gapIn = 0.125,
+    boardLengthFt = 16,
+    layout = 'straight',
+    wastePercent = 10,
+  } = input;
+
+  assertPositive(deckLengthFt, 'Deck length');
+  assertPositive(deckWidthFt, 'Deck width');
+  assertPositive(boardWidthIn, 'Board width');
+  assertNonNegative(gapIn, 'Gap');
+  assertPositive(boardLengthFt, 'Board length');
+  assertNonNegative(wastePercent, 'Waste');
+
+  // Each row occupies the board plus one gap, and the last row needs no gap
+  // after it -- which is why the span gets one gap added before dividing.
+  const rows = Math.ceil((deckWidthFt * 12 + gapIn) / (boardWidthIn + gapIn));
+  const boardsPerRow = Math.ceil(deckLengthFt / boardLengthFt);
+  const boardsBeforeWaste = rows * boardsPerRow;
+
+  const diagonalFactor = layout === 'diagonal' ? 1.1 : 1;
+  const boards = Math.ceil(boardsBeforeWaste * (1 + wastePercent / 100) * diagonalFactor);
+
+  return {
+    rows,
+    boardsPerRow,
+    boardsBeforeWaste,
+    boards,
+    coverageSqFt: deckLengthFt * deckWidthFt,
+    linearFeet: boards * boardLengthFt,
+    offcutPerRowFt: boardsPerRow * boardLengthFt - deckLengthFt,
+  };
+}
+
 export interface FootingDepthInput {
   /** Frost depth the jurisdiction enforces, in inches. */
   frostDepthIn: number;

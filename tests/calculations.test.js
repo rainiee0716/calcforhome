@@ -7,6 +7,7 @@ import {
   calculateGravel,
   calculateFootingDepth,
   calculateFraming,
+  calculateDeckBoards,
 } from '../dist-test/calculations.js';
 import { AFI_TABLE, FROST_REGIONS, designFrostDepthFromAfi } from '../dist-test/frost.js';
 
@@ -222,4 +223,60 @@ test('a wall taller than stock lumber is rejected', () => {
     /engineered studs/,
   );
   assert.throws(() => calculateFraming({ wallLengthFt: 0, wallHeightFt: 8 }), RangeError);
+});
+
+test('deck takeoff counts courses from the dressed board width', () => {
+  const deck = calculateDeckBoards({
+    deckLengthFt: 16,
+    deckWidthFt: 12,
+    boardWidthIn: 5.5,
+    gapIn: 0.125,
+    boardLengthFt: 16,
+    wastePercent: 10,
+  });
+
+  // 144 + 0.125 over 5.625 rounds up to 26 courses, not the 24 a nominal
+  // 6 in board would give.
+  assert.equal(deck.rows, 26);
+  assert.equal(deck.boardsPerRow, 1);
+  assert.equal(deck.boardsBeforeWaste, 26);
+  assert.equal(deck.boards, 29);
+  assert.equal(deck.coverageSqFt, 192);
+  assert.equal(deck.linearFeet, 464);
+  assert.equal(deck.offcutPerRowFt, 0);
+});
+
+test('shorter stock means more pieces and more offcut', () => {
+  const short = calculateDeckBoards({
+    deckLengthFt: 16,
+    deckWidthFt: 12,
+    boardLengthFt: 12,
+    wastePercent: 10,
+  });
+
+  assert.equal(short.boardsPerRow, 2);
+  assert.equal(short.boardsBeforeWaste, 52);
+  assert.equal(short.boards, 58);
+  assert.equal(short.offcutPerRowFt, 8);
+});
+
+test('diagonal layout adds its own ten percent', () => {
+  const straight = calculateDeckBoards({ deckLengthFt: 16, deckWidthFt: 12, wastePercent: 10 });
+  const diagonal = calculateDeckBoards({
+    deckLengthFt: 16,
+    deckWidthFt: 12,
+    wastePercent: 10,
+    layout: 'diagonal',
+  });
+  assert.equal(diagonal.boards, 32);
+  assert.ok(diagonal.boards > straight.boards);
+});
+
+test('a wider board needs fewer courses and a narrow one more', () => {
+  const narrow = calculateDeckBoards({ deckLengthFt: 16, deckWidthFt: 12, boardWidthIn: 3.5, gapIn: 0.125 });
+  assert.equal(narrow.rows, 40);
+
+  // Butting boards tight removes the gaps, not the board width.
+  const tight = calculateDeckBoards({ deckLengthFt: 16, deckWidthFt: 12, boardWidthIn: 5.5, gapIn: 0 });
+  assert.equal(tight.rows, 27);
 });

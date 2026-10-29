@@ -1,0 +1,401 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import ToolIcon from '../components/ToolIcon.astro';
+import { breadcrumbSchema, faqSchema, softwareApplicationSchema } from '../lib/schema';
+
+const siteUrl = Astro.site ?? new URL(Astro.url.origin);
+const UPDATED = '2026-10-29';
+
+const faqs = [
+  {
+    question: 'How many deck boards do I need for a 12x16 deck?',
+    answer:
+      'About 29 boards of 16 foot decking if the boards run the 16 foot direction: 26 courses across the 12 foot width, one board per course, plus 10% waste. If you buy 12 foot boards instead, each course takes two boards and the piece count rises to 58, for the same deck. The 26 courses assume 5 1/2 inch boards with a 1/8 inch gap.',
+  },
+  {
+    question: 'How many deck boards in a row for a 12 foot wide deck?',
+    answer:
+      'Twenty six, using 5 1/2 inch boards and a 1/8 inch gap. The arithmetic is 144 inches plus one gap, divided by 5.625 inches per row, rounded up. Running 6 inches instead of 5.5 gives 24, which is why decks measured from the nominal size come up two rows short.',
+  },
+  {
+    question: 'What gap should I leave between deck boards?',
+    answer:
+      'An eighth of an inch for pressure treated wood, a quarter inch for a wet deck that will shrink, and whatever the clip sets for composite. The gap is not cosmetic: without it water sits on the joists, and a deck laid tight cups and holds it. Composite installs with hidden fasteners that set a 3/16 to 1/4 inch gap for you.',
+  },
+  {
+    question: 'How many screws per deck board?',
+    answer:
+      'Two per joist crossing, one about an inch in from each edge, for 5/4 and 2x6 decking. A 16 foot board across nine joists takes 18 screws. Face screwing darker boards shows the heads; a hidden fastener system uses a clip per joist plus one screw at the start of each course.',
+  },
+  {
+    question: 'How much extra decking do I need for a diagonal layout?',
+    answer:
+      'Add 10% on top of the square footage, and 15% if you are also cutting a picture frame border. Every diagonal course ends in a mitre against the rim, and those offcuts are too short to use anywhere else. Herringbone and parquet patterns waste more still, because the pattern only works if the boards are cut in pairs.',
+  },
+  {
+    question: 'What is the actual width of a 5/4x6 deck board?',
+    answer:
+      'Five and a half inches, same as a 2x6. The 5/4 refers to thickness: 1 1/4 inches nominal, one inch dressed. That one inch of thickness is why 5/4 decking spans 16 inches between joists while 2x6 goes 24.',
+  },
+  {
+    question: 'Can I use 8 foot boards to build a 16 foot deck?',
+    answer:
+      'Yes, two per course, but every butt joint lands in the same place on every row, which looks like a seam running across the deck. Shift alternating rows by a joist bay so the joints stagger, and add 10% for the extra cuts. Sixteen or 20 foot boards cost more per foot but cut the joint count in half.',
+  },
+  {
+    question: 'How many joists do I need under the decking?',
+    answer:
+      'One more than the number of bays: a 16 foot wide deck with joists 16 inches on center needs 13 joists. Joist spacing is set by the decking, not the other way around — 5/4 boards want 16 inches, 2x6 wants 24, and any diagonal layout drops one step, so 12 and 16.',
+  },
+];
+
+const schema = [
+  softwareApplicationSchema('Deck Board Calculator', '/deck-board-calculator/', siteUrl),
+  breadcrumbSchema(
+    [
+      { name: 'Home', path: '/' },
+      { name: 'Deck Board Calculator', path: '/deck-board-calculator/' },
+    ],
+    siteUrl,
+  ),
+  faqSchema(faqs),
+];
+
+// Courses across the deck: 5 1/2 in board with a 1/8 in gap, against the
+// nominal 6 in figure people use when they price it by eye.
+const rowsByWidth = [
+  { width: 8, actual: 18, nominal: 16 },
+  { width: 10, actual: 22, nominal: 20 },
+  { width: 12, actual: 26, nominal: 24 },
+  { width: 14, actual: 30, nominal: 28 },
+  { width: 16, actual: 35, nominal: 32 },
+  { width: 20, actual: 43, nominal: 40 },
+  { width: 24, actual: 52, nominal: 48 },
+];
+
+// Boards per course, by deck length and stock length
+const stockRows = [
+  { length: 10, s8: 2, s12: 1, s16: 1, s20: 1 },
+  { length: 12, s8: 2, s12: 1, s16: 1, s20: 1 },
+  { length: 14, s8: 2, s12: 2, s16: 1, s20: 1 },
+  { length: 16, s8: 2, s12: 2, s16: 1, s20: 1 },
+  { length: 20, s8: 3, s12: 2, s16: 2, s20: 1 },
+  { length: 24, s8: 3, s12: 2, s16: 2, s20: 2 },
+];
+
+const spanRows = [
+  { board: '5/4 x 6', straight: '16 in', diagonal: '12 in' },
+  { board: '2 x 6', straight: '24 in', diagonal: '16 in' },
+  { board: 'Composite 5/4', straight: '16 in', diagonal: '12 in' },
+  { board: '1 x 6 (cedar)', straight: '16 in', diagonal: '12 in' },
+];
+---
+
+<BaseLayout
+  title="Deck Board Calculator — How Many Boards a Deck Needs"
+  description="Work out how many deck boards a deck takes from its length and width, with the board width, gap, stock length and layout that actually change the count."
+  schema={schema}
+>
+  <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: 'Deck Board Calculator' }]} />
+
+  <section class="card">
+    <div class="page-head">
+      <span class="tool-icon"><ToolIcon slug="deck-board-calculator" /></span>
+      <div>
+        <h1>Deck Board Calculator</h1>
+        <p class="lead">Enter the deck, the board width and the gap you are leaving, and this returns
+          the courses, the boards per course, and how many pieces to put on the truck.</p>
+      </div>
+    </div>
+
+    <form id="calculator-form" class="calc" novalidate>
+      <div class="row">
+        <label for="deck-length">Deck length (ft)</label>
+        <input id="deck-length" name="deck-length" type="number" min="1" step="0.5" value="16" required inputmode="decimal" autocomplete="off" aria-describedby="length-help">
+        <p id="length-help" class="field-help">The direction the boards run.</p>
+      </div>
+      <div class="row">
+        <label for="deck-width">Deck width (ft)</label>
+        <input id="deck-width" name="deck-width" type="number" min="1" step="0.5" value="12" required inputmode="decimal" autocomplete="off" aria-describedby="width-help">
+        <p id="width-help" class="field-help">The direction the rows march across.</p>
+      </div>
+      <div class="row">
+        <label for="board-width">Board size</label>
+        <select id="board-width" name="board-width" required>
+          <option value="5.5" selected>5/4x6 or 2x6 (5 1/2 in)</option>
+          <option value="3.5">2x4 or 1x4 (3 1/2 in)</option>
+        </select>
+      </div>
+      <div class="row">
+        <label for="gap">Gap between boards</label>
+        <select id="gap" name="gap" required>
+          <option value="0.125" selected>1/8 in — dry treated wood</option>
+          <option value="0.1875">3/16 in — composite clips</option>
+          <option value="0.25">1/4 in — wet deck, hot climate</option>
+          <option value="0">0 in — grooved board, butted tight</option>
+        </select>
+      </div>
+      <div class="row">
+        <label for="board-length">Stock length (ft)</label>
+        <select id="board-length" name="board-length" required>
+          <option value="8">8 ft</option>
+          <option value="10">10 ft</option>
+          <option value="12">12 ft</option>
+          <option value="16" selected>16 ft</option>
+          <option value="20">20 ft</option>
+        </select>
+      </div>
+      <div class="row">
+        <label for="layout">Layout</label>
+        <select id="layout" name="layout" required>
+          <option value="straight" selected>Straight, square to the joists</option>
+          <option value="diagonal">Diagonal, 45 degrees</option>
+        </select>
+      </div>
+      <div class="row">
+        <label for="waste">Waste (%)</label>
+        <input id="waste" name="waste" type="number" min="0" max="30" step="1" value="10" required inputmode="decimal" autocomplete="off" aria-describedby="waste-help">
+        <p id="waste-help" class="field-help">Allowed range: 0–30%. Diagonal adds 10% on top of this.</p>
+      </div>
+      <p id="form-error" class="error" role="alert" hidden></p>
+      <button class="btn" type="submit">Calculate</button>
+    </form>
+
+    <div class="result" id="result" aria-live="polite" hidden>
+      <h3>Buy about</h3>
+      <p><span class="big" id="board-count">—</span> boards</p>
+      <ul>
+        <li>Courses across the deck: <b id="row-count">—</b></li>
+        <li>Boards per course: <b id="per-row">—</b></li>
+        <li>Deck area: <b id="coverage">—</b> sq ft</li>
+        <li>Decking bought: <b id="linear-feet">—</b> linear ft</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>How many deck boards do I need?</h2>
+    <p>A 12 foot wide deck takes <b>26 courses</b> of 5 1/2 inch decking with a 1/8 inch gap between
+      boards. The arithmetic is 144 inches plus one gap, divided by 5.625 inches per course, rounded up.
+      Each course is the deck length divided by the board length: a 16 foot deck takes one 16 foot board
+      per course, a 12 foot deck takes two 12 foot boards.</p>
+    <p>Where this goes wrong in practice is the board width. The board sold as a 2x6 measures 5 1/2
+      inches across. Run 6 inches through the same sum and 144 divided by 6 is 24 courses — two short of the
+      26 the deck actually needs. Two courses on a 16 foot deck is 32 linear feet, or two boards, and
+      the mistake only shows up when the last row sits against a 9 inch strip of exposed rim.</p>
+
+    <div class="table-wrap">
+      <table class="data center">
+        <caption>Courses across a deck, 5 1/2 in boards with a 1/8 in gap, against the nominal 6 in
+          figure.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Deck width</th>
+            <th scope="col">Courses (actual)</th>
+            <th scope="col">Courses at 6 in</th>
+            <th scope="col">Short by</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rowsByWidth.map((r) => (
+            <tr>
+              <td>{r.width} ft</td>
+              <td class="hl">{r.actual}</td>
+              <td>{r.nominal}</td>
+              <td>{r.actual - r.nominal} rows</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>The gap is part of the row count</h2>
+    <p>An eighth of an inch sounds like nothing. Across a 24 foot wide deck it is 51 gaps, which is
+      6 3/8 inches of extra width — enough to change the course count by one, and enough that the last
+      row is either a full board or a rip cut.</p>
+    <p>The gap does work you cannot see. Water that lands on the deck has to get off it, and boards
+      laid tight trap it on the joists, which is where rot starts. Pressure treated wood also moves:
+      boards straight off the rack are wet, and as they dry they lose a little width, so a deck laid
+      with an eighth inch gap ends up with a wider one by the end of the first summer.</p>
+    <p>Composite is different again. You are not choosing the gap, the fastener clip is: hidden clip
+      systems set 3/16 to 1/4 inch, and the manufacturer voids the warranty if you butt the boards. If
+      you are using a clip system, pick that option here rather than the default — it changes the row
+      count by one or two on a wide deck.</p>
+  </section>
+
+  <section class="card">
+    <h2>What length board to buy</h2>
+    <p>Board length decides how many pieces you carry, not how much deck you get. A 20 foot deck with
+      16 foot boards takes two per course and throws away 12 feet of offcut on every course; the same
+      deck with 20 foot boards takes one, and the offcut is nothing.</p>
+
+    <div class="table-wrap">
+      <table class="data center">
+        <caption>Boards per course, by deck length and stock length. One means no butt joint.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Deck length</th>
+            <th scope="col">8 ft</th>
+            <th scope="col">12 ft</th>
+            <th scope="col">16 ft</th>
+            <th scope="col">20 ft</th>
+          </tr>
+        </thead>
+        <tbody>
+          {stockRows.map((r) => (
+            <tr>
+              <td>{r.length} ft</td>
+              <td>{r.s8}</td>
+              <td>{r.s12}</td>
+              <td class="hl">{r.s16}</td>
+              <td>{r.s20}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <p>Long boards are heavy and awkward. A 20 foot treated 5/4 board runs about 30 pounds and behaves
+      like a wet noodle in the air; two people can carry one, one person cannot. Twenty foot stock also
+      arrives on a longer truck and some yards only deliver it with a minimum order. Sixteen is the
+      practical ceiling for a two person crew, which is why it is the default here.</p>
+  </section>
+
+  <section class="card">
+    <h2>Stagger the joints or the deck reads as stripes</h2>
+    <p>Every butt joint has to land on a joist — the board ends carry no load otherwise, and a joint
+      floating between joists will lift within a season. That constraint is what forces the layout: on a
+      16 foot deck with 8 foot boards, each course is a full board plus a half, and if every course
+      breaks at the same joist the deck gets a visible seam running its whole width.</p>
+    <p>Shift alternate courses by one joist bay so the breaks stagger. The cost is more cuts and a
+      little more waste, which is why the waste box on this page starts at 10% and not 5%. On a 12 foot
+      deck with 8 foot boards, the offcut is 4 feet, and a 4 foot piece is only useful as blocking.</p>
+    <p>Boards also come with a crown, one face slightly convex. Lay them crown up so the deck sheds
+      water toward the gaps rather than cupping it, and run the grain of adjacent boards the same way or
+      the light will catch them differently in patches.</p>
+  </section>
+
+  <section class="card">
+    <h2>Diagonal and picture-frame layouts cost extra boards</h2>
+    <p>A 45 degree layout adds roughly 10% to the material and this page adds it for you. The reason is
+      geometric rather than mysterious: the courses are longer than the deck is, and both ends of every
+      course get a mitre that cannot be reused anywhere else. Picture framing the perimeter adds another
+      run of boards around the edge plus eight mitred corners, and 15% is a fair allowance for the two
+      together.</p>
+    <p>Diagonal also changes the framing under it. A board running at 45 degrees spans further between
+      joists than the same board running square, so the code span table drops one step: 16 inches
+      becomes 12, 24 becomes 16. If you plan to lay diagonal, decide before the joists go in, not after.</p>
+  </section>
+
+  <section class="card">
+    <h2>Joist spacing decides the board, not the other way round</h2>
+    <div class="table-wrap">
+      <table class="data center">
+        <caption>Maximum joist spacing for decking, 40 psf live load.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Decking</th>
+            <th scope="col">Square</th>
+            <th scope="col">Diagonal</th>
+          </tr>
+        </thead>
+        <tbody>
+          {spanRows.map((r) => (
+            <tr>
+              <td>{r.board}</td>
+              <td class="hl">{r.straight}</td>
+              <td>{r.diagonal}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p>Two things follow. First, the number of joists is the number of bays plus one: a 16 foot wide
+      deck at 16 inches on center takes 13 joists, not 12. Second, if the deck has to carry a hot tub or
+      a heavy grill, the decking span is not the limiting number — the joists and beam are, and those
+      need their own sizing.</p>
+    <p>Fastening: two screws per joist crossing for 5/4 and 2x6, set about an inch in from each edge.
+      Predrill composite and hardwood near the ends or the board splits. Hidden clips use one screw per
+      joist plus a starter screw at the beginning of each course.</p>
+  </section>
+
+  <section class="card">
+    <h2>Deck board calculator FAQ</h2>
+    <div class="faq">
+      {faqs.map((f) => (
+        <details>
+          <summary>{f.question}</summary>
+          <p>{f.answer}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Where these numbers come from</h2>
+    <div class="sources">
+      <p>Dressed dimensions and span limits come from the lumber standards and the residential code
+        that most US jurisdictions adopt. Gaps and clip spacing are set by the decking manufacturer.</p>
+      <ul>
+        <li><a href="https://www.iccsafe.org/" target="_blank" rel="noopener">International Code Council</a> — IRC decking span table, joist spacing and ledger requirements</li>
+        <li><a href="https://www.awc.org/" target="_blank" rel="noopener">American Wood Council</a> — span tables for joists, beams and decking</li>
+        <li><a href="https://www.wwpa.org/" target="_blank" rel="noopener">Western Wood Products Association</a> — nominal and dressed dimensions for 5/4 and 2x decking</li>
+        <li><a href="https://www.fpl.fs.usda.gov/" target="_blank" rel="noopener">USDA Forest Products Laboratory</a> — shrinkage data behind the gap recommendation</li>
+      </ul>
+      <p>Local amendments change span tables by snow load, wind and seismic zone. Confirm with your
+        building department before you frame.</p>
+    </div>
+
+    <h3>Related calculators</h3>
+    <div class="related">
+      <a href="/lumber-calculator/">Lumber for wall framing</a>
+      <a href="/concrete-calculator/">Concrete for the footings</a>
+      <a href="/frost-depth-by-state/">Frost depth by state</a>
+      <a href="/concrete-fence-post-calculator/">Concrete for fence posts</a>
+    </div>
+    <p class="muted">Last updated: {UPDATED}</p>
+  </section>
+</BaseLayout>
+
+<script>
+  import { calculateDeckBoards } from '../lib/calculations';
+
+  const form = document.querySelector<HTMLFormElement>('#calculator-form')!;
+  const error = document.querySelector<HTMLElement>('#form-error')!;
+  const result = document.querySelector<HTMLElement>('#result')!;
+
+  function showError(message: string) {
+    error.textContent = message;
+    error.removeAttribute('hidden');
+    result.setAttribute('hidden', '');
+  }
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    try {
+      const values = calculateDeckBoards({
+        deckLengthFt: Number((form.elements.namedItem('deck-length') as HTMLInputElement).value),
+        deckWidthFt: Number((form.elements.namedItem('deck-width') as HTMLInputElement).value),
+        boardWidthIn: Number((form.elements.namedItem('board-width') as HTMLSelectElement).value),
+        gapIn: Number((form.elements.namedItem('gap') as HTMLSelectElement).value),
+        boardLengthFt: Number((form.elements.namedItem('board-length') as HTMLSelectElement).value),
+        layout: (form.elements.namedItem('layout') as HTMLSelectElement).value as 'straight' | 'diagonal',
+        wastePercent: Number((form.elements.namedItem('waste') as HTMLInputElement).value),
+      });
+
+      document.querySelector('#board-count')!.textContent = values.boards.toLocaleString();
+      document.querySelector('#row-count')!.textContent = values.rows.toLocaleString();
+      document.querySelector('#per-row')!.textContent = values.boardsPerRow.toLocaleString();
+      document.querySelector('#coverage')!.textContent = values.coverageSqFt.toLocaleString();
+      document.querySelector('#linear-feet')!.textContent = values.linearFeet.toLocaleString();
+
+      error.setAttribute('hidden', '');
+      result.removeAttribute('hidden');
+    } catch (err) {
+      showError(err instanceof Error ? err.message : 'Please check your measurements.');
+    }
+  });
+</script>
