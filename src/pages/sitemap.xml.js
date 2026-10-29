@@ -18,6 +18,7 @@ export function GET({ site }) {
       loc: `/${tool.slug}/`,
       changefreq: 'monthly',
       priority: '0.9',
+      lastmod: tool.updated ?? LAST_UPDATED,
     })),
   ];
 
@@ -26,7 +27,7 @@ export function GET({ site }) {
 ${all
   .map(
     (page) =>
-      `  <url><loc>${siteBase}${page.loc}</loc><lastmod>${LAST_UPDATED}</lastmod><changefreq>${page.changefreq}</changefreq><priority>${page.priority}</priority></url>`,
+      `  <url><loc>${siteBase}${page.loc}</loc><lastmod>${page.lastmod ?? LAST_UPDATED}</lastmod><changefreq>${page.changefreq}</changefreq><priority>${page.priority}</priority></url>`,
   )
   .join('\n')}
 </urlset>`;

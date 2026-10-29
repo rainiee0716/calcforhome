@@ -2,11 +2,54 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import ToolIcon from '../components/ToolIcon.astro';
-import { calculateFencePostConcrete } from '../lib/calculations';
-import { breadcrumbSchema, softwareApplicationSchema } from '../lib/schema';
-import { LAST_UPDATED } from '../lib/site';
+import { breadcrumbSchema, faqSchema, softwareApplicationSchema } from '../lib/schema';
 
 const siteUrl = Astro.site ?? new URL(Astro.url.origin);
+const UPDATED = '2026-10-29';
+
+const faqs = [
+  {
+    question: 'How many bags of concrete do I need for 10 fence posts?',
+    answer:
+      'For ten 4x4 posts in 12-inch holes dug 30 inches deep, you need about 30 bags of 80 lb concrete. Add 10% for spillage and uneven holes and buy 33 bags. A single post that size takes roughly 1.75 cubic feet of concrete.',
+  },
+  {
+    question: 'How much concrete does one 4x4 fence post need?',
+    answer:
+      'A 4x4 post in a 12-inch hole 30 inches deep needs about 1.75 cubic feet before waste, which is 3 bags of 80 lb mix, 4 bags of 60 lb, or 6 bags of 40 lb. Add 10% waste and you carry 4 bags of 80 lb. In a narrower 10-inch hole at the same depth it drops to about 1.15 cubic feet, or 2 bags of 80 lb.',
+  },
+  {
+    question: 'How deep should a fence post hole be?',
+    answer:
+      'Bury at least one third of the post height, and go below the frost line for your area. In practice that means 24 inches minimum in mild climates and 30 to 36 inches across most of the US, with 42 to 48 inches in the northern states. Your local building department sets the legal minimum.',
+  },
+  {
+    question: 'Should I put gravel in the bottom of the post hole?',
+    answer:
+      'A 4 to 6 inch gravel layer helps drainage in clay soil, but you must dig the hole deeper by the same amount. If you add gravel without deepening the hole, the concrete sits higher and covers less of the post, which is where the strength comes from.',
+  },
+  {
+    question: 'Can I pour dry concrete mix into the hole and add water?',
+    answer:
+      'Yes, with a fast-setting mix designed for it. Pour the dry mix around the post, add water per the bag, and leave it alone. It sets in about 20 to 40 minutes, which is why it is popular for fence posts. Regular concrete mix needs to be mixed in a wheelbarrow or tub first.',
+  },
+  {
+    question: 'How much water goes into an 80 lb bag of concrete?',
+    answer:
+      'About 3 quarts (2.8 liters) per 80 lb bag. Add roughly two thirds of the water, mix, then add the rest until the mix holds together without pooling water. Too much water is the most common reason fence post concrete ends up weak.',
+  },
+  {
+    question: 'How long before I can hang a gate on new posts?',
+    answer:
+      'Wait 24 hours for regular concrete and about 4 hours for fast-setting mix before hanging hardware or attaching rails. Full design strength takes 7 days, so avoid leaning on gate posts or slamming gates during the first week.',
+  },
+  {
+    question: 'Do I need concrete for every fence post, or just the corners?',
+    answer:
+      'Corner, end, and gate posts carry the tension and always need concrete. Line posts in soft ground should be set in concrete too, because tamped soil loosens after a few freeze-thaw cycles. Skipping concrete on line posts is the usual reason a fence starts leaning in year two.',
+  },
+];
+
 const schema = [
   softwareApplicationSchema('Concrete for Fence Post Calculator', '/concrete-fence-post-calculator/', siteUrl),
   breadcrumbSchema(
@@ -16,12 +59,32 @@ const schema = [
     ],
     siteUrl,
   ),
+  faqSchema(faqs),
+];
+
+// 每柱混凝土量与袋数，按常用柱/洞组合预算（不含损耗）
+const bagRows = [
+  { post: '2 3/8" round', hole: 8, depth: 24, cuft: 0.64, b40: 3, b50: 2, b60: 2, b80: 2 },
+  { post: '2 3/8" round', hole: 8, depth: 30, cuft: 0.8, b40: 3, b50: 3, b60: 2, b80: 2 },
+  { post: '3" round', hole: 10, depth: 30, cuft: 1.24, b40: 5, b50: 4, b60: 3, b80: 3 },
+  { post: '4x4', hole: 10, depth: 24, cuft: 0.92, b40: 4, b50: 3, b60: 3, b80: 2 },
+  { post: '4x4', hole: 10, depth: 30, cuft: 1.15, b40: 4, b50: 4, b60: 3, b80: 2 },
+  { post: '4x4', hole: 10, depth: 36, cuft: 1.38, b40: 5, b50: 4, b60: 4, b80: 3 },
+  { post: '4x4', hole: 12, depth: 24, cuft: 1.4, b40: 5, b50: 4, b60: 4, b80: 3 },
+  { post: '4x4', hole: 12, depth: 30, cuft: 1.75, b40: 6, b50: 5, b60: 4, b80: 3 },
+  { post: '4x4', hole: 12, depth: 36, cuft: 2.1, b40: 8, b50: 6, b60: 5, b80: 4 },
+  { post: '4x4', hole: 12, depth: 42, cuft: 2.45, b40: 9, b50: 7, b60: 6, b80: 5 },
+  { post: '6x6', hole: 12, depth: 30, cuft: 1.44, b40: 5, b50: 4, b60: 4, b80: 3 },
+  { post: '6x6', hole: 12, depth: 36, cuft: 1.73, b40: 6, b50: 5, b60: 4, b80: 3 },
+  { post: '6x6', hole: 18, depth: 30, cuft: 3.89, b40: 13, b50: 11, b60: 9, b80: 7 },
+  { post: '6x6', hole: 18, depth: 36, cuft: 4.67, b40: 16, b50: 13, b60: 11, b80: 8 },
+  { post: '6x6', hole: 18, depth: 42, cuft: 5.45, b40: 19, b50: 15, b60: 13, b80: 10 },
 ];
 ---
 
 <BaseLayout
   title="Concrete for Fence Post Calculator — Bags per Post Hole"
-  description="Free fence post concrete calculator: enter the number of posts, hole size, and post dimensions to get concrete volume and 80 lb bags needed, per post and for the whole fence."
+  description="Free fence post calculator: enter post count, hole size and post dimensions to get concrete volume and 80, 60, 50 or 40 lb bags needed per post hole and for the whole fence."
   schema={schema}
 >
   <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: 'Concrete for Fence Post Calculator' }]} />
@@ -32,7 +95,8 @@ const schema = [
       <div>
         <h1>Concrete for Fence Post Calculator</h1>
         <p class="lead">How much concrete per fence post? Enter your post count, hole size, and post
-          dimensions — we'll subtract the buried post volume and give you bags per hole plus the total.</p>
+          dimensions — we subtract the buried post volume, then give you bags per hole and the total
+          to buy.</p>
       </div>
     </div>
 
@@ -89,18 +153,168 @@ const schema = [
   </section>
 
   <section class="card">
+    <h2>How much concrete does a fence post need?</h2>
+    <p>A 4x4 post in a 12-inch hole dug 30 inches deep takes about <b>1.75 cubic feet</b> of concrete.
+      That is <b>3 bags of 80 lb</b> mix, 4 bags of 60 lb, or 6 bags of 40 lb. For ten posts that size,
+      buy 30 bags, or 33 if you allow 10% waste.</p>
+    <p>The number depends on three things and nothing else: how wide you dig the hole, how deep you dig
+      it, and how much of that hole the post itself fills. A 4x4 is really 3.5 inches square, and it
+      eats 11% of a 12-inch hole. A 6x6 in an 18-inch hole only eats 9%. That is why guessing by bag
+      count goes wrong at scale — the smaller the hole relative to the post, the more the error grows.</p>
+
+    <div class="table-wrap">
+      <table class="data">
+        <caption>Concrete per post hole and bags needed, by post and hole size. No waste allowance —
+          add 10% for uneven holes and spillage.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Post</th>
+            <th scope="col">Hole dia.</th>
+            <th scope="col">Depth</th>
+            <th scope="col">Cu ft / post</th>
+            <th scope="col">40 lb</th>
+            <th scope="col">50 lb</th>
+            <th scope="col">60 lb</th>
+            <th scope="col">80 lb</th>
+          </tr>
+        </thead>
+        <tbody>
+          {bagRows.map((r) => (
+            <tr>
+              <td>{r.post}</td>
+              <td>{r.hole}"</td>
+              <td>{r.depth}"</td>
+              <td>{r.cuft.toFixed(2)}</td>
+              <td>{r.b40}</td>
+              <td>{r.b50}</td>
+              <td>{r.b60}</td>
+              <td>{r.b80}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <p><strong>Buying in bags vs. ordering a truck.</strong> Ten posts is about 18 cubic feet, or
+        two thirds of a cubic yard — bags are the answer. Once a fence passes roughly 40 posts you are
+        over 1.5 cubic yards, and a short-load delivery starts competing with bag price. Bag count
+        above 45 is the point to get a quote.</p>
+    </div>
+  </section>
+
+  <section class="card">
     <h2>How the fence post concrete calculator works</h2>
-    <p>A post hole is a cylinder: <code>volume per hole = π × (diameter ÷ 2 ÷ 12)² × (depth ÷ 12)</code>.
-      We subtract the buried portion of the post, multiply by the number of posts, then divide by
-      <b>0.60</b> — one 80&nbsp;lb bag — and round up.</p>
-    <p>A common rule is to set posts one-third of their height into the ground and dig the hole three
-      times the post width. For a 4×4 post, a 12-inch hole is typical; a 6×6 needs about 18 inches.</p>
-    <h3>Assumptions and sources</h3>
-    <p>The calculator assumes the post is fully buried for the entered depth and uses a standard
-      80&nbsp;lb bag yield of 0.60 cubic feet.</p>
-    <h3>Related tools</h3>
-    <p><a href="/concrete-bags-calculator/">Concrete bags calculator</a> · <a href="/concrete-calculator/">Concrete calculator</a> · <a href="/gravel-driveway-calculator/">Gravel for driveway</a></p>
-    <p class="muted">Last updated: {LAST_UPDATED}</p>
+    <p>A post hole is a cylinder, and the buried part of the post is a smaller box or cylinder sitting
+      inside it. The concrete is the difference:</p>
+    <p><code>concrete per post = π × (hole diameter ÷ 2 ÷ 12)² × (hole depth ÷ 12) − post volume</code></p>
+    <p>Then we multiply by the number of posts and divide by the bag yield. Our defaults are a 12-inch
+      hole, 30 inches deep, a 4x4 post, and 10% waste — a standard 6-foot privacy fence on level ground.</p>
+
+    <h3>Why the post volume is subtracted</h3>
+    <p>Most fence post calculators treat the hole as a solid cylinder and ignore the post standing in
+      it. On a 4x4 in a 12-inch hole that overstates the concrete by about 11%. On a 4x4 in a 10-inch
+      hole it overstates by almost 16%. On a single post it is one extra bag; on a 60-post fence it is
+      a dozen bags you paid for and carried home for nothing.</p>
+    <p>The calculator assumes the post is buried to the full depth you enter. If you set posts on a
+      gravel base, put the gravel depth into the field as the difference between hole depth and buried
+      depth, or just enter a shorter buried depth.</p>
+
+    <h3>Rounding and waste</h3>
+    <p>Bags are rounded up per post and then summed, because you cannot buy a fraction of a bag and
+      leftover mix from one hole does not pour itself into the next. Waste covers hole diameter that
+      runs wider than the auger, spillage, and mix left in the tub. 10% is right for machine-dug holes
+      in firm soil; use 15% for hand-dug holes, sandy ground, or a first fence.</p>
+  </section>
+
+  <section class="card">
+    <h2>How deep and how wide should the hole be?</h2>
+
+    <h3>Depth</h3>
+    <p>The rule of thumb is to bury one third of the post height: a 6-foot post goes 2 feet down, an
+      8-foot post goes 30 to 36 inches down. That rule is a floor, not a target. Frost is what actually
+      lifts a post, so the hole has to reach below the frost line for your area — 24 inches in the
+      South, 30 to 36 inches through the middle of the US, and 42 to 48 inches in the northern states
+      and at elevation. Ask your local building department for the number they enforce; it is usually
+      published and it is the one that matters at inspection.</p>
+
+    <h3>Width</h3>
+    <p>Dig the hole about three times the post width. A 4x4 (3.5 inches actual) gets a 10 to 12 inch
+      hole, a 6x6 gets 18 inches, and a 2 3/8 inch chain-link terminal post gets 8 inches. Wider is not
+      better: beyond 12 inches for a 4x4 you are buying concrete that adds little holding power, and a
+      bell-shaped hole bottom does more for uplift resistance than a bigger cylinder.</p>
+
+    <h3>Depth versus diameter, in bag terms</h3>
+    <p>Going from a 10-inch to a 12-inch hole at the same 30-inch depth raises the concrete from 1.15
+      to 1.75 cubic feet — from 2 bags to 3 bags of 80 lb per post. Going from 30 to 36 inches deep at
+      12 inches wide raises it from 1.75 to 2.10 cubic feet, which is still 4 bags of 80 lb. Depth buys
+      frost protection cheaply; diameter gets expensive fast.</p>
+  </section>
+
+  <section class="card">
+    <h2>Bag sizes, water, and curing</h2>
+    <p>All four bag sizes are the same concrete, just different amounts. A 40 lb bag yields 0.30 cubic
+      feet, a 50 lb bag 0.375, a 60 lb bag 0.45, and an 80 lb bag 0.60. Per cubic foot of hole, an
+      80 lb bag is almost always the cheapest way to buy it; 40 lb bags only win when you have a couple
+      of posts and do not want to carry 80 pounds around.</p>
+    <p>Water: about 3 quarts per 80 lb bag. Add two thirds, mix to a uniform gray with no dry pockets,
+      then add the rest a splash at a time. The mix should hold a shape when you squeeze it. Watery mix
+      is weaker mix, and it is the single most common mistake on a fence.</p>
+    <p>Fast-setting mix is worth the extra dollar per bag on a fence. You pour it dry around a straight
+      post, add water, and it sets in 20 to 40 minutes, so you can plumb and brace a post and walk away.
+      Regular mix gives you more working time and a lower bag price, but you need a wheelbarrow and a
+      hoe, and every post has to be braced until it sets.</p>
+    <p>Wait 24 hours before attaching rails with regular mix, about 4 hours with fast-set, and 7 days
+      before hanging a gate. Bracing stays on for the full first day either way.</p>
+  </section>
+
+  <section class="card">
+    <h2>What fence post concrete costs</h2>
+    <p>An 80 lb bag of concrete mix runs about $6 to $9 in 2026 depending on region and brand; 50 lb
+      bags land near $5 and 40 lb near $4.50. Fast-setting mix adds roughly $1 to $2 per bag.</p>
+    <p>For ten 4x4 posts at 3 bags each, that is 30 bags and roughly $200 to $260 in concrete, or about
+      $20 to $26 per post. A contractor setting those same ten posts typically charges $40 to $75 per
+      post for labor and material, so the DIY saving on a 100-foot fence is usually $400 to $800 —
+      before you count the post hole digger or auger rental, which runs $40 to $90 a day.</p>
+    <p>Two ways people overspend: buying 60 lb bags because they are easier to carry (you pay 10% to
+      15% more per cubic foot), and buying 20% extra "just in case" on a 40-post fence, which is several
+      bags of hardened mix in the garage by spring.</p>
+  </section>
+
+  <section class="card">
+    <h2>Fence post concrete FAQ</h2>
+    <div class="faq">
+      {faqs.map((f) => (
+        <details>
+          <summary>{f.question}</summary>
+          <p>{f.answer}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Where these numbers come from</h2>
+    <div class="sources">
+      <p>Bag yields and mixing water follow the manufacturers' published data for pre-blended concrete
+        mix. Frost depth and footing requirements are set locally.</p>
+      <ul>
+        <li><a href="https://www.quikrete.com/calculator/main.asp" target="_blank" rel="noopener">QUIKRETE concrete calculator</a> — bag yield reference for 40, 50, 60 and 80 lb mixes</li>
+        <li><a href="https://www.quikrete.com/" target="_blank" rel="noopener">QUIKRETE product data</a> — mixing water and fast-setting instructions</li>
+        <li><a href="https://www.sakrete.com/" target="_blank" rel="noopener">SAKRETE</a> — alternate bag yield and set-time data</li>
+        <li><a href="https://www.iccsafe.org/" target="_blank" rel="noopener">International Code Council</a> — IRC footing depth and frost line provisions adopted by most US jurisdictions</li>
+      </ul>
+      <p>Frost depth varies by county, not by state. Confirm the required footing depth with your local
+        building department before you dig.</p>
+    </div>
+
+    <h3>Related calculators</h3>
+    <div class="related">
+      <a href="/concrete-bags-calculator/">How many bags of concrete</a>
+      <a href="/concrete-calculator/">Concrete slab & footing volume</a>
+      <a href="/gravel-driveway-calculator/">Gravel for a driveway</a>
+    </div>
+    <p class="muted">Last updated: {UPDATED}</p>
   </section>
 </BaseLayout>
 

@@ -2,6 +2,8 @@ export interface Tool {
   slug: string;
   title: string;
   blurb: string;
+  /** Optional per-page last-modified date for the sitemap. Falls back to LAST_UPDATED. */
+  updated?: string;
 }
 
 // Hub tool list — drives the homepage grid and the sitemap. Add a new tool here,
@@ -26,5 +28,6 @@ export const tools: Tool[] = [
     slug: 'concrete-fence-post-calculator',
     title: 'Concrete for Fence Post Calculator',
     blurb: 'Bags of concrete per post hole',
+    updated: '2026-10-29',
   },
 ];
