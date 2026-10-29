@@ -105,7 +105,8 @@ const spanRows = [
       <div>
         <h1>Deck Board Calculator</h1>
         <p class="lead">Enter the deck, the board width and the gap you are leaving, and this returns
-          the courses, the boards per course, and how many pieces to put on the truck.</p>
+          the courses, the boards per course, and how many pieces to put on the truck. It counts the
+          decking only — joists, footings and hardware are the next two sections down.</p>
       </div>
     </div>
 
@@ -320,6 +321,12 @@ const spanRows = [
     <p>Fastening: two screws per joist crossing for 5/4 and 2x6, set about an inch in from each edge.
       Predrill composite and hardwood near the ends or the board splits. Hidden clips use one screw per
       joist plus a starter screw at the beginning of each course.</p>
+    <p>Boards are only one line of a deck takeoff. The joists and rim are framing lumber, which the
+      <a href="/lumber-calculator/">lumber calculator</a> sizes; the post footings are concrete, which
+      the <a href="/concrete-calculator/">concrete calculator</a> turns into cubic yards; and how deep
+      those footings have to sit is set by the
+      <a href="/frost-depth-by-state/">frost depth your state enforces</a>. Do the footing depth first —
+      it changes the tube length and the bag count, and it cannot be fixed after the concrete sets.</p>
   </section>
 
   <section class="card">
