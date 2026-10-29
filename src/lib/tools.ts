@@ -33,4 +33,10 @@ export const tools: Tool[] = [
     blurb: 'Bags of concrete per post hole',
     updated: '2026-10-29',
   },
+  {
+    slug: 'frost-depth-by-state',
+    title: 'Frost Depth by State',
+    blurb: 'Code footing depth, dig depth and bags for all 50 states',
+    updated: '2026-10-29',
+  },
 ];

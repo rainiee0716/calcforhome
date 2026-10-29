@@ -7,5 +7,5 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "include": ["src/lib/calculations.ts"]
+  "include": ["src/lib/calculations.ts", "src/lib/frost.ts"]
 }

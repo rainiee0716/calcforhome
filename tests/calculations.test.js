@@ -5,7 +5,9 @@ import {
   calculateConcreteBags,
   calculateFencePostConcrete,
   calculateGravel,
+  calculateFootingDepth,
 } from '../dist-test/calculations.js';
+import { AFI_TABLE, FROST_REGIONS, designFrostDepthFromAfi } from '../dist-test/frost.js';
 
 test('concrete calculator applies waste and rounds bags up', () => {
   const result = calculateConcrete({
@@ -81,4 +83,66 @@ test('calculators reject invalid dimensions', () => {
       }),
     RangeError,
   );
+});
+
+test('footing depth adds a bearing layer and picks the right tube', () => {
+  // Minnesota Zone II: 42 in of frost becomes a 48 in dig, and a 4 ft tube is
+  // exactly long enough — no more.
+  const mn = calculateFootingDepth({
+    frostDepthIn: 42,
+    holeDiameterIn: 12,
+    count: 4,
+    postWidthIn: 3.5,
+    postThicknessIn: 3.5,
+    wastePercent: 10,
+  });
+  assert.equal(mn.digDepthIn, 48);
+  assert.equal(mn.tubeLengthFt, 4);
+  assert.equal(mn.concretePerFootingCubicFeet.toFixed(2), '3.08');
+  assert.equal(mn.bagsPerFooting, 6);
+  assert.equal(mn.totalEightyPoundBags, 21);
+
+  // 48 in of frost digs 54, which no longer fits a 4 ft tube.
+  const ma = calculateFootingDepth({ frostDepthIn: 48, holeDiameterIn: 12, count: 1 });
+  assert.equal(ma.digDepthIn, 54);
+  assert.equal(ma.tubeLengthFt, 6);
+});
+
+test('a solid footing fills the whole hole', () => {
+  // No post to subtract: 12 in hole, 18 in deep is a plain cylinder.
+  const solid = calculateFootingDepth({ frostDepthIn: 12, holeDiameterIn: 12, count: 1 });
+  assert.equal(solid.digDepthIn, 18);
+  assert.equal(solid.concretePerFootingCubicFeet.toFixed(2), '1.18');
+  assert.equal(solid.bagsPerFooting, 2);
+});
+
+test('air freezing index maps to the published design frost depth', () => {
+  assert.equal(designFrostDepthFromAfi(0), 3);
+  assert.equal(designFrostDepthFromAfi(400), 16);
+  assert.equal(designFrostDepthFromAfi(3500), 57);
+  assert.equal(designFrostDepthFromAfi(4000), 62);
+  // Above the last row the table stops at 65 rather than extrapolating.
+  assert.equal(designFrostDepthFromAfi(9000), 65);
+});
+
+test('frost region table is internally consistent', () => {
+  const ids = FROST_REGIONS.map((r) => r.id);
+  assert.equal(new Set(ids).size, ids.length, 'region ids must be unique');
+  for (const region of FROST_REGIONS) {
+    assert.ok(region.depth > 0 && region.depth <= 120, `${region.state} depth out of range`);
+    assert.ok(region.basis.length > 0, `${region.state} needs a code basis`);
+  }
+  // Every state appears once at minimum, and no state is split more than twice.
+  const counts = new Map();
+  for (const region of FROST_REGIONS) {
+    counts.set(region.state, (counts.get(region.state) ?? 0) + 1);
+  }
+  assert.equal(counts.size, 51, '50 states plus DC');
+  for (const [state, count] of counts) {
+    assert.ok(count <= 2, `${state} has ${count} zones`);
+  }
+  // The AFI table must stay sorted, since the lookup walks it in order.
+  for (let i = 1; i < AFI_TABLE.length; i += 1) {
+    assert.ok(AFI_TABLE[i].afi > AFI_TABLE[i - 1].afi, 'AFI table must ascend');
+  }
 });

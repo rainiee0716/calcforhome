@@ -1,0 +1,519 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import ToolIcon from '../components/ToolIcon.astro';
+import { breadcrumbSchema, faqSchema, softwareApplicationSchema } from '../lib/schema';
+import { calculateFootingDepth } from '../lib/calculations';
+import { AFI_TABLE, FROST_REGIONS, regionsByState } from '../lib/frost';
+
+const siteUrl = Astro.site ?? new URL(Astro.url.origin);
+const UPDATED = '2026-10-29';
+
+const states = regionsByState();
+
+// States whose code publishes two depths. Derived from the data so the table,
+// the count in the heading and the selector can never disagree.
+const splitStates = states
+  .filter((group) => new Set(group.regions.map((r) => r.depth)).size > 1)
+  .map((group) => {
+    const sorted = [...group.regions].sort((a, b) => a.depth - b.depth);
+    return { state: group.state, shallower: sorted[0], deeper: sorted[sorted.length - 1] };
+  });
+
+
+// Depth column shows both values for states whose code splits in two.
+function depthLabel(regions: typeof FROST_REGIONS): string {
+  const values = [...new Set(regions.map((r) => r.depth))].sort((a, b) => a - b);
+  return values.length === 1 ? `${values[0]}"` : values.map((v) => `${v}"`).join(' / ');
+}
+
+function basisLabel(regions: typeof FROST_REGIONS): string {
+  const values = [...new Set(regions.map((r) => r.basis))];
+  return values.length === 1 ? values[0] : values.join('; ');
+}
+
+// Digest depth to bags, for a solid footing with no post in the hole.
+const frostDepths = [0, 6, 12, 18, 24, 30, 36, 42, 48, 54, 60, 66, 72];
+const bagRows = frostDepths.map((frost) => ({
+  frost,
+  dig: frost + 6,
+  bags: [10, 12, 16, 20].map(
+    (dia) =>
+      calculateFootingDepth({
+        frostDepthIn: frost,
+        holeDiameterIn: dia,
+        count: 1,
+      }).bagsPerFooting,
+  ),
+}));
+
+const regionPayload = FROST_REGIONS.map((r) => ({
+  id: r.id,
+  depth: r.depth,
+  label: r.zone ? `${r.state} — ${r.zone}` : r.state,
+  basis: r.basis,
+  statewide: r.statewide,
+}));
+
+const faqs = [
+  {
+    question: 'How deep is the frost line in my state?',
+    answer:
+      'Look up your state in the table above for the depth the code enforces. It runs from 12 inches across Florida, Louisiana, Hawaii and most of the Deep South up to 60 inches in northern Minnesota and northern North Dakota, and 72 inches in interior Alaska and the Maine mountains. The table lists the code value, because that is the depth an inspector measures, not the average depth the ground actually froze last winter.',
+  },
+  {
+    question: 'Does frost depth vary within a single state?',
+    answer:
+      'Yes, and in the large states it varies a lot. Minnesota has two zones, 42 inches across the Twin Cities and southern counties and 60 inches in the northern and central counties. Washington is 12 inches in Seattle and 24 inches in Spokane. Colorado is 36 inches in Denver and 60 inches in mountain towns. California is 12 inches at the coast and 30 inches in the Sierra. Never take a state number to a permit counter outside the city it was written for.',
+  },
+  {
+    question: 'How deep do footings have to be?',
+    answer:
+      'Deep enough that the bottom of the footing sits below the frost depth for the site, plus a bearing layer. In practice that is the published frost depth plus 6 inches, so a 42-inch frost depth becomes a 48-inch dig. Interior footings inside a heated, enclosed space are exempt from the frost rule in most codes, but exterior and perimeter footings never are.',
+  },
+  {
+    question: 'Do fence posts have to go below the frost line?',
+    answer:
+      'A deck footing does, because the code treats it as a structural support and an inspector will check it. A fence post usually does not, because most jurisdictions do not permit or inspect fences. Frost will still lift a shallow post and lean the fence, so in cold states the practical answer is the same: below the frost line, or accepted as a fence that needs re-setting every few springs.',
+  },
+  {
+    question: 'Why is the code depth different from what I read about frost depth?',
+    answer:
+      'Because they measure different things. Measured frost penetration varies with soil type, moisture, snow cover and how the ground is exposed, and it changes year to year. A code value is a conservative envelope picked so a footing stays put in a bad winter. When the two disagree, the code number governs the permit and the measured number explains why your neighbor had to re-level a deck.',
+  },
+  {
+    question: 'What is an air-freezing index?',
+    answer:
+      'The cumulative number of degree-days the air stays below 32°F over a winter, added up. A winter that averages 10°F below freezing for 100 days scores 1,000. The IRC uses it to size frost-protected shallow foundations, and HUD publishes a direct table that converts it to a design frost depth, which is reproduced on this page.',
+  },
+  {
+    question: 'What is a frost-protected shallow foundation?',
+    answer:
+      'A shallow footing that stays put because rigid insulation keeps the soil under it from freezing, instead of digging below the frost line. IRC R403.3 allows it for buildings kept at a monthly mean of at least 64°F, with insulation values set by the air-freezing index. In northern Minnesota it can replace a 60-inch frost wall, which is why it is common there.',
+  },
+  {
+    question: 'How do I get the exact number for my address?',
+    answer:
+      'Call the building department that issues your permit and ask for the required footing depth, or ask which edition of the code they enforce and read Table R301.2(1) in their local amendment. That table is filled in by the jurisdiction, not by the state. It takes one phone call and it is the only number that survives an inspection.',
+  },
+];
+
+const schema = [
+  softwareApplicationSchema('Frost Depth by State', '/frost-depth-by-state/', siteUrl),
+  breadcrumbSchema(
+    [
+      { name: 'Home', path: '/' },
+      { name: 'Frost Depth by State', path: '/frost-depth-by-state/' },
+    ],
+    siteUrl,
+  ),
+  faqSchema(faqs),
+];
+---
+
+<BaseLayout
+  title="Frost Depth by State — Code Footing Depth for All 50 States"
+  description="Frost depth by state as the building code enforces it: 12 inches across the Deep South to 72 in Alaska. Plus the dig depth, Sonotube length and bags it takes."
+  schema={schema}
+>
+  <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: 'Frost Depth by State' }]} />
+
+  <section class="card">
+    <div class="page-head">
+      <span class="tool-icon"><ToolIcon slug="frost-depth-by-state" /></span>
+      <div>
+        <h1>Frost Depth by State</h1>
+        <p class="lead">Pick your state to get the footing depth its code enforces, then the dig depth,
+          the Sonotube to buy and the bags of concrete it takes. Every number below is a code value,
+          not a climate average.</p>
+      </div>
+    </div>
+
+    <form id="frost-form" class="calc" novalidate>
+      <div class="row">
+        <label for="region">State and zone</label>
+        <select id="region" name="region" required>
+          <option value="" selected disabled>Select your state</option>
+          {states.map((group) =>
+            group.regions.length === 1 ? (
+              <option value={group.regions[0].id}>{group.regions[0].depth}" — {group.state}</option>
+            ) : (
+              <optgroup label={group.state}>
+                {group.regions.map((region) => (
+                  <option value={region.id}>{region.depth}" — {region.zone}</option>
+                ))}
+              </optgroup>
+            ),
+          )}
+        </select>
+      </div>
+      <div class="row">
+        <label for="hole-diameter">Hole diameter (in)</label>
+        <input id="hole-diameter" name="hole-diameter" type="number" min="4" max="36" step="1" value="12" required inputmode="decimal" autocomplete="off" aria-describedby="diameter-help">
+        <p id="diameter-help" class="field-help">10 to 12 in for a 4x4 post, 16 to 18 in for a 6x6.</p>
+      </div>
+      <div class="row">
+        <label for="post-size">Post in the hole</label>
+        <select id="post-size" name="post-size" required>
+          <option value="0">No post — solid footing</option>
+          <option value="3.5" selected>4x4 (3.5 in)</option>
+          <option value="5.5">6x6 (5.5 in)</option>
+        </select>
+      </div>
+      <div class="row">
+        <label for="footing-count">Number of footings</label>
+        <input id="footing-count" name="footing-count" type="number" min="1" step="1" value="4" required inputmode="numeric" autocomplete="off">
+      </div>
+      <div class="row">
+        <label for="waste">Waste (%)</label>
+        <input id="waste" name="waste" type="number" min="0" max="30" step="1" value="10" required inputmode="decimal" autocomplete="off" aria-describedby="waste-help">
+        <p id="waste-help" class="field-help">Allowed range: 0–30%.</p>
+      </div>
+      <p id="form-error" class="error" role="alert" hidden></p>
+      <button class="btn" type="submit">Get my depth</button>
+    </form>
+
+    <div class="result" id="result" aria-live="polite" hidden>
+      <h3>Dig each hole</h3>
+      <p><span class="big" id="dig-depth">—</span> inches deep</p>
+      <ul>
+        <li>Code frost depth: <b id="frost-depth">—</b> inches</li>
+        <li>In feet and inches: <b id="dig-depth-ft">—</b></li>
+        <li>Sonotube to buy: <b id="tube-length">—</b></li>
+        <li>Concrete per hole: <b id="cuft-per">—</b> cu ft</li>
+        <li>Total: <b id="total-bags">—</b> bags of 80 lb (with waste)</li>
+      </ul>
+      <p class="muted" id="basis-line">—</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Frost depth by state</h2>
+    <p>These are the depths that state codes and the larger city codes actually require, in inches below
+      finished grade. Where a state leaves the number to local government the table lists the value used
+      by its largest city that publishes one, and the basis column says so.</p>
+
+    <div class="table-wrap">
+      <table class="data text">
+        <caption>Required footing depth by state, from the code each jurisdiction enforces. Where two
+          numbers appear, the state has separate zones — see the zone list below the table.</caption>
+        <thead>
+          <tr>
+            <th scope="col">State</th>
+            <th scope="col">Code depth</th>
+            <th scope="col">Basis</th>
+          </tr>
+        </thead>
+        <tbody>
+          {states.map((group) => (
+            <tr>
+              <td>{group.state}</td>
+              <td class="hl">{depthLabel(group.regions)}</td>
+              <td>{basisLabel(group.regions)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note">
+      <p><strong>The number that matters is the one your building department gives you.</strong> This
+        table is a starting point for planning and for knowing what to ask. It is not a substitute for
+        the local amendment to IRC Table R301.2(1), which is filled in by the jurisdiction, not the
+        state, and which is what an inspector checks.</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Where one state has two answers</h2>
+    <p>Treating a state as one climate is the most common mistake in reading a frost depth chart.
+      {splitStates.length} states publish two different depths, and in most of them the gap is a foot or
+      more of digging:</p>
+
+    <div class="table-wrap">
+      <table class="data text">
+        <caption>Every state with two code frost depths, and the zone each value applies to.</caption>
+        <thead>
+          <tr>
+            <th scope="col">State</th>
+            <th scope="col">Shallower zone</th>
+            <th scope="col">Deeper zone</th>
+          </tr>
+        </thead>
+        <tbody>
+          {splitStates.map((row) => (
+            <tr>
+              <td>{row.state}</td>
+              <td>{row.shallower.depth}" — {row.shallower.zone}</td>
+              <td class="hl">{row.deeper.depth}" — {row.deeper.zone}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <p>Minnesota is the clearest case because it is written into the rule rather than left to
+      interpretation. Minnesota Rules 1303.1600 sets five feet in Zone I and three and a half feet in
+      Zone II, and then lists every county by name in each zone. Hennepin, Ramsey and every other Twin
+      Cities county is Zone II at 42 inches. St. Louis County, which is Duluth, is Zone I at 60 inches.
+      That is a difference of 18 inches of digging for a state you could drive across in four hours.</p>
+    <p>The pattern repeats wherever elevation or a mountain range interrupts the climate. Western
+      Washington is 12 inches because the Pacific keeps the ground above freezing most winters; drive
+      four hours east over Snoqualmie Pass and it doubles. The Cascades are the dividing line, not the
+      state border.</p>
+  </section>
+
+  <section class="card">
+    <h2>Why the code number is not the measured number</h2>
+    <p>If you look up frost depth somewhere else and get a different answer, both numbers can be right.
+      They answer different questions.</p>
+    <p><strong>Measured frost depth</strong> is what the ground did. It depends on soil type, moisture
+      content, whether there was snow on it in January, whether it was under a driveway or under grass,
+      and how bad that particular winter was. Sandy, well-drained soil can freeze deeper than wet clay,
+      because dry soil has less latent heat to give up. A foot of snow before a cold snap insulates the
+      ground and cuts penetration by half or more. Two sites a mile apart with different cover can
+      differ by a foot.</p>
+    <p><strong>Code frost depth</strong> is what a footing has to be built to. It is a conservative
+      envelope chosen so that a footing does not move in a bad winter, with no credit taken for snow
+      cover or drainage. That is why the code value is usually deeper than the average measured
+      penetration, and why Minnesota's code says 60 inches in the north while a measured average might
+      read closer to 50.</p>
+    <p>The practical consequence: use the code number for anything that will be inspected, and use the
+      measured number to understand why your neighbor's deck heaved even though he dug to what he
+      thought was the local depth.</p>
+  </section>
+
+  <section class="card">
+    <h2>From frost depth to dig depth</h2>
+    <p>The frost depth is the depth the ground freezes. A footing needs to sit at or below it, and it
+      also needs soil under it that has not been disturbed and can carry load. The usual rule is to add
+      6 inches of bearing below the frost line, so:</p>
+    <p><code>dig depth = frost depth + 6 inches</code></p>
+    <p>In Minneapolis Zone II that is 42 + 6 = 48 inches. In Boston it is 48 + 6 = 54. In Miami there is
+      no frost, so the 12-inch minimum foundation depth governs and bearing is the only real question.
+      Some jurisdictions write the plus-six into the code as the footing depth directly, which is why
+      you sometimes see 48 inches for Minnesota instead of 42. Either way you end up at the same hole.</p>
+
+    <h3>If you use a gravel base</h3>
+    <p>A 4 to 6 inch gravel layer at the bottom of the hole is good practice in clay and in wet spots.
+      It does not replace the bearing layer, so add its depth on top: 42 inches of frost, 6 inches of
+      bearing, 4 inches of gravel is a 52-inch hole, not a 44-inch one. Digging the frost depth and
+      filling the bottom with gravel is the same mistake as digging too shallow.</p>
+
+    <h3>What that means in Sonotube lengths</h3>
+    <p>Cardboard forms are sold in 4, 6, 8 and 12 foot lengths. At a 42-inch frost depth you are digging
+      48 inches and a 4 foot tube is exactly right, with nothing to spare. At 48 inches of frost you are
+      digging 54 and you need the 6 foot tube, with 18 inches left over to cut off above grade. Going up
+      a size is cheaper than discovering the tube is short with the hole already dug.</p>
+  </section>
+
+  <section class="card">
+    <h2>How much concrete a frost-depth footing takes</h2>
+    <p>This is the conversion most people actually need: frost depth to hole depth to bags. Bags of 80 lb
+      mix, solid footing with no post in the hole, no waste allowance.</p>
+
+    <div class="table-wrap">
+      <table class="data">
+        <caption>80 lb bags of concrete per footing by frost depth and hole diameter, with a 6 inch
+          bearing layer added. Round up, and add 10% for uneven holes.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Frost depth</th>
+            <th scope="col">Dig depth</th>
+            <th scope="col">10" hole</th>
+            <th scope="col">12" hole</th>
+            <th scope="col">16" hole</th>
+            <th scope="col">20" hole</th>
+          </tr>
+        </thead>
+        <tbody>
+          {bagRows.map((row) => (
+            <tr>
+              <td>{row.frost}"</td>
+              <td>{row.dig}"</td>
+              <td>{row.bags[0]}</td>
+              <td class="hl">{row.bags[1]}</td>
+              <td>{row.bags[2]}</td>
+              <td>{row.bags[3]}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <p>Two things that table makes obvious. First, depth is expensive: going from a 12-inch frost depth
+      to 60 inches takes a 12-inch hole from 2 bags to 7. Second, diameter is more expensive still: at
+      60 inches of frost, a 20-inch hole is 20 bags against 7 for a 12-inch hole. If you need more
+      holding power in deep frost, a bell-shaped bottom costs less than a wider hole.</p>
+    <p>A 4x4 post standing in the hole displaces about 11% of the concrete in a 12-inch hole, which is
+      roughly one bag on a 60-inch dig. The <a href="/concrete-fence-post-calculator/">fence post
+      calculator</a> does that subtraction per post; this page ignores it so the numbers stay a pure
+      depth-to-volume conversion.</p>
+  </section>
+
+  <section class="card">
+    <h2>Frost depth from the air-freezing index</h2>
+    <p>If your state is not on the list, or you are on a county line, there is a federal method that
+      skips the state table entirely. The air-freezing index is the cumulative number of degree-days
+      the air spends below 32°F over a winter. HUD publishes a direct conversion from that index to a
+      design frost depth for footing design, and it is the same climate measure the IRC uses to size
+      frost-protected shallow foundations.</p>
+
+    <div class="table-wrap">
+      <table class="data">
+        <caption>Design frost depth for footings by air-freezing index, from the HUD table published at
+          82 FR 28596 (24 CFR 3285.312).</caption>
+        <thead>
+          <tr>
+            <th scope="col">Air-freezing index (°F-days)</th>
+            <th scope="col">Design frost depth</th>
+            <th scope="col">Metric</th>
+          </tr>
+        </thead>
+        <tbody>
+          {AFI_TABLE.map((row) => (
+            <tr>
+              <td>{row.afi.toLocaleString()}</td>
+              <td class="hl">{row.depthIn}"</td>
+              <td>{Math.round(row.depthIn * 25.4)} mm</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <p>Read the index off IRC Figure R403.3(2), which maps it by county, then read the depth off the
+      table. Northern Minnesota and northeastern North Dakota sit at 4,000, which is 62 inches.
+      Georgia is listed at 1,500 or less across every county, which is 32 inches on paper — but Georgia's
+      own residential code still only requires 12, because the index-based table is a national envelope
+      and the state amendment is more specific.</p>
+    <p>Where the two disagree, the state or local amendment wins. Use the index when nothing more
+      specific exists.</p>
+  </section>
+
+  <section class="card">
+    <h2>Frost-protected shallow foundations</h2>
+    <p>There is a legal way to avoid all of this digging. IRC R403.3 lets a building keep a shallow
+      footing if rigid insulation holds the frost out of the soil under it, instead of putting the
+      footing under the frost. The insulation is vertical against the slab edge plus a horizontal wing
+      that extends out from the building, with the R-values and wing dimensions set by the air-freezing
+      index, straight off the table above.</p>
+    <p>The conditions are specific. The building has to be maintained at a monthly mean of at least
+      64°F, so an unheated garage, porch or three-season room does not qualify, and the foundation
+      cannot be attached to a basement or crawl space that falls below that. Insulation below grade
+      has to be rated for wet conditions, and its R-value is derated: extruded polystyrene counts as
+      R-4.5 per inch vertically instead of its dry rating.</p>
+    <p>In Zone I Minnesota, where the alternative is a 60-inch frost wall, this is not a technicality.
+      It is the reason a lot of new construction there uses a turned-down slab instead of a basement.</p>
+  </section>
+
+  <section class="card">
+    <h2>Frost depth FAQ</h2>
+    <div class="faq">
+      {faqs.map((f) => (
+        <details>
+          <summary>{f.question}</summary>
+          <p>{f.answer}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Where these numbers come from</h2>
+    <div class="sources">
+      <p>State values are the code sections named in the table. The air-freezing index conversion is
+        the federal table. Nothing on this page is a climate average.</p>
+      <ul>
+        <li><a href="https://public-inspection.federalregister.gov/2017-12964.pdf" target="_blank" rel="noopener">HUD / Federal Register 82 FR 28596</a> — 24 CFR 3285.312, Table 1: design frost depth for footings by air-freezing index</li>
+        <li><a href="https://www.revisor.mn.gov/rules/1303.1600/" target="_blank" rel="noopener">Minnesota Rules 1303.1600</a> — footing depth for frost protection, with the Zone I and Zone II county lists</li>
+        <li><a href="https://www.nyc.gov/site/buildings/codes/2022-construction-codes.page" target="_blank" rel="noopener">NYC Buildings — Construction Codes</a> — section 1809.5, the four foot footing depth for New York City</li>
+        <li><a href="https://codes.iccsafe.org/" target="_blank" rel="noopener">International Code Council</a> — IRC R403.1.4, R403.1.4.1, R403.3 and Table R301.2(1), the model provisions most states amend</li>
+        <li><a href="https://www.ncei.noaa.gov/" target="_blank" rel="noopener">NOAA National Centers for Environmental Information</a> — climate data behind the air-freezing index figures</li>
+      </ul>
+      <p>Frost depth is set by county and city, not by state, and it changes when a jurisdiction adopts
+        a new code edition. Confirm the number with the building department that issues your permit.</p>
+    </div>
+
+    <h3>Cite this page</h3>
+    <div class="note">
+      <p>If you are referencing the state table or the air-freezing index conversion, cite it as:
+        <em>“Frost Depth by State,” CalcForHome, updated 29 October 2026,
+        https://www.calcforhome.com/frost-depth-by-state/</em></p>
+    </div>
+
+    <h3>Related calculators</h3>
+    <div class="related">
+      <a href="/concrete-fence-post-calculator/">Concrete per fence post</a>
+      <a href="/concrete-calculator/">Concrete slab & footing volume</a>
+      <a href="/concrete-bags-calculator/">How many bags of concrete</a>
+      <a href="/gravel-driveway-calculator/">Gravel for a driveway</a>
+    </div>
+    <p class="muted">Last updated: {UPDATED}</p>
+  </section>
+</BaseLayout>
+
+<script type="application/json" id="frost-regions" set:html={JSON.stringify(regionPayload)}></script>
+
+<script>
+  import { calculateFootingDepth } from '../lib/calculations';
+
+  const regions: Array<{ id: string; depth: number; label: string; basis: string; statewide: boolean }> =
+    JSON.parse(document.querySelector<HTMLScriptElement>('#frost-regions')!.textContent!);
+
+  const form = document.querySelector<HTMLFormElement>('#frost-form')!;
+  const error = document.querySelector<HTMLElement>('#form-error')!;
+  const result = document.querySelector<HTMLElement>('#result')!;
+
+  function showError(message: string) {
+    error.textContent = message;
+    error.removeAttribute('hidden');
+    result.setAttribute('hidden', '');
+  }
+
+  function feetAndInches(inches: number): string {
+    const feet = Math.floor(inches / 12);
+    const rest = Math.round(inches - feet * 12);
+    if (feet === 0) return `${rest} in`;
+    return rest === 0 ? `${feet} ft` : `${feet} ft ${rest} in`;
+  }
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    try {
+      const regionId = (form.elements.namedItem('region') as HTMLSelectElement).value;
+      const region = regions.find((r) => r.id === regionId);
+      if (!region) {
+        showError('Pick your state and zone first.');
+        return;
+      }
+
+      const holeDiameter = Number((form.elements.namedItem('hole-diameter') as HTMLInputElement).value);
+      const postSize = Number((form.elements.namedItem('post-size') as HTMLSelectElement).value);
+      const count = Number((form.elements.namedItem('footing-count') as HTMLInputElement).value);
+      const waste = Number((form.elements.namedItem('waste') as HTMLInputElement).value);
+
+      const values = calculateFootingDepth({
+        frostDepthIn: region.depth,
+        holeDiameterIn: holeDiameter,
+        count,
+        postWidthIn: postSize,
+        postThicknessIn: postSize,
+        wastePercent: waste,
+      });
+
+      document.querySelector('#dig-depth')!.textContent = String(values.digDepthIn);
+      document.querySelector('#frost-depth')!.textContent = String(region.depth);
+      document.querySelector('#dig-depth-ft')!.textContent = feetAndInches(values.digDepthIn);
+      document.querySelector('#tube-length')!.textContent = `${values.tubeLengthFt} ft`;
+      document.querySelector('#cuft-per')!.textContent = values.concretePerFootingCubicFeet.toFixed(2);
+      document.querySelector('#total-bags')!.textContent = values.totalEightyPoundBags.toLocaleString();
+      document.querySelector('#basis-line')!.textContent = `${region.label} (${region.basis})`;
+
+      error.setAttribute('hidden', '');
+      result.removeAttribute('hidden');
+    } catch (err) {
+      showError(err instanceof Error ? err.message : 'Please check your measurements.');
+    }
+  });
+</script>

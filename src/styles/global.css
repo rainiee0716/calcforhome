@@ -271,6 +271,22 @@ table.data td.hl {
   color: var(--brand-ink);
 }
 
+/* Reference tables where the right-hand columns are prose, not numbers:
+   left-align them and let them wrap instead of forcing a wide scroll. */
+table.data.text {
+  min-width: 0;
+}
+
+table.data.text th:not(:first-child),
+table.data.text td:not(:first-child) {
+  text-align: left;
+  white-space: normal;
+}
+
+table.data.text td:nth-child(2) {
+  white-space: nowrap;
+}
+
 /* ===== Callout ===== */
 .note {
   background: var(--brand-soft);

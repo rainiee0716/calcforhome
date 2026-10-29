@@ -168,3 +168,75 @@ export function calculateFencePostConcrete(input: FencePostInput): FencePostResu
     totalEightyPoundBags: Math.ceil(totalConcrete / EIGHTY_POUND_BAG_YIELD),
   };
 }
+
+export interface FootingDepthInput {
+  /** Frost depth the jurisdiction enforces, in inches. */
+  frostDepthIn: number;
+  holeDiameterIn: number;
+  /** Footing count. */
+  count: number;
+  /** Buried post size in inches; 0 means a solid concrete footing with no post. */
+  postWidthIn?: number;
+  postThicknessIn?: number;
+  wastePercent?: number;
+}
+
+export interface FootingDepthResult {
+  /** Frost depth plus the 6 in bearing layer. */
+  digDepthIn: number;
+  /** Shortest standard Sonotube length that reaches the dig depth, in feet. */
+  tubeLengthFt: number;
+  concretePerFootingCubicFeet: number;
+  totalConcreteCubicFeet: number;
+  cubicYards: number;
+  bagsPerFooting: number;
+  totalEightyPoundBags: number;
+}
+
+/** Standard Sonotube lengths sold at home centers. */
+const TUBE_LENGTHS_FT = [4, 6, 8, 12];
+
+/**
+ * Footing depth from a published frost depth.
+ *
+ * Dig depth is frost depth plus 6 in of bearing below it, which is the usual
+ * cushion poured below the frost line so the footing bears on soil that never
+ * freezes. The hole is a cylinder; when a post sits in it the buried post
+ * volume comes out of the concrete.
+ */
+export function calculateFootingDepth(input: FootingDepthInput): FootingDepthResult {
+  const { frostDepthIn, holeDiameterIn, count, postWidthIn = 0, postThicknessIn = 0, wastePercent = 0 } = input;
+
+  assertNonNegative(frostDepthIn, 'Frost depth');
+  assertPositive(holeDiameterIn, 'Hole diameter');
+  assertPositive(count, 'Footing count');
+
+  const digDepthIn = frostDepthIn + 6;
+  const holeRadiusFt = holeDiameterIn / 2 / 12;
+  const holeVolume = Math.PI * holeRadiusFt ** 2 * (digDepthIn / 12);
+
+  const postVolume =
+    postWidthIn > 0 && postThicknessIn > 0
+      ? (postWidthIn / 12) * (postThicknessIn / 12) * (digDepthIn / 12)
+      : 0;
+
+  const concretePerFooting = holeVolume - postVolume;
+  if (concretePerFooting <= 0) {
+    throw new RangeError('The post fills the entire hole. Increase the hole diameter.');
+  }
+
+  const perFootingWithWaste = applyWaste(concretePerFooting, wastePercent);
+  const total = perFootingWithWaste * count;
+
+  const tubeLengthFt = TUBE_LENGTHS_FT.find((length) => length * 12 >= digDepthIn) ?? 12;
+
+  return {
+    digDepthIn,
+    tubeLengthFt,
+    concretePerFootingCubicFeet: perFootingWithWaste,
+    totalConcreteCubicFeet: total,
+    cubicYards: total / CUBIC_FEET_PER_CUBIC_YARD,
+    bagsPerFooting: Math.ceil(perFootingWithWaste / EIGHTY_POUND_BAG_YIELD),
+    totalEightyPoundBags: Math.ceil(total / EIGHTY_POUND_BAG_YIELD),
+  };
+}
