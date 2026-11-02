@@ -1,0 +1,298 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { breadcrumbSchema, faqSchema } from '../../lib/schema';
+import { calculateFootingDepth } from '../../lib/calculations';
+import { regionsByState, statePagePath, type FrostRegion } from '../../lib/frost';
+import { FROST_EDITORIAL } from '../../lib/frostEditorial';
+
+export function getStaticPaths() {
+  return regionsByState().map((group) => ({
+    params: { state: group.state.toLowerCase().replace(/\./g, '').replace(/\s+/g, '-') },
+    props: { group },
+  }));
+}
+
+const { group } = Astro.props;
+const { state, abbr, regions } = group;
+
+const UPDATED = '2026-11-02';
+
+// Distinct code depths in this state, shallowest first.
+const depths = [...new Set(regions.map((r) => r.depth))].sort((a, b) => a - b);
+const splitState = depths.length > 1;
+
+const depthLabel = depths.map((d) => `${d}"`).join(' / ');
+const digDepths = depths.map((d) => `${d + 6}"`).join(' / ');
+
+function zoneList(regs: FrostRegion[]): string {
+  return regs
+    .filter((r) => r.zone)
+    .map((r) => r.zone!.replace(/^Zone [IVX]+[, —-]*\s*/i, ''))
+    .join(', ');
+}
+
+// Dig depth and Sonotube length for each distinct frost depth.
+const digRows = depths.map((frost) => {
+  const calc = calculateFootingDepth({ frostDepthIn: frost, holeDiameterIn: 12, count: 1 });
+  return { frost, dig: calc.digDepthIn, tube: calc.tubeLengthFt };
+});
+
+// Solid-footing bag counts (no post in the hole) per depth and hole diameter,
+// mirroring the table on the frost-depth-by-state hub page.
+const holeDiameters = [10, 12, 16, 20];
+const bagRows = depths.map((frost) => ({
+  frost,
+  dig: frost + 6,
+  bags: holeDiameters.map(
+    (dia) =>
+      calculateFootingDepth({ frostDepthIn: frost, holeDiameterIn: dia, count: 1 })
+        .bagsPerFooting,
+  ),
+}));
+
+// Neighbouring state pages, alphabetical, for cross-links between state pages.
+const allStates = regionsByState();
+const idx = allStates.findIndex((g) => g.state === state);
+const prev = allStates[(idx - 1 + allStates.length) % allStates.length];
+const next = allStates[(idx + 1) % allStates.length];
+
+// A state counts as "no frost" when its own citation says the 12-inch value is
+// a bearing minimum, not a climate number (FL, HI, LA, MS, SC, AL).
+const noFrost = regions.some((r) => /no frost/i.test(r.basis));
+
+const editorial = FROST_EDITORIAL[state];
+
+const basisNames = [...new Set(regions.map((r) => r.basis))].join('; ');
+const zoneText = splitState ? zoneList(regions) : '';
+
+const faqs = [
+  {
+    question: `How deep is the frost line in ${state}?`,
+    answer: splitState
+      ? `${state} has two code depths, and the county you build in decides which one an inspector measures: ${regions
+          .map((r) => `${r.depth} inches in ${r.zone ? r.zone.replace(/^Zone [IVX]+[, —-]*\s*/i, '') : 'the rest of the state'}`)
+          .join(', and ')}. These are code values, not the average depth the ground actually froze last winter.`
+      : `${depths[0]} inches below finished grade. ${regions[0].basis} sets that number, and it applies ${regions[0].statewide ? 'statewide' : 'to the areas most permits are filed in'}. It is the code value an inspector measures, not the average depth the ground actually froze last winter.`,
+  },
+  {
+    question: `How deep do footings have to go in ${state}?`,
+    answer: `Bearing sits below the frost depth, so dig to the code depth plus 6 inches: ${depths
+      .map((d) => `${d} inches of frost means a ${d + 6}-inch dig`)
+      .join(', and ')} in ${state}. The extra 6 inches is the bearing layer that keeps the footing from sitting on frost-susceptible soil, and it is what ${basisNames.split(';')[0]} expects to see on a permit drawing.`,
+  },
+  {
+    question: noFrost
+      ? `How deep should fence posts go in ${state} if there is no frost line?`
+      : splitState
+        ? `How do I know which ${state} zone my county is in?`
+        : depths[0] >= 48
+          ? `What happens if a footing stops above the frost line in ${state}?`
+          : `Does the ${depths[0]}-inch depth apply to decks as well as fences in ${state}?`,
+    answer: noFrost
+      ? `With no frost heave to fight, a ${state} post only goes as deep as wind load and a plumb line demand — 24 inches is the practical minimum for a 4x4, which is one to two bags of concrete in a 10-inch hole. The <a href="/concrete-fence-post-calculator/">fence post calculator</a> works the same here as anywhere; frost depth just never adds to the count.`
+      : splitState
+        ? `The citation in the table above names the authority that drew the lines — ${basisNames}. Your county or city publishes its own amendment to IRC Table R301.2(1) (or its own zone map), and that local document, not a state table, is what a permit reviewer checks. One call to the building department settles it before you rent an auger.`
+        : depths[0] >= 48
+          ? `Water in the soil freezes, expands roughly nine percent, and lifts whatever rests on it — that is frost heave, and in ${state} the design freeze reaches ${depths[0]} inches. A footing above that line moves every year: slabs crack at the control joints, decks rack, and fence posts walk out of plumb within a few seasons. The 6-inch bearing layer below the code depth is what turns a hole into a foundation.`
+          : `Decks yes, fences usually no. A deck footing is structural, permitted and inspected, so in ${state} it goes the full ${depths[0]} inches plus bearing. A fence post is rarely permitted, so nothing forces the same depth — but frost heave does not check permits, and a post set well above the frost line will lean within a few winters. Set fence posts near the frost depth anyway and the fence stays plumb.`,
+  },
+];
+
+const schema = [
+  breadcrumbSchema(
+    [
+      { name: 'Home', path: '/' },
+      { name: 'Frost Depth by State', path: '/frost-depth-by-state/' },
+      { name: state, path: statePagePath(state) },
+    ],
+    Astro.site ?? new URL(Astro.url.origin),
+  ),
+  faqSchema(faqs),
+];
+---
+
+<BaseLayout
+  title={`Frost Depth in ${state} — ${depthLabel} Code Footing Depth`}
+  description={`Frost depth in ${state} (${abbr}): the code requires ${depthLabel} of footing depth${splitState ? `, split by zone — ${zoneText}` : ''}. Plus the dig depth, Sonotube length and bags of concrete per footing.`}
+  schema={schema}
+>
+  <Breadcrumbs
+    items={[
+      { name: 'Home', path: '/' },
+      { name: 'Frost Depth by State', path: '/frost-depth-by-state/' },
+      { name: state },
+    ]}
+  />
+
+  <section class="card">
+    <div class="page-head">
+      <h1>Frost depth in {state}</h1>
+      <p class="lead">
+        {splitState
+          ? `${state} has two code depths: ${depths.map((d) => `${d} inches`).join(' in ')} — and which one applies depends on the county you build in.`
+          : `The code in ${state} enforces ${depths[0]} inches of footing depth below finished grade.`}
+        Add 6 inches of bearing and that becomes a dig depth of {digDepths}. The numbers below are
+        the code values an inspector measures, not climate averages — the local building department
+        always has the final word.
+      </p>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data text">
+        <thead>
+          <tr>
+            <th>Area{splitState ? ' / zone' : ''}</th>
+            <th>Frost depth</th>
+            <th>Dig depth</th>
+            <th>Set by</th>
+          </tr>
+        </thead>
+        <tbody>
+          {regions.map((r) => (
+            <tr>
+              <td>
+                <strong>{r.zone ?? 'Statewide'}</strong>
+              </td>
+              <td class="hl">{r.depth}"</td>
+              <td>{r.depth + 6}"</td>
+              <td>{r.basis}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <div class="note">
+      <p>
+        {splitState
+          ? `Two rows, two numbers: the county you build in decides which one governs your permit. Never take the shallower value to a counter in a deeper zone.`
+          : `One number for the whole state${regions[0].statewide ? ' — the code sets it at the state level, so it applies everywhere permits are issued' : ', though the value tracks the largest cities where most permits are filed'}. Counties can still be stricter, so confirm with the building department before you dig.`}
+      </p>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Why {state}'s number looks the way it does</h2>
+    <p>{editorial}</p>
+  </section>
+
+  <section class="card">
+    <h2>From frost depth to dig depth in {state}</h2>
+    {splitState ? (
+      <>
+        <p>
+          Footings bear on undisturbed soil below the frost line, so the hole goes 6 inches deeper
+          than the code number. In {state} that means:
+        </p>
+        <div class="table-wrap">
+          <table class="data text">
+            <thead>
+              <tr>
+                <th>Code frost depth</th>
+                <th>Dig depth</th>
+                <th>Shortest Sonotube</th>
+              </tr>
+            </thead>
+            <tbody>
+              {digRows.map((row) => (
+                <tr>
+                  <td>{row.frost}"</td>
+                  <td class="hl">{row.dig}"</td>
+                  <td>{row.tube} ft tube</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p>
+          A 4-inch gravel base at the bottom of the hole is common practice for drainage, and if you
+          use one, add it to the tube length rather than the dig depth — the footing still has to
+          reach the full {depths[0]}–{depths[depths.length - 1]} inches below grade.
+        </p>
+      </>
+    ) : (
+      <p>
+        Footings bear on undisturbed soil below the frost line, so the hole goes 6 inches deeper
+        than the code number: {depths[0]} inches of frost in {state} means digging {depths[0] + 6}
+        inches, and a {digRows[0].tube}-foot Sonotube covers it with room to spare. A 4-inch gravel
+        base at the bottom of the hole is common practice for drainage — add it to the tube length,
+        not the dig depth, because the footing still has to reach {depths[0]} inches below grade.
+      </p>
+    )}
+  </section>
+
+  <section class="card">
+    <h2>How much concrete a footing takes in {state}</h2>
+    {splitState ? (
+      <>
+        <p>
+          Bags of 80-lb mix per footing, for a solid pier with no post in the hole, at {state}'s code
+          depth:
+        </p>
+        <div class="table-wrap">
+          <table class="data text">
+            <thead>
+              <tr>
+                <th>Frost depth</th>
+                {holeDiameters.map((dia) => (
+                  <th>{dia}" hole</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {bagRows.map((row) => (
+                <tr>
+                  <td>{row.frost}" ({row.dig}" dig)</td>
+                  {row.bags.map((bags) => (
+                    <td class="hl">{bags} bags</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </>
+    ) : (
+      <p>
+        At {state}'s {depths[0]}-inch code depth, a solid 12-inch pier with no post in the hole
+        takes about {bagRows[0].bags[1]} bags of 80-lb mix — count on {bagRows[0].bags[0]} for a
+        10-inch hole and {bagRows[0].bags[2]} if you open it up to 16 inches. A 4x4 post displaces
+        enough concrete to drop those counts by roughly a bag, and the
+        <a href="/concrete-fence-post-calculator/">fence post calculator</a> does that subtraction
+        per hole.
+      </p>
+    )}
+    <p>
+      The <a href="/concrete-bags-calculator/">bags calculator</a> converts any total into 80, 60,
+      50 or 40-pound bags, and the <a href="/concrete-calculator/">concrete calculator</a> handles
+      slab and footing volumes.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>{state} frost depth FAQ</h2>
+    {faqs.map((faq) => (
+      <>
+        <h3>{faq.question}</h3>
+        <p>{faq.answer}</p>
+      </>
+    ))}
+  </section>
+
+  <section class="card">
+    <h3>Plan a pour in {state}</h3>
+    <div class="related">
+      <a href="/concrete-fence-post-calculator/">Concrete per fence post</a>
+      <a href="/concrete-calculator/">Concrete slab &amp; footing volume</a>
+      <a href="/concrete-bags-calculator/">How many bags of concrete</a>
+      <a href="/frost-depth-by-state/">Frost depth in every state</a>
+    </div>
+
+    <h3>Other states</h3>
+    <div class="related">
+      <a href={statePagePath(prev.state)}>Frost depth in {prev.state}</a>
+      <a href={statePagePath(next.state)}>Frost depth in {next.state}</a>
+    </div>
+    <p class="muted">Last updated: {UPDATED}</p>
+  </section>
+</BaseLayout>

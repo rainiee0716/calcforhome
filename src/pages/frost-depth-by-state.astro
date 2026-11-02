@@ -4,7 +4,7 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
 import ToolIcon from '../components/ToolIcon.astro';
 import { breadcrumbSchema, faqSchema, imageObjectSchema, softwareApplicationSchema } from '../lib/schema';
 import { calculateFootingDepth } from '../lib/calculations';
-import { AFI_TABLE, FROST_REGIONS, regionsByState } from '../lib/frost';
+import { AFI_TABLE, FROST_REGIONS, regionsByState, statePagePath } from '../lib/frost';
 
 const siteUrl = Astro.site ?? new URL(Astro.url.origin);
 const UPDATED = '2026-10-29';
@@ -242,7 +242,7 @@ const schema = [
         <tbody>
           {states.map((group) => (
             <tr>
-              <td>{group.state}</td>
+              <td><a href={statePagePath(group.state)}>{group.state}</a></td>
               <td class="hl">{depthLabel(group.regions)}</td>
               <td>{basisLabel(group.regions)}</td>
             </tr>

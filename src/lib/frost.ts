@@ -114,6 +114,16 @@ export function regionsByState(): Array<{ state: string; abbr: string; regions: 
   return groups;
 }
 
+/** URL slug for a state page: "texas", "new-york", "district-of-columbia". */
+export function stateSlug(state: string): string {
+  return state.toLowerCase().replace(/\./g, '').replace(/\s+/g, '-');
+}
+
+/** The path of a state's frost-depth page, with leading and trailing slash. */
+export function statePagePath(state: string): string {
+  return `/frost-depth/${stateSlug(state)}/`;
+}
+
 /**
  * Air-freezing index to design frost depth, from HUD's Table 1 in the
  * Manufactured Home Construction and Safety Standards (24 CFR 3285.312),

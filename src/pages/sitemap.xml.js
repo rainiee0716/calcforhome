@@ -1,5 +1,6 @@
 import { tools } from '../lib/tools';
 import { LAST_UPDATED } from '../lib/site';
+import { regionsByState, statePagePath } from '../lib/frost';
 
 const staticPages = [
   { loc: '/', changefreq: 'weekly', priority: '1.0' },
@@ -19,6 +20,11 @@ export function GET({ site }) {
       changefreq: 'monthly',
       priority: '0.9',
       lastmod: tool.updated ?? LAST_UPDATED,
+    })),
+    ...regionsByState().map((group) => ({
+      loc: statePagePath(group.state),
+      changefreq: 'monthly',
+      priority: '0.7',
     })),
   ];
 
