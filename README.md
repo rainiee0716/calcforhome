@@ -112,5 +112,6 @@ Vercel reads `.nvmrc` and `vercel.json`. Security headers and immutable asset ca
 
 1. Add a pure calculation function to `src/lib/calculations.ts`.
 2. Add a test in `tests/calculations.test.js`.
-3. Add the tool to `src/lib/tools.ts`.
+3. Add the tool to `src/lib/tools.ts` (this also adds it to the sitemap).
 4. Copy an existing calculator page and connect it to the shared calculation function.
+5. Add the new page to `public/llms.txt` so AI crawlers can discover it.

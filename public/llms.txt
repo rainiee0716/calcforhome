@@ -1,0 +1,98 @@
+# CalcForHome
+
+> Free, single-purpose calculators for US home-improvement materials: concrete,
+> gravel, sand, mulch, lumber and decking. Every calculator runs entirely in the
+> browser — no sign-up, nothing sent to a server — shows the formula it uses, and
+> cites industry sources (QUIKRETE, Concrete Network, NRMCA, ICC). Frost-depth
+> pages cover code-required footing depth for all 50 US states plus Washington DC.
+
+## Concrete calculators
+
+- [Concrete Calculator](https://www.calcforhome.com/concrete-calculator/): slab and footing volume in cubic feet and cubic yards, with 80 lb bag counts and a slab-size chart
+- [Concrete Bags Calculator](https://www.calcforhome.com/concrete-bags-calculator/): exactly how many 80/60/50/40 lb bags of concrete mix a project needs
+- [Concrete Bag Coverage Calculator](https://www.calcforhome.com/concrete-bag-coverage-calculator/): square feet covered per 80, 60, 50 or 40 lb bag
+- [Concrete Slab Cost Calculator](https://www.calcforhome.com/concrete-slab-cost-calculator/): yards, bags and material cost for any slab size
+- [Concrete for Fence Post Calculator](https://www.calcforhome.com/concrete-fence-post-calculator/): bags of concrete per fence post hole, with buried-post volume subtraction
+
+## Gravel and landscaping calculators
+
+- [Gravel Calculator for Driveways](https://www.calcforhome.com/gravel-driveway-calculator/): cubic yards and tons of gravel by stone type
+- [Gravel Driveway Cost Calculator](https://www.calcforhome.com/gravel-driveway-cost-calculator/): tons and material cost for a gravel driveway
+- [Gravel Driveway Depth Calculator](https://www.calcforhome.com/gravel-driveway-depth-calculator/): base and surface layer depths for cars or trucks
+- [Paver Sand Calculator](https://www.calcforhome.com/paver-sand-calculator/): cubic yards, cubic feet and bags of bedding sand for pavers
+- [Mulch Calculator](https://www.calcforhome.com/mulch-calculator/): cubic yards and bags of mulch for garden beds
+
+## Lumber and decking
+
+- [Lumber Calculator](https://www.calcforhome.com/lumber-calculator/): studs, plate boards and board feet for a wall
+- [Deck Board Calculator](https://www.calcforhome.com/deck-board-calculator/): courses, boards per course and stock length for a deck
+
+## Frost depth by state
+
+Code-required frost depth and footing depth for all 50 US states and DC, by
+county where depths differ within a state. Each page lists dig depth (frost
+depth plus 6 inches of bearing), Sonotube length, concrete bag counts per hole
+diameter, and answers common footing and fence-post questions. All values are
+also available as a downloadable CSV.
+
+- [Frost Depth by State (hub)](https://www.calcforhome.com/frost-depth-by-state/)
+- [Frost depth data, all states (CSV)](https://www.calcforhome.com/frost-depth-by-state.csv)
+- [Alabama](https://www.calcforhome.com/frost-depth/alabama/)
+- [Alaska](https://www.calcforhome.com/frost-depth/alaska/)
+- [Arizona](https://www.calcforhome.com/frost-depth/arizona/)
+- [Arkansas](https://www.calcforhome.com/frost-depth/arkansas/)
+- [California](https://www.calcforhome.com/frost-depth/california/)
+- [Colorado](https://www.calcforhome.com/frost-depth/colorado/)
+- [Connecticut](https://www.calcforhome.com/frost-depth/connecticut/)
+- [Delaware](https://www.calcforhome.com/frost-depth/delaware/)
+- [District of Columbia](https://www.calcforhome.com/frost-depth/district-of-columbia/)
+- [Florida](https://www.calcforhome.com/frost-depth/florida/)
+- [Georgia](https://www.calcforhome.com/frost-depth/georgia/)
+- [Hawaii](https://www.calcforhome.com/frost-depth/hawaii/)
+- [Idaho](https://www.calcforhome.com/frost-depth/idaho/)
+- [Illinois](https://www.calcforhome.com/frost-depth/illinois/)
+- [Indiana](https://www.calcforhome.com/frost-depth/indiana/)
+- [Iowa](https://www.calcforhome.com/frost-depth/iowa/)
+- [Kansas](https://www.calcforhome.com/frost-depth/kansas/)
+- [Kentucky](https://www.calcforhome.com/frost-depth/kentucky/)
+- [Louisiana](https://www.calcforhome.com/frost-depth/louisiana/)
+- [Maine](https://www.calcforhome.com/frost-depth/maine/)
+- [Maryland](https://www.calcforhome.com/frost-depth/maryland/)
+- [Massachusetts](https://www.calcforhome.com/frost-depth/massachusetts/)
+- [Michigan](https://www.calcforhome.com/frost-depth/michigan/)
+- [Minnesota](https://www.calcforhome.com/frost-depth/minnesota/)
+- [Mississippi](https://www.calcforhome.com/frost-depth/mississippi/)
+- [Missouri](https://www.calcforhome.com/frost-depth/missouri/)
+- [Montana](https://www.calcforhome.com/frost-depth/montana/)
+- [Nebraska](https://www.calcforhome.com/frost-depth/nebraska/)
+- [Nevada](https://www.calcforhome.com/frost-depth/nevada/)
+- [New Hampshire](https://www.calcforhome.com/frost-depth/new-hampshire/)
+- [New Jersey](https://www.calcforhome.com/frost-depth/new-jersey/)
+- [New Mexico](https://www.calcforhome.com/frost-depth/new-mexico/)
+- [New York](https://www.calcforhome.com/frost-depth/new-york/)
+- [North Carolina](https://www.calcforhome.com/frost-depth/north-carolina/)
+- [North Dakota](https://www.calcforhome.com/frost-depth/north-dakota/)
+- [Ohio](https://www.calcforhome.com/frost-depth/ohio/)
+- [Oklahoma](https://www.calcforhome.com/frost-depth/oklahoma/)
+- [Oregon](https://www.calcforhome.com/frost-depth/oregon/)
+- [Pennsylvania](https://www.calcforhome.com/frost-depth/pennsylvania/)
+- [Rhode Island](https://www.calcforhome.com/frost-depth/rhode-island/)
+- [South Carolina](https://www.calcforhome.com/frost-depth/south-carolina/)
+- [South Dakota](https://www.calcforhome.com/frost-depth/south-dakota/)
+- [Tennessee](https://www.calcforhome.com/frost-depth/tennessee/)
+- [Texas](https://www.calcforhome.com/frost-depth/texas/)
+- [Utah](https://www.calcforhome.com/frost-depth/utah/)
+- [Vermont](https://www.calcforhome.com/frost-depth/vermont/)
+- [Virginia](https://www.calcforhome.com/frost-depth/virginia/)
+- [Washington](https://www.calcforhome.com/frost-depth/washington/)
+- [West Virginia](https://www.calcforhome.com/frost-depth/west-virginia/)
+- [Wisconsin](https://www.calcforhome.com/frost-depth/wisconsin/)
+- [Wyoming](https://www.calcforhome.com/frost-depth/wyoming/)
+
+## About the site
+
+- [About](https://www.calcforhome.com/about/): what CalcForHome is and how the calculators are built
+- [Contact](https://www.calcforhome.com/contact/)
+- [Privacy Policy](https://www.calcforhome.com/privacy/): calculator inputs never leave your device
+- [Terms & Disclaimer](https://www.calcforhome.com/terms/): estimates are for planning, local code governs structural work
+- [Affiliate Disclosure](https://www.calcforhome.com/affiliate-disclosure/)
