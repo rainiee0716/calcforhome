@@ -1,0 +1,227 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { breadcrumbSchema, faqSchema } from '../lib/schema';
+import { buildSlabPage, getSlabSizes, slabPagePath, type SlabPageData } from '../lib/longtail/slabs';
+
+export function getStaticPaths() {
+  return getSlabSizes().map((s) => ({ params: { size: s.size } }));
+}
+
+const { size } = Astro.params;
+const data = buildSlabPage(size!) as SlabPageData;
+const UPDATED = '2026-11-07';
+
+const a = data.answer;
+const siteUrl = Astro.site ?? new URL(Astro.url.origin);
+
+const verdictCopy =
+  data.mixVerdict === 'bags'
+    ? `At this size, bagged mix is the right call — no short-load fee, no minimum delivery, and ${data.mixingHours} hours with a rented mixer handles it.`
+    : data.mixVerdict === 'borderline'
+      ? `This is the borderline size. Bags still work if you have a mixer and a free day, but a short-load truck usually costs less per yard and saves your back.`
+      : `At this footprint, order ready-mix. You would be hand-mixing for two days, and the bag math costs roughly twice as much per yard as a delivered truck.`;
+
+const faqs = [
+  {
+    question: `Is it cheaper to use bags or ready-mix for a ${data.size} slab?`,
+    answer:
+      data.mixVerdict === 'bags'
+        ? `Bags. ${a.bags80} bags of 80 lb mix runs about $${a.bagCostLow}–$${a.bagCostHigh} in material, and a short-load truck would charge a $100–$250 minimum fee on top of the concrete for a pour this small.`
+        : data.mixVerdict === 'borderline'
+          ? `It is close. ${a.bags80} bags of 80 lb mix costs about $${a.bagCostLow}–$${a.bagCostHigh} — roughly what a delivered truck charges before the short-load fee. Decide on convenience: bags need ${data.mixingHours} hours of mixing.`
+          : `Ready-mix. Bags would cost about $${a.bagCostLow}–$${a.bagCostHigh} at $7–$9 each, roughly twice the delivered price per cubic yard, and mixing ${a.bags80} bags by hand is a two-day job.`,
+  },
+  {
+    question: `How thick should a ${data.size} slab be?`,
+    answer:
+      data.squareFeet <= 120
+        ? `Four inches for a shed floor, walkway or patio slab — anything that only sees foot traffic and garden carts. Go to five inches only if a vehicle will cross it.`
+        : data.squareFeet <= 300
+          ? `Five inches for a one-car garage or anything cars will park on, with #3 rebar on a 24 inch grid. Four inches is fine if it stays a patio.`
+          : `Five to six inches with #4 rebar on an 18 inch grid. A slab this big is usually a garage or driveway pad, and it will see real wheel loads.`,
+  },
+  {
+    question: `How much does a ${data.size} concrete slab cost in materials?`,
+    answer: `Bagged material runs $${a.bagCostLow}–$${a.bagCostHigh} for ${a.bags80} bags of 80 lb mix at 2026 prices, plus $30–$60 for forms and mesh or rebar. Delivered ready-mix for ${data.mixVerdict === 'readymix' ? `about ${a.cubicYardsWithWaste.toFixed(1)} yards` : `the same volume`} would be $150–$200 per yard plus a short-load fee under a full truck.`,
+  },
+  {
+    question: `How long does it take to mix ${a.bags80} bags by hand?`,
+    answer: `With a rented electric mixer, figure about 14 bags per hour, so roughly ${data.mixingHours} hour${data.mixingHours === 1 ? '' : 's'} of mixing plus forming, pouring and finishing. By wheelbarrow and shovel, double it — and a second person stops being optional past 30 bags.`,
+  },
+];
+
+const schema = [
+  breadcrumbSchema(
+    [
+      { name: 'Home', path: '/' },
+      { name: 'Concrete Bags Calculator', path: '/concrete-bags-calculator/' },
+      { name: `${data.size} slab`, path: slabPagePath(data.size) },
+    ],
+    siteUrl,
+  ),
+  faqSchema(faqs),
+];
+
+const fmt = (n: number) => n.toFixed(n >= 100 ? 0 : 2);
+---
+
+<BaseLayout
+  title={`How Many Bags of Concrete for a ${data.size} Slab? (${a.bags80} Bags at 4")`}
+  description={`A ${data.size} slab at 4 inches needs ${a.cubicYards.toFixed(2)} cubic yards of concrete — ${a.bags80} bags of 80 lb mix with 10% waste. Full bag counts for 80/60/40 lb bags, thickness chart and ready-mix comparison.`}
+  schema={schema}
+>
+  <Breadcrumbs
+    items={[
+      { name: 'Home', path: '/' },
+      { name: 'Concrete Bags Calculator', path: '/concrete-bags-calculator/' },
+      { name: `${data.size} slab` },
+    ]}
+  />
+
+  <section class="card">
+    <div class="page-head">
+      <div>
+        <h1>How Many Bags of Concrete for a {data.size} Slab?</h1>
+        <p class="lead">
+          A {data.size} slab is {data.squareFeet} square feet. At the standard 4 inches thick it
+          takes <b>{fmt(a.cubicYards)} cubic yards</b> of concrete — <b>{a.bags80} bags of 80 lb
+          mix</b> with 10% waste. {verdictCopy}
+        </p>
+      </div>
+    </div>
+    <div class="result">
+      <h3>You need about</h3>
+      <p><span class="big">{fmt(a.cubicYardsWithWaste)}</span> cubic yards with 10% waste</p>
+      <ul>
+        <li>80 lb bags: <b>{a.bags80}</b></li>
+        <li>60 lb bags: <b>{a.bags60}</b></li>
+        <li>40 lb bags: <b>{a.bags40}</b></li>
+        <li>Bagged material cost: <b>$${a.bagCostLow}–$${a.bagCostHigh}</b> at $7–$9 per 80 lb bag</li>
+      </ul>
+    </div>
+    <p class="muted">
+      Typical use: {data.projectLabel}. Check the numbers yourself with the
+      <a href="/concrete-bags-calculator/">concrete bags calculator</a>.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>Volume and bag count by thickness</h2>
+    <p>
+      Thickness moves everything. Going from 4 to 6 inches on a {data.size} slab adds
+      {Math.round(((6 - 4) / 4) * 100)}% to the concrete — and the bags go up by exactly the same
+      proportion. The table already includes 10% waste in the bag counts.
+    </p>
+    <div class="table-wrap">
+      <table class="data">
+        <caption>{data.size} slab — net volume and bag counts with 10% waste included</caption>
+        <thead>
+          <tr>
+            <th scope="col">Thickness</th>
+            <th scope="col">Cubic feet</th>
+            <th scope="col">Cubic yards</th>
+            <th scope="col">80 lb bags</th>
+            <th scope="col">60 lb bags</th>
+            <th scope="col">40 lb bags</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.thicknessRows.map((r) => (
+            <tr>
+              <td>{r.thicknessIn} inches</td>
+              <td>{fmt(r.cubicFeet)}</td>
+              <td>{r.cubicYards.toFixed(2)}</td>
+              <td><b>{r.bags80}</b></td>
+              <td>{r.bags60}</td>
+              <td>{r.bags40}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Bag yields: one 80 lb bag makes 0.60 cubic feet, a 60 lb bag 0.45, a 40 lb bag 0.30. The
+      counts are rounded up — you cannot buy seven tenths of a bag, and running short mid-pour
+      leaves a cold joint that never fully bonds.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>Bags or a ready-mix truck for {data.squareFeet} square feet?</h2>
+    <p>
+      {verdictCopy} The crossover point is about 1.5 cubic yards: below it, bags win on price
+      because the truck charges a $100–$250 short-load fee; above it, delivered concrete wins on
+      both money and labor.
+    </p>
+    <p>
+      {data.mixVerdict === 'readymix'
+        ? `For this slab, delivered concrete at roughly ${a.cubicYardsWithWaste.toFixed(1)} yards runs $150–$200 per yard — call it $${
+            Math.round(a.cubicYardsWithWaste * 150)
+          }–$${
+            Math.round(a.cubicYardsWithWaste * 200)
+          } before fees — against ${a.bags80} bags at $7–$9 each.`
+        : `If you do order ready-mix for this volume, expect the plant's short-load fee on top: $100–$250 under a full truck.`}
+      Either way, the volume number stays the same — only the packaging changes.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>Nearby slab sizes</h2>
+    <p>Same math, different footprint — bag counts scale directly with area:</p>
+    <div class="table-wrap">
+      <table class="data">
+        <caption>80 lb bag counts at 4 inches with 10% waste, including this slab for comparison</caption>
+        <thead>
+          <tr>
+            <th scope="col">Slab</th>
+            <th scope="col">Square feet</th>
+            <th scope="col">Cubic yards</th>
+            <th scope="col">80 lb bags</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.siblings.map((s) => {
+            const d = buildSlabPage(s.size)!;
+            return (
+              <tr>
+                <td><a href={slabPagePath(d.size)}>{d.size} slab</a></td>
+                <td>{d.squareFeet}</td>
+                <td>{d.answer.cubicYards.toFixed(2)}</td>
+                <td>{d.answer.bags80}</td>
+              </tr>
+            );
+          })}
+          <tr>
+            <td><b>{data.size} slab (this page)</b></td>
+            <td><b>{data.squareFeet}</b></td>
+            <td><b>{a.cubicYards.toFixed(2)}</b></td>
+            <td><b>{a.bags80}</b></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>{data.size} slab FAQ</h2>
+    <div class="faq">
+      {faqs.map((f) => (
+        <details>
+          <summary>{f.question}</summary>
+          <p>{f.answer}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Related calculators</h2>
+    <div class="related">
+      <a href="/concrete-bags-calculator/">Concrete bags calculator</a>
+      <a href="/concrete-calculator/">Concrete calculator (cubic yards)</a>
+      <a href="/concrete-slab-cost-calculator/">Slab cost calculator</a>
+    </div>
+    <p class="muted">Last updated: {UPDATED}</p>
+  </section>
+</BaseLayout>

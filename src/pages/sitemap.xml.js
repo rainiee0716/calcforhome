@@ -1,6 +1,8 @@
 import { tools } from '../lib/tools';
 import { LAST_UPDATED } from '../lib/site';
 import { regionsByState, statePagePath } from '../lib/frost';
+import { getSlabSizes, slabPagePath } from '../lib/longtail/slabs';
+import { getGravelLengths, gravelPagePath } from '../lib/longtail/gravel';
 
 const staticPages = [
   { loc: '/', changefreq: 'weekly', priority: '1.0' },
@@ -25,6 +27,16 @@ export function GET({ site }) {
       loc: statePagePath(group.state),
       changefreq: 'monthly',
       priority: '0.7',
+    })),
+    ...getSlabSizes().map((s) => ({
+      loc: slabPagePath(s.size),
+      changefreq: 'monthly',
+      priority: '0.6',
+    })),
+    ...getGravelLengths().map((l) => ({
+      loc: gravelPagePath(l),
+      changefreq: 'monthly',
+      priority: '0.6',
     })),
   ];
 

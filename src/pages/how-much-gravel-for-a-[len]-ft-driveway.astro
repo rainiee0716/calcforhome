@@ -1,0 +1,210 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { breadcrumbSchema, faqSchema } from '../lib/schema';
+import { buildGravelPage, getGravelLengths, gravelPagePath, type GravelPageData } from '../lib/longtail/gravel';
+
+export function getStaticPaths() {
+  return getGravelLengths().map((l) => ({ params: { len: String(l) } }));
+}
+
+const { len } = Astro.params;
+const data = buildGravelPage(Number(len!)) as GravelPageData;
+const UPDATED = '2026-11-07';
+
+const a = data.answer;
+const t = data.twoLayer;
+
+const depthCopy =
+  data.lengthVerdict === 'short'
+    ? `For a car-only driveway this length, the standard build is 4 inches of compacted base. If a delivery truck or RV will ever roll it, build 6 inches instead.`
+    : data.lengthVerdict === 'medium'
+      ? `For a car driveway this length, build two layers: 4 inches of compacted #411 or #304 base, then 2 inches of #57 on top. That 6-inch total is what keeps ruts from forming by season two.`
+      : `At this length you are building a real road: 6 inches total as a two-layer job — 4 inches of #411 base, 2 inches of #57 surface — and expect the supplier to stage the load in more than one truck.`;
+
+const faqs = [
+  {
+    question: `How many tons of gravel do I need for a ${data.lengthFt} foot driveway?`,
+    answer: `At the standard 10 feet wide and 4 inches deep, a ${data.lengthFt} ft driveway takes ${a.cubicYards.toFixed(1)} cubic yards, which is about ${a.tons.toFixed(1)} tons of crushed stone at 1.4 tons per yard. Order 10% more for compaction and spillage on soft ground.`,
+  },
+  {
+    question: `How deep should the gravel be?`,
+    answer:
+      data.lengthVerdict === 'long'
+        ? `Six inches total, built as two layers: 4 inches of compacted #411 or #304 base, then 2 inches of #57 surface. For heavy trucks or soft clay soil, go to 8 inches total.`
+        : `Four inches of compacted base for cars, six inches total if trucks use it. The proven two-layer build is 4 inches of #411 base topped with 2 inches of #57 — single-size stone alone never locks and ravels under tires.`,
+  },
+  {
+    question: `What will ${data.lengthFt} feet of gravel driveway cost?`,
+    answer: `At 2026 prices of $30–$60 per ton delivered, the stone for 4 inches runs $${a.costLow}–$${a.costHigh}. The two-layer 6-inch build needs ${t.totalTons.toFixed(1)} tons, which is $${Math.round(t.totalTons * 30)}–$${Math.round(t.totalTons * 60)}, plus delivery — typically $100–$300 depending on distance.`,
+  },
+  {
+    question: data.lengthVerdict === 'long'
+      ? `How many truckloads of gravel is that?`
+      : `Do I need landscape fabric under the gravel?`,
+    answer:
+      data.lengthVerdict === 'long'
+        ? `About ${data.depthRows[0].truckLoads} truckload${data.depthRows[0].truckLoads === 1 ? '' : 's'} at 20 tons per delivery for the 4-inch layer. Talk to the quarry about staged drops — dumping ${a.tons.toFixed(0)} tons in one pile at the top of the drive turns the spreading day into a week.`
+        : `Yes if the ground is soft or clayey. Woven geotextile between the subgrade and the base stops soil pumping up into the stone, which is what turns a gravel driveway into a mud hole. It costs about $0.30–$0.60 per square foot and doubles the life of the base.`,
+  },
+];
+
+const schema = [
+  breadcrumbSchema(
+    [
+      { name: 'Home', path: '/' },
+      { name: 'Gravel Calculator for Driveways', path: '/gravel-driveway-calculator/' },
+      { name: `${data.lengthFt} ft driveway`, path: gravelPagePath(data.lengthFt) },
+    ],
+    Astro.site ?? new URL(Astro.url.origin),
+  ),
+  faqSchema(faqs),
+];
+---
+
+<BaseLayout
+  title={`How Much Gravel for a ${data.lengthFt} ft Driveway? (${a.tons.toFixed(1)} Tons at 4")`}
+  description={`A ${data.lengthFt} ft driveway at 10 feet wide and 4 inches deep needs ${a.cubicYards.toFixed(1)} cubic yards — about ${a.tons.toFixed(1)} tons of crushed stone. Depth chart, two-layer build, cost at 2026 prices, and truckload math.`}
+  schema={schema}
+>
+  <Breadcrumbs
+    items={[
+      { name: 'Home', path: '/' },
+      { name: 'Gravel Calculator for Driveways', path: '/gravel-driveway-calculator/' },
+      { name: `${data.lengthFt} ft driveway` },
+    ]}
+  />
+
+  <section class="card">
+    <div class="page-head">
+      <div>
+        <h1>How Much Gravel for a {data.lengthFt} ft Driveway?</h1>
+        <p class="lead">
+          A {data.lengthFt} foot driveway at the standard <b>10 feet wide</b> and <b>4 inches
+          deep</b> takes <b>{a.cubicYards.toFixed(1)} cubic yards</b> of crushed stone — about
+          <b> {a.tons.toFixed(1)} tons</b> at 1.4 tons per yard. Material runs
+          $${a.costLow}–$${a.costHigh} delivered at 2026 prices. {depthCopy}
+        </p>
+      </div>
+    </div>
+    <div class="result">
+      <h3>You need about</h3>
+      <p><span class="big">{a.tons.toFixed(1)}</span> tons at 4 inches deep</p>
+      <ul>
+        <li>Cubic yards: <b>{a.cubicYards.toFixed(1)}</b> ({Math.round(data.squareFeet)} sq ft × 4")</li>
+        <li>Recommended 6″ two-layer build: <b>{t.totalTons.toFixed(1)} tons</b> total</li>
+        <li>Material cost: <b>$${a.costLow}–$${a.costHigh}</b> at $30–$60 per ton</li>
+      </ul>
+    </div>
+    <p class="muted">
+      Add about 10% on soft or sloped ground for compaction. Run your exact numbers with the
+      <a href="/gravel-driveway-calculator/">gravel driveway calculator</a>.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>Gravel by depth for a {data.lengthFt} ft driveway</h2>
+    <div class="table-wrap">
+      <table class="data">
+        <caption>10 ft wide × {data.lengthFt} ft, crushed stone at 1.4 tons per cubic yard</caption>
+        <thead>
+          <tr>
+            <th scope="col">Depth</th>
+            <th scope="col">Cubic feet</th>
+            <th scope="col">Cubic yards</th>
+            <th scope="col">Tons</th>
+            <th scope="col">Cost ($30–$60/ton)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.depthRows.map((r) => (
+            <tr>
+              <td>{r.depthIn} inches</td>
+              <td>{Math.round(r.cubicFeet)}</td>
+              <td>{r.cubicYards.toFixed(1)}</td>
+              <td><b>{r.tons.toFixed(1)}</b></td>
+              <td>$${r.costLow}–$${r.costHigh}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Four inches is the minimum that survives cars. Six inches total as a two-layer build is the
+      standard for anything trucks touch; eight inches is for heavy vehicles or soft ground.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>The two-layer build that lasts</h2>
+    <p>
+      {depthCopy} For a {data.lengthFt} ft driveway the two-layer 6-inch build needs{' '}
+      <b>{t.baseTons.toFixed(1)} tons of base</b> (4 inches of #411 or #304, which has stone dust
+      in it so it compacts hard) plus <b>{t.surfaceTons.toFixed(1)} tons of #57</b> for the 2-inch
+      surface that drains and doesn't kick up.
+    </p>
+    <p>
+      Put woven geotextile under the base on soft or clay ground — $0.30–$0.60 per square foot
+      against rebuilding the whole drive in two seasons. Crown the finished surface about a
+      quarter inch per foot so water runs off the middle instead of carving channels.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>Nearby driveway lengths</h2>
+    <div class="table-wrap">
+      <table class="data">
+        <caption>Tons at 4 inches deep, 10 ft wide — including this length for comparison</caption>
+        <thead>
+          <tr>
+            <th scope="col">Driveway</th>
+            <th scope="col">Square feet</th>
+            <th scope="col">Cubic yards</th>
+            <th scope="col">Tons</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.siblings.map((l) => {
+            const d = buildGravelPage(l)!;
+            return (
+              <tr>
+                <td><a href={gravelPagePath(l)}>{l} ft driveway</a></td>
+                <td>{d.squareFeet}</td>
+                <td>{d.answer.cubicYards.toFixed(1)}</td>
+                <td>{d.answer.tons.toFixed(1)}</td>
+              </tr>
+            );
+          })}
+          <tr>
+            <td><b>{data.lengthFt} ft driveway (this page)</b></td>
+            <td><b>{data.squareFeet}</b></td>
+            <td><b>{a.cubicYards.toFixed(1)}</b></td>
+            <td><b>{a.tons.toFixed(1)}</b></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>{data.lengthFt} ft driveway FAQ</h2>
+    <div class="faq">
+      {faqs.map((f) => (
+        <details>
+          <summary>{f.question}</summary>
+          <p>{f.answer}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Related calculators</h2>
+    <div class="related">
+      <a href="/gravel-driveway-calculator/">Gravel driveway calculator</a>
+      <a href="/gravel-driveway-cost-calculator/">Gravel driveway cost</a>
+      <a href="/gravel-driveway-depth-calculator/">Gravel driveway depth</a>
+    </div>
+    <p class="muted">Last updated: {UPDATED}</p>
+  </section>
+</BaseLayout>

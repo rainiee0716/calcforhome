@@ -27,6 +27,14 @@
 - [Lumber Calculator](https://www.calcforhome.com/lumber-calculator/): studs, plate boards and board feet for a wall
 - [Deck Board Calculator](https://www.calcforhome.com/deck-board-calculator/): courses, boards per course and stock length for a deck
 
+## Common slab sizes: bag counts answered
+
+- [10x10](https://www.calcforhome.com/how-many-bags-of-concrete-for-a-10x10-slab/), [10x12](https://www.calcforhome.com/how-many-bags-of-concrete-for-a-10x12-slab/), [10x20](https://www.calcforhome.com/how-many-bags-of-concrete-for-a-10x20-slab/), [12x12](https://www.calcforhome.com/how-many-bags-of-concrete-for-a-12x12-slab/), [12x16](https://www.calcforhome.com/how-many-bags-of-concrete-for-a-12x16-slab/), [12x24](https://www.calcforhome.com/how-many-bags-of-concrete-for-a-12x24-slab/), [16x20](https://www.calcforhome.com/how-many-bags-of-concrete-for-a-16x20-slab/), [20x20](https://www.calcforhome.com/how-many-bags-of-concrete-for-a-20x20-slab/), [20x30](https://www.calcforhome.com/how-many-bags-of-concrete-for-a-20x30-slab/), [24x24](https://www.calcforhome.com/how-many-bags-of-concrete-for-a-24x24-slab/), [24x30](https://www.calcforhome.com/how-many-bags-of-concrete-for-a-24x30-slab/), [30x30](https://www.calcforhome.com/how-many-bags-of-concrete-for-a-30x30-slab/): how many 80/60/40 lb bags of concrete a slab that size needs at 4, 5 and 6 inches thick, with a ready-mix comparison
+
+## Driveway length: gravel quantity answered
+
+- [50 ft](https://www.calcforhome.com/how-much-gravel-for-a-50-ft-driveway/), [60 ft](https://www.calcforhome.com/how-much-gravel-for-a-60-ft-driveway/), [80 ft](https://www.calcforhome.com/how-much-gravel-for-a-80-ft-driveway/), [100 ft](https://www.calcforhome.com/how-much-gravel-for-a-100-ft-driveway/), [150 ft](https://www.calcforhome.com/how-much-gravel-for-a-150-ft-driveway/), [200 ft](https://www.calcforhome.com/how-much-gravel-for-a-200-ft-driveway/), [300 ft](https://www.calcforhome.com/how-much-gravel-for-a-300-ft-driveway/), [400 ft](https://www.calcforhome.com/how-much-gravel-for-a-400-ft-driveway/): cubic yards and tons of crushed stone for a 10 ft wide driveway at 4–8 inches deep, with cost and truckload math
+
 ## Frost depth by state
 
 Code-required frost depth and footing depth for all 50 US states and DC, by
