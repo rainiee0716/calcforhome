@@ -1,0 +1,211 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { breadcrumbSchema, faqSchema } from '../lib/schema';
+import { calculateBulkVsBags } from '../lib/longtail/estimates';
+
+const UPDATED = '2026-11-08';
+const siteUrl = Astro.site ?? new URL(Astro.url.origin);
+
+// 预设对照表：yard 0.5~10，默认 $40/吨、$6/袋
+const tableRows = [0.5, 1, 2, 3, 5, 10].map((y) => {
+  const r = calculateBulkVsBags({ cubicYards: y, bulkPricePerTon: 40, bagPrice: 6 });
+  return { y, tons: r.tons, bulk: r.bulkCost, bags: r.bagCount, bagged: r.baggedCost, winner: r.bagsCheaper ? 'bags' : 'bulk' };
+});
+
+const faqs = [
+  {
+    question: 'What is a bulk bag of gravel?',
+    answer:
+      'A bulk bag (super sack) holds about one ton of stone — roughly a cubic yard — delivered on a pallet. It is the middle option between 0.5 cu ft individual bags and a full dump-truck load.',
+  },
+  {
+    question: 'At what size project do bags stop making sense?',
+    answer:
+      'Around 0.3 to 0.5 cubic yards. At $5–$7 per 0.5 cu ft bag, bagged stone runs $270–$378 per yard against $42–$84 per yard bulk. Past half a yard, the bags cost more than the delivery fee they were supposed to avoid.',
+  },
+  {
+    question: 'Is bulk gravel cheaper than bagged at big-box stores?',
+    answer:
+      'For anything over half a yard, yes — usually by a factor of 3 to 5. The bag option only wins when the job is one wheelbarrow wide, or when you have no way to take a delivery.',
+  },
+  {
+    question: 'How much does one bulk bag cover?',
+    answer:
+      'One ton of crushed stone covers about 58 square feet at 2 inches deep, or 29 square feet at 4 inches. Two bulk bags build a 10 ft wide, 35 ft long driveway at 4 inches.',
+  },
+];
+
+const schema = [
+  breadcrumbSchema(
+    [
+      { name: 'Home', path: '/' },
+      { name: 'Gravel Calculator for Driveways', path: '/gravel-driveway-calculator/' },
+      { name: 'Bulk bag vs bags calculator', path: '/bulk-bag-vs-bags-calculator/' },
+    ],
+    siteUrl,
+  ),
+  faqSchema(faqs),
+];
+---
+
+<BaseLayout
+  title={`Bulk Bag vs Bags of Gravel Calculator — Which Is Cheaper?`}
+  description={`Compare bulk gravel (super sacks and delivered tons) against 0.5 cu ft bags by the yard: costs at 2026 prices, the crossover point, and when bags actually win. Free calculator, no sign-up.`}
+  schema={schema}
+>
+  <Breadcrumbs
+    items={[
+      { name: 'Home', path: '/' },
+      { name: 'Gravel Calculator for Driveways', path: '/gravel-driveway-calculator/' },
+      { name: 'Bulk bag vs bags calculator' },
+    ]}
+  />
+
+  <section class="card">
+    <div class="page-head">
+      <div>
+        <h1>Bulk Bag vs Bags of Gravel Calculator</h1>
+        <p class="lead">
+          Bagged stone at big-box stores runs <b>$270–$378 per cubic yard</b>. Bulk stone delivered
+          runs <b>$42–$84 per yard</b>. Enter your project size and local prices to see the exact
+          crossover point — and how much the "convenient" option actually costs.
+        </p>
+      </div>
+    </div>
+
+    <form id="bulk-form" class="calc" novalidate>
+      <div class="row">
+        <label for="bulk-yards">Cubic yards needed</label>
+        <input id="bulk-yards" name="yards" type="number" min="0.1" step="0.1" value="5" required inputmode="decimal" autocomplete="off">
+      </div>
+      <div class="row">
+        <label for="bulk-price">Bulk price per ton ($)</label>
+        <input id="bulk-price" name="bulkPrice" type="number" min="1" step="1" value="40" required inputmode="decimal" autocomplete="off" aria-describedby="bulk-help">
+        <p id="bulk-help" class="field-help">Delivered crushed stone runs $30–$60 per ton in 2026.</p>
+      </div>
+      <div class="row">
+        <label for="bag-price">Bag price ($ per 0.5 cu ft bag)</label>
+        <input id="bag-price" name="bagPrice" type="number" min="0.5" step="0.5" value="6" required inputmode="decimal" autocomplete="off" aria-describedby="bag-help">
+        <p id="bag-help" class="field-help">Big-box 0.5 cu ft stone bags run $5–$7.</p>
+      </div>
+      <p id="bulk-error" class="error" role="alert" hidden></p>
+      <button class="btn" type="submit">Compare</button>
+    </form>
+
+    <div class="result" id="bulk-result" aria-live="polite" hidden>
+      <h3 id="bulk-verdict">—</h3>
+      <ul>
+        <li>Bulk (delivered): <b id="bulk-cost">—</b> for <span id="bulk-tons">—</span> tons</li>
+        <li>Bags (0.5 cu ft): <b id="bagged-cost">—</b> for <span id="bag-count">—</span> bags</li>
+        <li>Difference: <b id="bulk-savings">—</b></li>
+        <li>Bags become more expensive past: <b id="bulk-crossover">—</b> cubic yards</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Cost by project size (defaults: $40/ton bulk, $6/bag)</h2>
+    <div class="table-wrap">
+      <table class="data">
+        <caption>Bulk delivered vs 0.5 cu ft bags, at 1.4 tons per cubic yard</caption>
+        <thead>
+          <tr>
+            <th scope="col">Cubic yards</th>
+            <th scope="col">Tons</th>
+            <th scope="col">Bulk cost</th>
+            <th scope="col">Bags needed</th>
+            <th scope="col">Bagged cost</th>
+            <th scope="col">Winner</th>
+          </tr>
+        </thead>
+        <tbody>
+          {tableRows.map((r) => (
+            <tr>
+              <td>{r.y}</td>
+              <td>{r.tons.toFixed(1)}</td>
+              <td>${r.bulk}</td>
+              <td>{r.bags}</td>
+              <td>${r.bagged}</td>
+              <td class="hl">{r.winner === 'bulk' ? 'Bulk' : 'Bags'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p>
+      The bag option only wins under about a third of a cubic yard — one wheelbarrow's worth. Past
+      that, you are paying a $200+ premium per yard for the plastic.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>When bags are still the right call</h2>
+    <p>
+      Two situations: <b>no delivery access</b> (a fence-post hole behind a gate, a balcony planter),
+      and <b>tiny repairs</b> where a half yard would sit unused. For everything else — driveways,
+      paths, patio bases — bulk delivered wins on price, and it also wins on labor: one pallet jack
+      trip beats hauling 270 bags from the parking lot.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>Bulk bag vs bags FAQ</h2>
+    <div class="faq">
+      {faqs.map((f) => (
+        <details>
+          <summary>{f.question}</summary>
+          <p>{f.answer}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Related calculators</h2>
+    <div class="related">
+      <a href="/gravel-driveway-calculator/">Gravel driveway calculator</a>
+      <a href="/gravel-driveway-cost-calculator/">Gravel driveway cost</a>
+      <a href="/gravel-road-calculator/">Gravel road calculator</a>
+    </div>
+    <p class="muted">Last updated: {UPDATED}</p>
+  </section>
+</BaseLayout>
+
+<script>
+  import { calculateBulkVsBags } from '../lib/longtail/estimates';
+
+  const form = document.querySelector<HTMLFormElement>('#bulk-form')!;
+  const error = document.querySelector<HTMLElement>('#bulk-error')!;
+  const result = document.querySelector<HTMLElement>('#bulk-result')!;
+
+  function showError(message: string) {
+    error.textContent = message;
+    error.removeAttribute('hidden');
+    result.setAttribute('hidden', '');
+  }
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    try {
+      const r = calculateBulkVsBags({
+        cubicYards: Number((form.elements.namedItem('yards') as HTMLInputElement).value),
+        bulkPricePerTon: Number((form.elements.namedItem('bulkPrice') as HTMLInputElement).value),
+        bagPrice: Number((form.elements.namedItem('bagPrice') as HTMLInputElement).value),
+      });
+      document.querySelector('#bulk-verdict')!.textContent = r.bagsCheaper
+        ? 'Bags are cheaper for this size'
+        : 'Bulk is cheaper for this size';
+      document.querySelector('#bulk-cost')!.textContent = `$${Math.round(r.bulkCost)}`;
+      document.querySelector('#bulk-tons')!.textContent = r.tons.toFixed(1);
+      document.querySelector('#bagged-cost')!.textContent = `$${Math.round(r.baggedCost)}`;
+      document.querySelector('#bag-count')!.textContent = String(r.bagCount);
+      document.querySelector('#bulk-savings')!.textContent = `$${Math.round(r.savings)}`;
+      document.querySelector('#bulk-crossover')!.textContent = r.crossoverYards.toFixed(2);
+      error.setAttribute('hidden', '');
+      result.removeAttribute('hidden');
+    } catch (err) {
+      showError(err instanceof Error ? err.message : 'Please check your values.');
+    }
+  });
+</script>

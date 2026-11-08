@@ -38,6 +38,9 @@ export function GET({ site }) {
       changefreq: 'monthly',
       priority: '0.6',
     })),
+    { loc: '/gravel-road-calculator/', changefreq: 'monthly', priority: '0.7' },
+    { loc: '/bulk-bag-vs-bags-calculator/', changefreq: 'monthly', priority: '0.7' },
+    { loc: '/gravel-driveway-estimate/', changefreq: 'monthly', priority: '0.7' },
   ];
 
   const body = `<?xml version="1.0" encoding="UTF-8"?>

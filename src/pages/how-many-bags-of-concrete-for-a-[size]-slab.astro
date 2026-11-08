@@ -51,6 +51,10 @@ const faqs = [
   },
 ];
 
+// YouTube explainers keyed by slab size (video 1 covers the 10x10 walkthrough)
+const slabVideos: Record<string, string> = { '10x10': 'nEPgkvY5r80' };
+const youtubeVideoId = slabVideos[data.size];
+
 const schema = [
   breadcrumbSchema(
     [
@@ -61,6 +65,19 @@ const schema = [
     siteUrl,
   ),
   faqSchema(faqs),
+  ...(youtubeVideoId
+    ? [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'VideoObject',
+          name: `How many bags of concrete for a ${data.size} slab`,
+          description: `A ${data.size} slab at 4 inches takes ${a.cubicYards.toFixed(2)} cubic yards — ${a.bags80} bags of 80 lb mix with waste. Walkthrough with the bag math.`,
+          thumbnailUrl: [`https://i.ytimg.com/vi/${youtubeVideoId}/hqdefault.jpg`],
+          uploadDate: '2026-11-05',
+          embedUrl: `https://www.youtube-nocookie.com/embed/${youtubeVideoId}`,
+        },
+      ]
+    : []),
 ];
 
 const fmt = (n: number) => n.toFixed(n >= 100 ? 0 : 2);
@@ -106,9 +123,29 @@ const fmt = (n: number) => n.toFixed(n >= 100 ? 0 : 2);
     </p>
   </section>
 
+  {youtubeVideoId && (
+    <section class="card">
+      <h2>Watch: the {data.size} slab walkthrough</h2>
+      <p>
+        The bag math, the mixing reality, and when to switch to a truck — in under a minute.
+      </p>
+      <div class="table-wrap" style={`max-width: 760px;`}>
+        <iframe
+          src={`https://www.youtube-nocookie.com/embed/${youtubeVideoId}`}
+          title={`How many bags of concrete for a ${data.size} slab`}
+          width="720"
+          height="405"
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          style={`border: 0; border-radius: 12px; aspect-ratio: 16 / 9; width: 100%; height: auto; display: block;`}
+        ></iframe>
+      </div>
+    </section>
+  )}
+
   <section class="card">
-    <h2>Volume and bag count by thickness</h2>
-    <p>
+    <h2>Volume and bag count by thickness</h2>    <p>
       Thickness moves everything. Going from 4 to 6 inches on a {data.size} slab adds
       {Math.round(((6 - 4) / 4) * 100)}% to the concrete — and the bags go up by exactly the same
       proportion. The table already includes 10% waste in the bag counts.

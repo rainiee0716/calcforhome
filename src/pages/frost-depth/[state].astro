@@ -5,7 +5,7 @@ import { breadcrumbSchema, faqSchema } from '../../lib/schema';
 import { calculateFootingDepth } from '../../lib/calculations';
 import { regionsByState, statePagePath, type FrostRegion } from '../../lib/frost';
 import { FROST_EDITORIAL } from '../../lib/frostEditorial';
-import { frostCityZones } from '../../lib/frostCities';
+import { frostCityZones, frostVideos } from '../../lib/frostCities';
 
 export function getStaticPaths() {
   return regionsByState().map((group) => ({
@@ -27,6 +27,9 @@ const cityRows = cityZoneMap
       return { city: c.city, zoneLabel: c.zoneLabel, depth: region?.depth ?? null };
     }).filter((r) => r.depth !== null)
   : null;
+
+// YouTube 讲解视频（仅配置了的州）
+const youtubeVideoId = frostVideos[state];
 
 // Distinct code depths in this state, shallowest first.
 const depths = [...new Set(regions.map((r) => r.depth))].sort((a, b) => a - b);
@@ -119,6 +122,19 @@ const schema = [
     Astro.site ?? new URL(Astro.url.origin),
   ),
   faqSchema(faqs),
+  ...(youtubeVideoId
+    ? [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'VideoObject',
+          name: `Frost depth in ${state} explained`,
+          description: `The code frost depth in ${state} (${depthLabel}), the 6-inch bearing rule, and what it means for your dig depth.`,
+          thumbnailUrl: [`https://i.ytimg.com/vi/${youtubeVideoId}/hqdefault.jpg`],
+          uploadDate: '2026-11-07',
+          embedUrl: `https://www.youtube-nocookie.com/embed/${youtubeVideoId}`,
+        },
+      ]
+    : []),
 ];
 ---
 
@@ -210,6 +226,28 @@ const schema = [
             ))}
           </tbody>
         </table>
+      </div>
+    </section>
+  )}
+
+  {youtubeVideoId && (
+    <section class="card">
+      <h2>Watch: frost depth in {state} explained</h2>
+      <p>
+        A two-minute walkthrough — the code numbers, the 6-inch bearing rule, and what happens if
+        you stop above the frost line.
+      </p>
+      <div class="table-wrap" style={`max-width: 760px;`}>
+        <iframe
+          src={`https://www.youtube-nocookie.com/embed/${youtubeVideoId}`}
+          title={`Frost depth in ${state} explained`}
+          width="720"
+          height="405"
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          style={`border: 0; border-radius: 12px; aspect-ratio: 16 / 9; width: 100%; height: auto; display: block;`}
+        ></iframe>
       </div>
     </section>
   )}

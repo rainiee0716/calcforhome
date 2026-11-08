@@ -1,0 +1,185 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { breadcrumbSchema, faqSchema } from '../lib/schema';
+import { estimateDriveway } from '../lib/longtail/estimates';
+
+const UPDATED = '2026-11-08';
+const siteUrl = Astro.site ?? new URL(Astro.url.origin);
+
+const faqs = [
+  {
+    question: 'How much does a gravel driveway cost in 2026?',
+    answer:
+      'Material runs $30–$60 per ton delivered, delivery adds $100–$300, and optional geotextile adds about $0.45 per square foot. A 100 ft × 10 ft driveway at 4 inches lands around $520–$880 all-in with fabric, before any grading labor.',
+  },
+  {
+    question: 'Does the estimate include grading or excavation?',
+    answer:
+      'Only if you tick the box. Professional grading and subgrade preparation runs $0.50–$2.00 per square foot depending on slope and soil. New driveways on raw ground almost always need it; refreshes on an existing drive do not.',
+  },
+  {
+    question: 'Why is delivery charged separately from stone?',
+    answer:
+      'Quarries quote stone FOB (on their truck at the pit); the haul is billed by distance and load. Short loads under a full truck carry a premium, which is why the delivery fee line matters more on small jobs.',
+  },
+  {
+    question: 'Is gravel cheaper than asphalt or concrete?',
+    answer:
+      'Upfront, far cheaper — asphalt runs $3–$7 per square foot installed versus $1–$3 for gravel done right. The trade is maintenance: gravel needs re-grading and a top-up every few years, which is what the annual budget line is for.',
+  },
+];
+
+const schema = [
+  breadcrumbSchema(
+    [
+      { name: 'Home', path: '/' },
+      { name: 'Gravel Calculator for Driveways', path: '/gravel-driveway-calculator/' },
+      { name: 'Gravel driveway estimate', path: '/gravel-driveway-estimate/' },
+    ],
+    siteUrl,
+  ),
+  faqSchema(faqs),
+];
+---
+
+<BaseLayout
+  title={`Gravel Driveway Estimate — Material, Delivery & Total Cost Calculator`}
+  description={`Build a full gravel driveway estimate: material tons and cost, delivery fee, optional geotextile and grading labor. Free calculator with 2026 price ranges, no sign-up.`}
+  schema={schema}
+>
+  <Breadcrumbs
+    items={[
+      { name: 'Home', path: '/' },
+      { name: 'Gravel Calculator for Driveways', path: '/gravel-driveway-calculator/' },
+      { name: 'Gravel driveway estimate' },
+    ]}
+  />
+
+  <section class="card">
+    <div class="page-head">
+      <div>
+        <h1>Gravel Driveway Estimate</h1>
+        <p class="lead">
+          A material-only number is not an estimate. This builds the whole quote: stone by ton,
+          the delivery fee, optional geotextile, and optional grading — with the honest low/high
+          range suppliers actually quote between.
+        </p>
+      </div>
+    </div>
+
+    <form id="est-form" class="calc" novalidate>
+      <div class="row">
+        <label for="est-length">Driveway length (ft)</label>
+        <input id="est-length" name="length" type="number" min="1" step="1" value="100" required inputmode="decimal" autocomplete="off">
+      </div>
+      <div class="row">
+        <label for="est-width">Driveway width (ft)</label>
+        <input id="est-width" name="width" type="number" min="4" step="1" value="10" required inputmode="decimal" autocomplete="off">
+      </div>
+      <div class="row">
+        <label for="est-depth">Compact depth (in)</label>
+        <input id="est-depth" name="depth" type="number" min="2" step="1" value="4" required inputmode="decimal" autocomplete="off" aria-describedby="est-depth-help">
+        <p id="est-depth-help" class="field-help">4 in for cars, 6 in two-layer for trucks.</p>
+      </div>
+      <div class="row">
+        <label for="est-fabric">Include geotextile fabric (+$0.45/sq ft)</label>
+        <input id="est-fabric" name="fabric" type="checkbox">
+      </div>
+      <div class="row">
+        <label for="est-exc">Include grading / subgrade prep (+$0.50–$2.00/sq ft)</label>
+        <input id="est-exc" name="exc" type="checkbox">
+      </div>
+      <p id="est-error" class="error" role="alert" hidden></p>
+      <button class="btn" type="submit">Build estimate</button>
+    </form>
+
+    <div class="result" id="est-result" aria-live="polite" hidden>
+      <h3>Estimate range</h3>
+      <p><span class="big" id="est-total">$—</span> total (low–high shown below)</p>
+      <ul>
+        <li>Stone: <b id="est-tons">—</b> tons → <b id="est-material">—</b></li>
+        <li>Delivery: <b id="est-delivery">—</b></li>
+        <li>Geotextile: <b id="est-fabric-cost">—</b></li>
+        <li>Grading: <b id="est-exc-cost">—</b></li>
+        <li><b>Total: <span id="est-range">—</span></b></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>What the estimate covers — and what it doesn't</h2>
+    <p>
+      Covered: stone, hauling, fabric, and rough grading. Not covered: culverts or drainage tiles,
+      permits (rarely needed for a private drive, but check the county), and ongoing maintenance —
+      budget a top-up load every 3–5 years, which is a fraction of the first build.
+    </p>
+    <p>
+      Suppliers quote between a low and a high number because stone price varies by quarry distance
+      and load size. If your quotes come in above the high end, ask whether the haul or the stone is
+      driving it — hauling distance is negotiable by splitting the load.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>Driveway estimate FAQ</h2>
+    <div class="faq">
+      {faqs.map((f) => (
+        <details>
+          <summary>{f.question}</summary>
+          <p>{f.answer}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Related calculators</h2>
+    <div class="related">
+      <a href="/gravel-driveway-calculator/">Gravel driveway calculator</a>
+      <a href="/gravel-driveway-cost-calculator/">Gravel driveway cost</a>
+      <a href="/bulk-bag-vs-bags-calculator/">Bulk bag vs bags</a>
+      <a href="/gravel-road-calculator/">Gravel road calculator</a>
+    </div>
+    <p class="muted">Last updated: {UPDATED}</p>
+  </section>
+</BaseLayout>
+
+<script>
+  import { estimateDriveway } from '../lib/longtail/estimates';
+
+  const form = document.querySelector<HTMLFormElement>('#est-form')!;
+  const error = document.querySelector<HTMLElement>('#est-error')!;
+  const result = document.querySelector<HTMLElement>('#est-result')!;
+
+  function showError(message: string) {
+    error.textContent = message;
+    error.removeAttribute('hidden');
+    result.setAttribute('hidden', '');
+  }
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    try {
+      const r = estimateDriveway({
+        lengthFt: Number((form.elements.namedItem('length') as HTMLInputElement).value),
+        widthFt: Number((form.elements.namedItem('width') as HTMLInputElement).value),
+        depthIn: Number((form.elements.namedItem('depth') as HTMLInputElement).value),
+        includeGeotextile: (form.elements.namedItem('fabric') as HTMLInputElement).checked,
+        includeExcavation: (form.elements.namedItem('exc') as HTMLInputElement).checked,
+      });
+      document.querySelector('#est-tons')!.textContent = r.tons.toFixed(1);
+      document.querySelector('#est-material')!.textContent = `$${r.materialCostLow}–$${r.materialCostHigh}`;
+      document.querySelector('#est-delivery')!.textContent = `$${r.deliveryFee}`;
+      document.querySelector('#est-fabric-cost')!.textContent = r.geotextileCost ? `$${r.geotextileCost}` : '—';
+      document.querySelector('#est-exc-cost')!.textContent = r.excavationCostLow ? `$${r.excavationCostLow}–$${r.excavationCostHigh}` : '—';
+      document.querySelector('#est-range')!.textContent = `$${r.totalLow}–$${r.totalHigh}`;
+      const total = document.querySelector('#est-total')!;
+      total.textContent = `$${r.totalLow}`;
+      error.setAttribute('hidden', '');
+      result.removeAttribute('hidden');
+    } catch (err) {
+      showError(err instanceof Error ? err.message : 'Please check your measurements.');
+    }
+  });
+</script>

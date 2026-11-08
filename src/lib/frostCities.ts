@@ -24,3 +24,9 @@ export const frostCityZones: Record<string, FrostCity[]> = {
     { city: 'Moorhead', zoneLabel: 'Zone I, north & central' },
   ],
 };
+
+// State pages with a YouTube explainer embedded (video id only; iframe is
+// rendered lazy via youtube-nocookie and carries VideoObject schema).
+export const frostVideos: Record<string, string> = {
+  Minnesota: 'VvyJPt92GiE',
+};

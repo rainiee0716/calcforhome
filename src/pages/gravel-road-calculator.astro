@@ -1,0 +1,172 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { breadcrumbSchema, faqSchema } from '../lib/schema';
+import { calculateGravelRoad } from '../lib/longtail/estimates';
+
+const UPDATED = '2026-11-08';
+const siteUrl = Astro.site ?? new URL(Astro.url.origin);
+
+const faqs = [
+  {
+    question: 'How wide should a gravel road be?',
+    answer:
+      'Twelve to 14 feet for a single lane with occasional passing, 20 to 24 feet for two-way residential traffic. The calculator defaults to 14 feet, which handles cars and delivery trucks on a private road.',
+  },
+  {
+    question: 'How deep should gravel be on a road?',
+    answer:
+      'Six inches of compacted road base is the working minimum for cars, 8 inches for trucks or soft ground. Roads take heavier loads than driveways, so the stone is road base (#411 or similar dense grade) rather than surface chip.',
+  },
+  {
+    question: 'Why does a road need a crown?',
+    answer:
+      'A crown of about half an inch per foot of width sheds water to the shoulders. Water sitting on a gravel road is what creates potholes — the crown, not more stone, is what keeps the surface intact. Re-grade the crown every year or two.',
+  },
+  {
+    question: 'How many tons of gravel does one truck hold?',
+    answer:
+      'A typical dump truck carries about 20 tons. The calculator rounds truckloads up so you can plan staged deliveries on longer roads.',
+  },
+];
+
+const schema = [
+  breadcrumbSchema(
+    [
+      { name: 'Home', path: '/' },
+      { name: 'Gravel Calculator for Driveways', path: '/gravel-driveway-calculator/' },
+      { name: 'Gravel road calculator', path: '/gravel-road-calculator/' },
+    ],
+    siteUrl,
+  ),
+  faqSchema(faqs),
+];
+---
+
+<BaseLayout
+  title={`Gravel Road Calculator — Tons by Length, Width & Depth`}
+  description={`Free gravel road calculator: enter road length, width and depth to get cubic yards, tons of road base at 1.45 t/yd³, and truckloads. Crown and layer guidance for roads that survive.`}
+  schema={schema}
+>
+  <Breadcrumbs
+    items={[
+      { name: 'Home', path: '/' },
+      { name: 'Gravel Calculator for Driveways', path: '/gravel-driveway-calculator/' },
+      { name: 'Gravel road calculator' },
+    ]}
+  />
+
+  <section class="card">
+    <div class="page-head">
+      <div>
+        <h1>Gravel Road Calculator</h1>
+        <p class="lead">
+          A gravel road takes heavier stone and a deeper base than a driveway. Enter the road's
+          dimensions to get cubic yards, tons of road base at 1.45 tons per yard, and the number of
+          truckloads to schedule.
+        </p>
+      </div>
+    </div>
+
+    <form id="road-form" class="calc" novalidate>
+      <div class="row">
+        <label for="road-length">Road length (ft)</label>
+        <input id="road-length" name="length" type="number" min="1" step="1" value="300" required inputmode="decimal" autocomplete="off">
+      </div>
+      <div class="row">
+        <label for="road-width">Road width (ft)</label>
+        <input id="road-width" name="width" type="number" min="4" step="1" value="14" required inputmode="decimal" autocomplete="off" aria-describedby="width-help">
+        <p id="width-help" class="field-help">12–14 ft single lane, 20–24 ft two-way.</p>
+      </div>
+      <div class="row">
+        <label for="road-depth">Compact depth (in)</label>
+        <input id="road-depth" name="depth" type="number" min="2" step="1" value="6" required inputmode="decimal" autocomplete="off" aria-describedby="depth-help">
+        <p id="depth-help" class="field-help">6 in for cars, 8 in for trucks or soft ground.</p>
+      </div>
+      <p id="road-error" class="error" role="alert" hidden></p>
+      <button class="btn" type="submit">Calculate</button>
+    </form>
+
+    <div class="result" id="road-result" aria-live="polite" hidden>
+      <h3>You need about</h3>
+      <p><span class="big" id="road-tons">—</span> tons of road base</p>
+      <ul>
+        <li>Cubic yards: <b id="road-yards">—</b></li>
+        <li>Truckloads (20 t each): <b id="road-trucks">—</b></li>
+        <li>Material cost: <b id="road-cost">—</b> at $30–$60 per ton</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>What makes a gravel road different from a driveway</h2>
+    <p>
+      Three things, and the first one is free: a <b>crown</b> of about half an inch per foot of
+      width so water runs to the shoulders instead of down the middle. Water is what turns a road
+      into potholes, and re-grading the crown every year or two does more than adding stone.
+    </p>
+    <p>
+      Second, the stone: roads carry truck loads, so the base is dense-grade (#411 or a local
+      equivalent, around 1.45 tons per cubic yard) rather than surface chip. Third, the depth —
+      six inches compacted for cars, eight for trucks or soft ground, built as two layers with the
+      bottom half compacted before the top goes on.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>Gravel road FAQ</h2>
+    <div class="faq">
+      {faqs.map((f) => (
+        <details>
+          <summary>{f.question}</summary>
+          <p>{f.answer}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Related calculators</h2>
+    <div class="related">
+      <a href="/gravel-driveway-calculator/">Gravel driveway calculator</a>
+      <a href="/gravel-driveway-cost-calculator/">Gravel driveway cost</a>
+      <a href="/gravel-driveway-depth-calculator/">Gravel driveway depth</a>
+      <a href="/how-much-gravel-for-a-300-ft-driveway/">300 ft driveway example</a>
+    </div>
+    <p class="muted">Last updated: {UPDATED}</p>
+  </section>
+</BaseLayout>
+
+<script>
+  import { calculateGravelRoad } from '../lib/longtail/estimates';
+
+  const form = document.querySelector<HTMLFormElement>('#road-form')!;
+  const error = document.querySelector<HTMLElement>('#road-error')!;
+  const result = document.querySelector<HTMLElement>('#road-result')!;
+
+  function showError(message: string) {
+    error.textContent = message;
+    error.removeAttribute('hidden');
+    result.setAttribute('hidden', '');
+  }
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    try {
+      const r = calculateGravelRoad({
+        lengthFt: Number((form.elements.namedItem('length') as HTMLInputElement).value),
+        widthFt: Number((form.elements.namedItem('width') as HTMLInputElement).value),
+        depthIn: Number((form.elements.namedItem('depth') as HTMLInputElement).value),
+      });
+      document.querySelector('#road-tons')!.textContent = r.tons.toFixed(1);
+      document.querySelector('#road-yards')!.textContent = r.cubicYards.toFixed(1);
+      document.querySelector('#road-trucks')!.textContent = String(r.truckLoads);
+      document.querySelector('#road-cost')!.textContent =
+        `$${Math.round(r.tons * 30)}–$${Math.round(r.tons * 60)}`;
+      error.setAttribute('hidden', '');
+      result.removeAttribute('hidden');
+    } catch (err) {
+      showError(err instanceof Error ? err.message : 'Please check your measurements.');
+    }
+  });
+</script>
