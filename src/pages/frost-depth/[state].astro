@@ -5,6 +5,7 @@ import { breadcrumbSchema, faqSchema } from '../../lib/schema';
 import { calculateFootingDepth } from '../../lib/calculations';
 import { regionsByState, statePagePath, type FrostRegion } from '../../lib/frost';
 import { FROST_EDITORIAL } from '../../lib/frostEditorial';
+import { frostCityZones } from '../../lib/frostCities';
 
 export function getStaticPaths() {
   return regionsByState().map((group) => ({
@@ -16,7 +17,16 @@ export function getStaticPaths() {
 const { group } = Astro.props;
 const { state, abbr, regions } = group;
 
-const UPDATED = '2026-11-02';
+const UPDATED = '2026-11-07';
+
+// 城市/区域速查表：仅当该州有城市映射时渲染
+const cityZoneMap = frostCityZones[state];
+const cityRows = cityZoneMap
+  ? cityZoneMap.map((c) => {
+      const region = regions.find((r) => r.zone === c.zoneLabel);
+      return { city: c.city, zoneLabel: c.zoneLabel, depth: region?.depth ?? null };
+    }).filter((r) => r.depth !== null)
+  : null;
 
 // Distinct code depths in this state, shallowest first.
 const depths = [...new Set(regions.map((r) => r.depth))].sort((a, b) => a - b);
@@ -170,6 +180,39 @@ const schema = [
       </p>
     </div>
   </section>
+
+  {cityRows && (
+    <section class="card">
+      <h2>Frost depth in {state}'s major cities</h2>
+      <p>
+        The same {splitState ? 'zone rules' : 'statewide rule'} applied to the cities people
+        actually build in. If your city is not on the list, its county's amendment governs —
+        confirm with the local building department before digging.
+      </p>
+      <div class="table-wrap">
+        <table class="data text">
+          <thead>
+            <tr>
+              <th>City</th>
+              <th>Zone</th>
+              <th>Frost depth</th>
+              <th>Dig depth (+6″ bearing)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {cityRows.map((r) => (
+              <tr>
+                <td><strong>{r.city}</strong></td>
+                <td>{r.zoneLabel}</td>
+                <td class="hl">{r.depth}"</td>
+                <td>{(r.depth ?? 0) + 6}"</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  )}
 
   <section class="card">
     <h2>Why {state}'s number looks the way it does</h2>
