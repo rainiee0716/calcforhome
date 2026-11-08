@@ -30,3 +30,60 @@ export const frostCityZones: Record<string, FrostCity[]> = {
 export const frostVideos: Record<string, string> = {
   Minnesota: 'VvyJPt92GiE',
 };
+
+// Statewide states (single depth, no zone rows) use the label 'Statewide'.
+export const frostCityZonesMore: Record<string, FrostCity[]> = {
+  Michigan: [
+    { city: 'Detroit', zoneLabel: 'Statewide' },
+    { city: 'Grand Rapids', zoneLabel: 'Statewide' },
+    { city: 'Ann Arbor', zoneLabel: 'Statewide' },
+    { city: 'Lansing', zoneLabel: 'Statewide' },
+    { city: 'Kalamazoo', zoneLabel: 'Statewide' },
+    { city: 'Traverse City', zoneLabel: 'Statewide' },
+  ],
+  Wisconsin: [
+    { city: 'Milwaukee', zoneLabel: 'Statewide' },
+    { city: 'Madison', zoneLabel: 'Statewide' },
+    { city: 'Green Bay', zoneLabel: 'Statewide' },
+    { city: 'Appleton', zoneLabel: 'Statewide' },
+    { city: 'Eau Claire', zoneLabel: 'Statewide' },
+    { city: 'La Crosse', zoneLabel: 'Statewide' },
+  ],
+  Pennsylvania: [
+    { city: 'Philadelphia', zoneLabel: 'Statewide' },
+    { city: 'Pittsburgh', zoneLabel: 'Statewide' },
+    { city: 'Allentown', zoneLabel: 'Statewide' },
+    { city: 'Harrisburg', zoneLabel: 'Statewide' },
+    { city: 'Erie', zoneLabel: 'Statewide' },
+    { city: 'Scranton', zoneLabel: 'Statewide' },
+  ],
+  'New York': [
+    { city: 'New York City', zoneLabel: 'New York City & Long Island' },
+    { city: 'Brooklyn', zoneLabel: 'New York City & Long Island' },
+    { city: 'Queens', zoneLabel: 'New York City & Long Island' },
+    { city: 'Hempstead (Long Island)', zoneLabel: 'New York City & Long Island' },
+    { city: 'Buffalo', zoneLabel: 'Upstate, Catskills & Adirondacks' },
+    { city: 'Rochester', zoneLabel: 'Upstate, Catskills & Adirondacks' },
+    { city: 'Albany', zoneLabel: 'Upstate, Catskills & Adirondacks' },
+    { city: 'Syracuse', zoneLabel: 'Upstate, Catskills & Adirondacks' },
+    { city: 'Binghamton', zoneLabel: 'Upstate, Catskills & Adirondacks' },
+  ],
+  Colorado: [
+    { city: 'Denver', zoneLabel: 'Front Range (Denver, Colorado Springs)' },
+    { city: 'Colorado Springs', zoneLabel: 'Front Range (Denver, Colorado Springs)' },
+    { city: 'Aurora', zoneLabel: 'Front Range (Denver, Colorado Springs)' },
+    { city: 'Fort Collins', zoneLabel: 'Front Range (Denver, Colorado Springs)' },
+    { city: 'Boulder', zoneLabel: 'Front Range (Denver, Colorado Springs)' },
+    { city: 'Pueblo', zoneLabel: 'Front Range (Denver, Colorado Springs)' },
+    { city: 'Aspen', zoneLabel: 'Mountain towns above 7,500 ft' },
+    { city: 'Vail', zoneLabel: 'Mountain towns above 7,500 ft' },
+    { city: 'Breckenridge', zoneLabel: 'Mountain towns above 7,500 ft' },
+    { city: 'Leadville', zoneLabel: 'Mountain towns above 7,500 ft' },
+  ],
+};
+
+// 合并视图：州页模板只查这一个表
+export const frostCityZonesAll: Record<string, FrostCity[]> = {
+  ...frostCityZones,
+  ...frostCityZonesMore,
+};

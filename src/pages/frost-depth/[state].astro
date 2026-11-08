@@ -5,7 +5,7 @@ import { breadcrumbSchema, faqSchema } from '../../lib/schema';
 import { calculateFootingDepth } from '../../lib/calculations';
 import { regionsByState, statePagePath, type FrostRegion } from '../../lib/frost';
 import { FROST_EDITORIAL } from '../../lib/frostEditorial';
-import { frostCityZones, frostVideos } from '../../lib/frostCities';
+import { frostCityZonesAll, frostVideos } from '../../lib/frostCities';
 
 export function getStaticPaths() {
   return regionsByState().map((group) => ({
@@ -20,10 +20,10 @@ const { state, abbr, regions } = group;
 const UPDATED = '2026-11-07';
 
 // 城市/区域速查表：仅当该州有城市映射时渲染
-const cityZoneMap = frostCityZones[state];
+const cityZoneMap = frostCityZonesAll[state];
 const cityRows = cityZoneMap
   ? cityZoneMap.map((c) => {
-      const region = regions.find((r) => r.zone === c.zoneLabel);
+      const region = regions.find((r) => (r.zone ?? 'Statewide') === c.zoneLabel);
       return { city: c.city, zoneLabel: c.zoneLabel, depth: region?.depth ?? null };
     }).filter((r) => r.depth !== null)
   : null;
