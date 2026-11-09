@@ -87,4 +87,22 @@ export const tools: Tool[] = [
     blurb: 'Courses, boards per course and stock length for a deck',
     updated: '2026-10-29',
   },
+  {
+    slug: 'gravel-road-calculator',
+    title: 'Gravel Road Calculator',
+    blurb: 'Tons by length, width and depth',
+    updated: '2026-11-07',
+  },
+  {
+    slug: 'bulk-bag-vs-bags-calculator',
+    title: 'Bulk Bag vs Bags Calculator',
+    blurb: 'Which way of buying gravel is cheaper',
+    updated: '2026-11-07',
+  },
+  {
+    slug: 'gravel-driveway-estimate',
+    title: 'Gravel Driveway Estimate',
+    blurb: 'Material, delivery and total cost in one place',
+    updated: '2026-11-07',
+  },
 ];

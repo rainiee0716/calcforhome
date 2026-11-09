@@ -199,6 +199,15 @@ const schema = [
   </section>
 
   <section class="card">
+    <h2>Gravel by other driveway lengths</h2>
+    <div class="related">
+      {getGravelLengths()
+        .filter((l) => l !== data.lengthFt)
+        .map((l) => (
+          <a href={gravelPagePath(l)}>{l} ft driveway</a>
+        ))}
+    </div>
+
     <h2>Related calculators</h2>
     <div class="related">
       <a href="/gravel-driveway-calculator/">Gravel driveway calculator</a>

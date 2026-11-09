@@ -253,6 +253,15 @@ const fmt = (n: number) => n.toFixed(n >= 100 ? 0 : 2);
   </section>
 
   <section class="card">
+    <h2>Bags for other slab sizes</h2>
+    <div class="related">
+      {getSlabSizes()
+        .filter((s) => s.size !== data.size)
+        .map((s) => (
+          <a href={slabPagePath(s.size)}>{s.size} slab</a>
+        ))}
+    </div>
+
     <h2>Related calculators</h2>
     <div class="related">
       <a href="/concrete-bags-calculator/">Concrete bags calculator</a>

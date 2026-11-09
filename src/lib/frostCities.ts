@@ -80,6 +80,31 @@ export const frostCityZonesMore: Record<string, FrostCity[]> = {
     { city: 'Breckenridge', zoneLabel: 'Mountain towns above 7,500 ft' },
     { city: 'Leadville', zoneLabel: 'Mountain towns above 7,500 ft' },
   ],
+  'North Carolina': [
+    { city: 'Wilmington', zoneLabel: 'Piedmont & coast' },
+    { city: 'Charlotte', zoneLabel: 'Piedmont & coast' },
+    { city: 'Raleigh', zoneLabel: 'Piedmont & coast' },
+    { city: 'Durham', zoneLabel: 'Piedmont & coast' },
+    { city: 'Greensboro', zoneLabel: 'Piedmont & coast' },
+    { city: 'Fayetteville', zoneLabel: 'Piedmont & coast' },
+    { city: 'Asheville', zoneLabel: 'Mountain counties (Asheville, Boone)' },
+    { city: 'Boone', zoneLabel: 'Mountain counties (Asheville, Boone)' },
+  ],
+  'North Dakota': [
+    { city: 'Fargo', zoneLabel: 'Fargo & southern tier' },
+    { city: 'West Fargo', zoneLabel: 'Fargo & southern tier' },
+    { city: 'Grand Forks', zoneLabel: 'Northern tier (Minot, Grand Forks)' },
+    { city: 'Minot', zoneLabel: 'Northern tier (Minot, Grand Forks)' },
+    { city: 'Williston', zoneLabel: 'Northern tier (Minot, Grand Forks)' },
+  ],
+  Ohio: [
+    { city: 'Columbus', zoneLabel: 'Statewide' },
+    { city: 'Cleveland', zoneLabel: 'Statewide' },
+    { city: 'Cincinnati', zoneLabel: 'Statewide' },
+    { city: 'Toledo', zoneLabel: 'Statewide' },
+    { city: 'Akron', zoneLabel: 'Statewide' },
+    { city: 'Dayton', zoneLabel: 'Statewide' },
+  ],
 };
 
 // 合并视图：州页模板只查这一个表
