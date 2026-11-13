@@ -139,8 +139,10 @@ const schema = [
 ---
 
 <BaseLayout
-  title={`Frost Depth in ${state} — ${depthLabel} Code Footing Depth`}
-  description={`Frost depth in ${state} (${abbr}): the code requires ${depthLabel} of footing depth${splitState ? `, split by zone — ${zoneText}` : ''}. Plus the dig depth, Sonotube length and bags of concrete per footing.`}
+  title={cityRows
+    ? `Frost Depth in ${state} — by City & County (${abbr})`
+    : `Frost Depth in ${state} — ${depthLabel} Code Footing Depth`}
+  description={`Frost depth in ${state} (${abbr}): the code requires ${depthLabel} of footing depth${splitState ? `, split by zone — ${zoneText}` : ''}${cityRows ? ', down to the city and county level' : ''}. Plus the dig depth, Sonotube length and bags of concrete per footing.`}
   schema={schema}
 >
   <Breadcrumbs
@@ -199,11 +201,16 @@ const schema = [
 
   {cityRows && (
     <section class="card">
-      <h2>Frost depth in {state}'s major cities</h2>
+      <h2>Frost depth in {state}'s major cities &amp; counties</h2>
       <p>
         The same {splitState ? 'zone rules' : 'statewide rule'} applied to the cities people
-        actually build in. If your city is not on the list, its county's amendment governs —
-        confirm with the local building department before digging.
+        actually build in, and the city row is also the county answer — the county amendment
+        adopts the city code, so the city's depth is what the county enforces.
+        {state === 'North Carolina'
+          ? ' Looking for New Hanover County? Its answer is Wilmington\'s below; Mecklenburg County\'s is Charlotte\'s.'
+          : ''}
+        {' '}If your city is not on the list, its county's amendment governs — confirm with the
+        local building department before digging.
       </p>
       <div class="table-wrap">
         <table class="data text">
