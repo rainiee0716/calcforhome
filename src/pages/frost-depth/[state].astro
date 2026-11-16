@@ -79,6 +79,25 @@ const editorial = FROST_EDITORIAL[state];
 const basisNames = [...new Set(regions.map((r) => r.basis))].join('; ');
 const zoneText = splitState ? zoneList(regions) : '';
 
+// 精选摘要级直接答案：每州一段可直接引用的 40-60 词回答，
+// 城市表州点名城市和县（县名来自 frostCities 的 county 字段）。
+function zoneExamples(depth: number): string {
+  const region = regions.find((r) => r.depth === depth);
+  const cities = (cityZoneMap || []).filter((c) => c.zoneLabel === (region?.zone ?? 'Statewide'));
+  if (cities.length) {
+    const named = cities
+      .slice(0, 3)
+      .map((c) => (c.county ? `${c.city} (${c.county} County)` : c.city))
+      .join(', ');
+    return named;
+  }
+  return region?.zone ?? state;
+}
+
+const snippetAnswer = splitState
+  ? `The frost line in ${state} is ${depths[0]} inches in ${zoneExamples(depths[0])}, and ${depths[depths.length - 1]} inches in ${zoneExamples(depths[depths.length - 1])}. Footings dig to the code depth plus 6 inches of bearing — ${depths[0] + 6} and ${depths[depths.length - 1] + 6} inches respectively.`
+  : `The frost line in ${state} is ${depths[0]} inches below finished grade${noFrost ? ' — the code has no frost requirement here, only a bearing minimum' : ''}. Footings in ${state} dig ${depths[0] + 6} inches, the code depth plus a 6-inch bearing layer.`;
+
 const faqs = [
   {
     question: `How deep is the frost line in ${state}?`,
@@ -164,6 +183,10 @@ const schema = [
         the code values an inspector measures, not climate averages — the local building department
         always has the final word.
       </p>
+    </div>
+
+    <div class="note">
+      <p><strong>Quick answer:</strong> {snippetAnswer}</p>
     </div>
 
     <div class="table-wrap">

@@ -6,6 +6,8 @@
 export interface FrostCity {
   city: string;
   zoneLabel: string; // must match a frost.ts zone string for the state
+  /** County the city is the seat of, when added for county-level queries. */
+  county?: string;
 }
 
 export const frostCityZones: Record<string, FrostCity[]> = {
@@ -81,14 +83,14 @@ export const frostCityZonesMore: Record<string, FrostCity[]> = {
     { city: 'Leadville', zoneLabel: 'Mountain towns above 7,500 ft' },
   ],
   'North Carolina': [
-    { city: 'Wilmington', zoneLabel: 'Piedmont & coast' },
-    { city: 'Charlotte', zoneLabel: 'Piedmont & coast' },
-    { city: 'Raleigh', zoneLabel: 'Piedmont & coast' },
-    { city: 'Durham', zoneLabel: 'Piedmont & coast' },
-    { city: 'Greensboro', zoneLabel: 'Piedmont & coast' },
-    { city: 'Fayetteville', zoneLabel: 'Piedmont & coast' },
-    { city: 'Asheville', zoneLabel: 'Mountain counties (Asheville, Boone)' },
-    { city: 'Boone', zoneLabel: 'Mountain counties (Asheville, Boone)' },
+    { city: 'Wilmington', zoneLabel: 'Piedmont & coast', county: 'New Hanover' },
+    { city: 'Charlotte', zoneLabel: 'Piedmont & coast', county: 'Mecklenburg' },
+    { city: 'Raleigh', zoneLabel: 'Piedmont & coast', county: 'Wake' },
+    { city: 'Durham', zoneLabel: 'Piedmont & coast', county: 'Durham' },
+    { city: 'Greensboro', zoneLabel: 'Piedmont & coast', county: 'Guilford' },
+    { city: 'Fayetteville', zoneLabel: 'Piedmont & coast', county: 'Cumberland' },
+    { city: 'Asheville', zoneLabel: 'Mountain counties (Asheville, Boone)', county: 'Buncombe' },
+    { city: 'Boone', zoneLabel: 'Mountain counties (Asheville, Boone)', county: 'Watauga' },
   ],
   'North Dakota': [
     { city: 'Fargo', zoneLabel: 'Fargo & southern tier' },
