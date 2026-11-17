@@ -41,6 +41,7 @@ export function GET({ site }) {
     { loc: '/gravel-road-calculator/', changefreq: 'monthly', priority: '0.7' },
     { loc: '/bulk-bag-vs-bags-calculator/', changefreq: 'monthly', priority: '0.7' },
     { loc: '/gravel-driveway-estimate/', changefreq: 'monthly', priority: '0.7' },
+    { loc: '/how-many-bags-of-concrete-in-a-yard/', changefreq: 'monthly', priority: '0.7' },
   ];
 
   const body = `<?xml version="1.0" encoding="UTF-8"?>

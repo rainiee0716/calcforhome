@@ -1,0 +1,215 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { breadcrumbSchema, faqSchema } from '../lib/schema';
+
+const UPDATED = '2026-11-13';
+
+const yieldRows = [
+  { size: '80 lb', yield: 0.6, perYard: 45, price: '$7.00', costPerYard: '$315' },
+  { size: '60 lb', yield: 0.45, perYard: 60, price: '$5.50', costPerYard: '$330' },
+  { size: '50 lb', yield: 0.375, perYard: 72, price: '$5.00', costPerYard: '$360' },
+  { size: '40 lb', yield: 0.3, perYard: 90, price: '$4.50', costPerYard: '$405' },
+];
+
+const volumeRows = [
+  { yards: '0.5', project: 'Post footings ×5–8', exact: 23, withWaste: 26 },
+  { yards: '1', project: 'Small landing or pad', exact: 45, withWaste: 50 },
+  { yards: '1.5', project: '10x10 slab at 4 in', exact: 68, withWaste: 75 },
+  { yards: '2', project: '12x12 slab at 4 in', exact: 90, withWaste: 99 },
+  { yards: '2.5', project: 'Short-load territory', exact: 113, withWaste: 125 },
+  { yards: '3', project: 'Call the plant', exact: 135, withWaste: 149 },
+];
+
+const faqs = [
+  {
+    question: 'How many 80 lb bags of concrete make a cubic yard?',
+    answer:
+      'Forty-five. An 80 lb bag yields 0.60 cubic feet, a cubic yard is 27 cubic feet, and 27 ÷ 0.60 is 45. Buy 50 for a full yard if you allow 10% for waste, because partial bags do not carry over.',
+  },
+  {
+    question: 'How many bags of concrete do I need for a 10x10 slab?',
+    answer:
+      'A 10x10 slab at 4 inches is 1.23 cubic yards, which is 56 bags of 80 lb mix without waste and about 62 with 10%. The full four-bag-size table is on the concrete bags calculator page.',
+  },
+  {
+    question: 'Is it cheaper to buy bags or order a cubic yard delivered?',
+    answer:
+      'Bagged material for one yard runs $315 to $405 depending on bag size. Delivered ready-mix runs about $150 to $200 per yard, but short loads under a full truck carry a $100 to $250 fee. Under roughly 1.5 yards, bags win; over 2 yards, the truck wins.',
+  },
+  {
+    question: 'How many bags of concrete do I need for a fence post?',
+    answer:
+      'Two to three bags of 80 lb mix per post hole, depending on hole diameter and depth — a 4x4 post in a 12-inch hole 30 inches deep takes 3 bags. The fence post calculator does the subtraction of the post volume per hole.',
+  },
+  {
+    question: 'Does a partially used bag count toward the next yard?',
+    answer:
+      'No. Bags are bought and mixed whole — an opened bag starts curing and leftover mix cannot be stored for the next pour. Every bag count in the table is rounded up to whole bags before any waste allowance.',
+  },
+];
+
+const schema = [
+  breadcrumbSchema(
+    [
+      { name: 'Home', path: '/' },
+      { name: 'Concrete Bags Calculator', path: '/concrete-bags-calculator/' },
+      { name: 'How many bags of concrete in a yard' },
+    ],
+    Astro.site ?? new URL(Astro.url.origin),
+  ),
+  faqSchema(faqs),
+];
+---
+
+<BaseLayout
+  title="How Many Bags of Concrete in a Yard — 45×80 lb, 60×60, 90×40"
+  description="A cubic yard of concrete is 45 bags of 80 lb mix, 60 of 60 lb, 72 of 50 lb or 90 of 40 lb. The math, the cost per yard by bag size, and the volumes where a truck beats bags."
+  schema={schema}
+>
+  <Breadcrumbs
+    items={[
+      { name: 'Home', path: '/' },
+      { name: 'Concrete Bags Calculator', path: '/concrete-bags-calculator/' },
+      { name: 'How many bags of concrete in a yard' },
+    ]}
+  />
+
+  <section class="card">
+    <div class="page-head">
+      <h1>How many bags of concrete in a yard?</h1>
+      <p class="lead">
+        One cubic yard — 27 cubic feet — is <b>45 bags of 80 lb</b> mix, <b>60 bags of 60 lb</b>,
+        <b>72 bags of 50 lb</b>, or <b>90 bags of 40 lb</b>. The count changes with the bag because
+        each size yields a different volume; the concrete is identical.
+      </p>
+    </div>
+
+    <div class="note">
+      <p>
+        <strong>Quick answer:</strong> 27 ÷ yield = bags per yard. An 80 lb bag yields 0.60 cu ft, so
+        27 ÷ 0.60 = <b>45 bags</b>. Order 50 if you allow 10% waste — leftover half-bags never carry
+        over to the next pour.
+      </p>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data">
+        <caption>Bags per cubic yard by bag size, with 2026 home-center pricing. All four fill the
+          same 27 cubic feet.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Bag</th>
+            <th scope="col">Yield (cu ft)</th>
+            <th scope="col">Bags per cu yd</th>
+            <th scope="col">Price per bag</th>
+            <th scope="col">Cost per yard</th>
+          </tr>
+        </thead>
+        <tbody>
+          {yieldRows.map((r) => (
+            <tr>
+              <td>{r.size}</td>
+              <td>{r.yield.toFixed(2)}</td>
+              <td class="hl">{r.perYard}</td>
+              <td>{r.price}</td>
+              <td>{r.costPerYard}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p>
+      The 80 lb bag is the cheapest way to buy a yard of concrete — $315 against $405 for the same
+      volume in 40 lb bags — and the least trips: 45 carries instead of 90. It is also 3,600 pounds
+      of hauling, which is the real cost.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>The math, once</h2>
+    <p><code>bags per yard = 27 ÷ (yield per bag in cubic feet)</code></p>
+    <p>
+      A cubic yard is a box three feet on a side: 3 × 3 × 3 = 27 cubic feet. Every bag prints its
+      yield on it — 80 lb bags make 0.60 cu ft, 60 lb make 0.45, 50 lb make 0.375, 40 lb make 0.30.
+      Divide 27 by the yield and round up, because you buy and mix whole bags.
+    </p>
+    <p>
+      Reverse check without a calculator: 45 bags × 0.60 cu ft = 27 cu ft = one yard. If a website
+      tells you a different count for 80 lb bags than 45, it is rounding a 0.55-ish yield from a
+      specific product, or it is wrong.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>Bags per yard for common project volumes</h2>
+    <div class="table-wrap">
+      <table class="data">
+        <caption>80 lb bags by project volume — exact count, then with 10% waste. Volumes in cubic
+          yards.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Cubic yards</th>
+            <th scope="col">Typical project</th>
+            <th scope="col">80 lb bags, exact</th>
+            <th scope="col">With 10% waste</th>
+          </tr>
+        </thead>
+        <tbody>
+          {volumeRows.map((r) => (
+            <tr>
+              <td>{r.yards}</td>
+              <td>{r.project}</td>
+              <td>{r.exact}</td>
+              <td class="hl">{r.withWaste}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Past 2.5 yards the bag count stops being practical — 125 bags of 80 lb is five tons of hauling
+      and a day and a half of mixing. That is the line where a short-load truck takes over.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>Bags or a delivered yard: the break-even</h2>
+    <p>
+      Bagged concrete for one yard costs <b>$315 to $405</b> in material. A delivered cubic yard runs
+      <b>$150 to $200</b> — but trucks charge a short-load fee of $100 to $250 below a full load, which
+      is why the crossing point sits around 1.5 yards. Below that, bags win on price and scheduling;
+      above 2 yards, the truck wins on both.
+    </p>
+    <p>
+      For the bag-vs-truck math on your exact volume, the
+      <a href="/concrete-bags-calculator/">concrete bags calculator</a> and the
+      <a href="/concrete-slab-cost-calculator/">slab cost calculator</a> both carry the comparison —
+      and the <a href="/concrete-calculator/">concrete calculator</a> turns any slab size into the
+      cubic yards this page prices.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>How many bags of concrete in a yard FAQ</h2>
+    <div class="faq">
+      {faqs.map((f) => (
+        <details>
+          <summary>{f.question}</summary>
+          <p>{f.answer}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <section class="card">
+    <h3>Related calculators</h3>
+    <div class="related">
+      <a href="/concrete-bags-calculator/">Concrete bags calculator</a>
+      <a href="/concrete-calculator/">Concrete calculator (cubic yards)</a>
+      <a href="/concrete-fence-post-calculator/">Bags per fence post hole</a>
+      <a href="/concrete-slab-cost-calculator/">Concrete slab cost</a>
+    </div>
+    <p class="muted">Last updated: {UPDATED}</p>
+  </section>
+</BaseLayout>
