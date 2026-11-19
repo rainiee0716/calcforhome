@@ -13,13 +13,17 @@
 
 | 候选 | 邮箱/渠道 | 发送日 | 跟进日 | 结果 |
 |---|---|---|---|---|
-| lilachbullock | 表单/邮件 | | +7d | |
-| slabcalc | 表单 | | +7d | |
-| calculatingconcrete | 表单 | | +7d | |
-| roohome | roohomecom@gmail.com | | +7d | |
-| homoper | 表单 | | +7d | |
-| worldculator | 表单 | | +7d | |
-| concretecalcs | 表单 | | +7d | |
+| lilachbullock | 站内表单（选 "Submit a guest post"） | 2026-11-20 | 2026-11-27 | 表单提交成功，跳转 thank-you 页 |
+| worldculator | 站内表单 | 2026-11-20 | 2026-11-27 | "Suggestion received ✓" |
+| roohome | roohomecom@gmail.com（Gmail 代发） | 2026-11-20 | 2026-11-27 | Message sent |
+| homoper | HomoperMedia@gmail.com（Gmail 代发） | 2026-11-20 | 2026-11-27 | Message sent |
+| calculatingconcrete | info@calculatingconcrete.com（Gmail 代发） | 2026-11-20 | 2026-11-27 | Message sent |
+| concretecalcs | contact@concretecalcs.com（Gmail 代发） | 2026-11-20 | 2026-11-27 | Message sent。注意：其站内表单是演示品不会真发送，别再填 |
+| slabcalc | 渠道待查（无 /contact 页，主机间歇不通） | — | — | 稍后换网络重试 |
+| thehomeimproving / dailyhomediy | DNS 不通 | — | — | 换网络验证后再投 |
+
+> 代发说明：4 封邮件从 rainiee0716@gmail.com 的 Gmail 网页发出（2026-11-20），已存"已发送"，回复会进该收件箱。
+> 本周已发 6 封——达到每周 3~5 封的节奏上限，剩余候选（slabcalc、D 类）下周再投。
 
 ---
 
