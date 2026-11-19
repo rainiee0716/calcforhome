@@ -4,7 +4,7 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
 import { breadcrumbSchema, faqSchema } from '../lib/schema';
 import { calculateGravelRoad } from '../lib/longtail/estimates';
 
-const UPDATED = '2026-11-08';
+const UPDATED = '2026-11-18';
 const siteUrl = Astro.site ?? new URL(Astro.url.origin);
 
 const faqs = [
@@ -45,7 +45,7 @@ const schema = [
 
 <BaseLayout
   title={`Gravel Road Calculator — Tons by Length, Width & Depth`}
-  description={`Free gravel road calculator: enter road length, width and depth to get cubic yards, tons of road base at 1.45 t/yd³, and truckloads. Crown and layer guidance for roads that survive.`}
+  description={`Gravel road calculator: enter length, width and depth for cubic yards, tons of road base and truckloads. Crown and layer guidance for roads that survive.`}
   schema={schema}
 >
   <Breadcrumbs
@@ -88,7 +88,7 @@ const schema = [
     </form>
 
     <div class="result" id="road-result" aria-live="polite" hidden>
-      <h3>You need about</h3>
+      <p class="kicker">You need about</p>
       <p><span class="big" id="road-tons">—</span> tons of road base</p>
       <ul>
         <li>Cubic yards: <b id="road-yards">—</b></li>
@@ -132,6 +132,8 @@ const schema = [
       <a href="/gravel-driveway-cost-calculator/">Gravel driveway cost</a>
       <a href="/gravel-driveway-depth-calculator/">Gravel driveway depth</a>
       <a href="/how-much-gravel-for-a-300-ft-driveway/">300 ft driveway example</a>
+      <a href="/how-many-bags-of-concrete-in-a-yard/">How many bags of concrete in a yard</a>
+      <a href="/concrete-bags-calculator/">How many bags of concrete do I need</a>
     </div>
     <p class="muted">Last updated: {UPDATED}</p>
   </section>

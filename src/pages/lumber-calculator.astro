@@ -5,7 +5,7 @@ import ToolIcon from '../components/ToolIcon.astro';
 import { breadcrumbSchema, faqSchema, softwareApplicationSchema } from '../lib/schema';
 
 const siteUrl = Astro.site ?? new URL(Astro.url.origin);
-const UPDATED = '2026-10-29';
+const UPDATED = '2026-11-18';
 
 const faqs = [
   {
@@ -161,7 +161,7 @@ const precutRows = [
     </form>
 
     <div class="result" id="result" aria-live="polite" hidden>
-      <h3>Buy about</h3>
+      <p class="kicker">Buy about</p>
       <p><span class="big" id="total-boards">—</span> boards in total</p>
       <ul>
         <li>Studs: <b id="stud-count">—</b></li>
@@ -351,12 +351,13 @@ const precutRows = [
         hardware this page does not count. Check with your building department before you frame.</p>
     </div>
 
-    <h3>Related calculators</h3>
+    <h2>Related calculators</h2>
     <div class="related">
       <a href="/concrete-calculator/">Concrete slab & footing volume</a>
       <a href="/concrete-fence-post-calculator/">Concrete for fence posts</a>
       <a href="/frost-depth-by-state/">Frost depth by state</a>
-      <a href="/concrete-bags-calculator/">Concrete bags calculator</a>
+      <a href="/concrete-bags-calculator/">How many bags of concrete do I need</a>
+      <a href="/how-many-bags-of-concrete-in-a-yard/">How many bags of concrete in a yard</a>
     </div>
     <p class="muted">Last updated: {UPDATED}</p>
   </section>

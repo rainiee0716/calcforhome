@@ -818,7 +818,8 @@ select:focus {
   box-shadow: var(--shadow-md);
 }
 
-.result h3 {
+.result h3,
+.result .kicker {
   margin-top: 0;
   color: #93a3bb;
   font-size: 0.85rem;

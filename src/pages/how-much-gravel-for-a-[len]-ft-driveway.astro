@@ -10,7 +10,7 @@ export function getStaticPaths() {
 
 const { len } = Astro.params;
 const data = buildGravelPage(Number(len!)) as GravelPageData;
-const UPDATED = '2026-11-07';
+const UPDATED = '2026-11-18';
 
 const a = data.answer;
 const t = data.twoLayer;
@@ -64,7 +64,7 @@ const schema = [
 
 <BaseLayout
   title={`How Much Gravel for a ${data.lengthFt} ft Driveway? (${a.tons.toFixed(1)} Tons at 4")`}
-  description={`A ${data.lengthFt} ft driveway at 10 feet wide and 4 inches deep needs ${a.cubicYards.toFixed(1)} cubic yards — about ${a.tons.toFixed(1)} tons of crushed stone. Depth chart, two-layer build, cost at 2026 prices, and truckload math.`}
+  description={`A ${data.lengthFt} ft driveway, 10 ft wide and 4 inches deep, takes ${a.cubicYards.toFixed(1)} cubic yards — about ${a.tons.toFixed(1)} tons of crushed stone. Depth chart, two-layer build and 2026 cost math.`}
   schema={schema}
 >
   <Breadcrumbs
@@ -88,7 +88,7 @@ const schema = [
       </div>
     </div>
     <div class="result">
-      <h3>You need about</h3>
+      <p class="kicker">You need about</p>
       <p><span class="big">{a.tons.toFixed(1)}</span> tons at 4 inches deep</p>
       <ul>
         <li>Cubic yards: <b>{a.cubicYards.toFixed(1)}</b> ({Math.round(data.squareFeet)} sq ft × 4")</li>
@@ -147,6 +147,13 @@ const schema = [
       Put woven geotextile under the base on soft or clay ground — $0.30–$0.60 per square foot
       against rebuilding the whole drive in two seasons. Crown the finished surface about a
       quarter inch per foot so water runs off the middle instead of carving channels.
+    </p>
+    <p>
+      If the drive meets a concrete apron or a small pad, that part is poured with bags, not
+      delivered — start from
+      <a href="/how-many-bags-of-concrete-in-a-yard/">how many bags of concrete in a yard</a>, then
+      size the pour with the
+      <a href="/concrete-bags-calculator/">how many bags of concrete do I need calculator</a>.
     </p>
   </section>
 
@@ -213,6 +220,8 @@ const schema = [
       <a href="/gravel-driveway-calculator/">Gravel driveway calculator</a>
       <a href="/gravel-driveway-cost-calculator/">Gravel driveway cost</a>
       <a href="/gravel-driveway-depth-calculator/">Gravel driveway depth</a>
+      <a href="/how-many-bags-of-concrete-in-a-yard/">How many bags of concrete in a yard</a>
+      <a href="/concrete-bags-calculator/">How many bags of concrete do I need</a>
     </div>
     <p class="muted">Last updated: {UPDATED}</p>
   </section>

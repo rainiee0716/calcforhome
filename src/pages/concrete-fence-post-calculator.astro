@@ -5,7 +5,7 @@ import ToolIcon from '../components/ToolIcon.astro';
 import { breadcrumbSchema, faqSchema, softwareApplicationSchema } from '../lib/schema';
 
 const siteUrl = Astro.site ?? new URL(Astro.url.origin);
-const UPDATED = '2026-10-29';
+const UPDATED = '2026-11-18';
 
 const faqs = [
   {
@@ -84,7 +84,7 @@ const bagRows = [
 
 <BaseLayout
   title="Concrete Fence Post Calculator — Bags per Post Hole"
-  description="Free fence post calculator: enter post count, hole size and post dimensions to get concrete volume and 80, 60, 50 or 40 lb bags needed per post hole and for the whole fence."
+  description="Enter post count, hole size and post dimensions to get concrete volume and 80, 60, 50 or 40 lb bags per post hole and for the whole fence. Frost depth built in."
   schema={schema}
 >
   <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: 'Concrete for Fence Post Calculator' }]} />
@@ -143,7 +143,7 @@ const bagRows = [
     </form>
 
     <div class="result" id="result" aria-live="polite" hidden>
-      <h3>You need about</h3>
+      <p class="kicker">You need about</p>
       <p><span class="big" id="total-bags">—</span> 80 lb bags total</p>
       <ul>
         <li>Per post: <b id="bags-per-post">—</b> bags</li>
@@ -199,7 +199,10 @@ const bagRows = [
       <p><strong>Buying in bags vs. ordering a truck.</strong> Ten posts is about 18 cubic feet, or
         two thirds of a cubic yard — bags are the answer. Once a fence passes roughly 40 posts you are
         over 1.5 cubic yards, and a short-load delivery starts competing with bag price. Bag count
-        above 45 is the point to get a quote.</p>
+        above 45 is the point to get a quote — and
+        <a href="/how-many-bags-of-concrete-in-a-yard/">how many bags of concrete in a yard</a> is the
+        crossover table. For any other pour around the yard, start from
+        <a href="/concrete-bags-calculator/">how many bags of concrete do I need</a>.</p>
     </div>
   </section>
 
@@ -323,9 +326,10 @@ const bagRows = [
         building department before you dig.</p>
     </div>
 
-    <h3>Related calculators</h3>
+    <h2>Related calculators</h2>
     <div class="related">
-      <a href="/concrete-bags-calculator/">Concrete bags calculator</a>
+      <a href="/concrete-bags-calculator/">How many bags of concrete do I need</a>
+      <a href="/how-many-bags-of-concrete-in-a-yard/">How many bags of concrete in a yard</a>
       <a href="/concrete-calculator/">Concrete slab & footing volume</a>
       <a href="/frost-depth-by-state/">Frost depth by state</a>
       <a href="/gravel-driveway-calculator/">Gravel for a driveway</a>

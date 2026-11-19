@@ -4,7 +4,7 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
 import { breadcrumbSchema, faqSchema } from '../lib/schema';
 import { estimateDriveway } from '../lib/longtail/estimates';
 
-const UPDATED = '2026-11-08';
+const UPDATED = '2026-11-18';
 const siteUrl = Astro.site ?? new URL(Astro.url.origin);
 
 const faqs = [
@@ -45,7 +45,7 @@ const schema = [
 
 <BaseLayout
   title={`Gravel Driveway Estimate — Material, Delivery & Total Cost Calculator`}
-  description={`Build a full gravel driveway estimate: material tons and cost, delivery fee, optional geotextile and grading labor. Free calculator with 2026 price ranges, no sign-up.`}
+  description={`Full gravel driveway estimate: material tons and cost, delivery fee, optional geotextile and grading labor. Free calculator, 2026 price ranges, no sign-up.`}
   schema={schema}
 >
   <Breadcrumbs
@@ -95,7 +95,7 @@ const schema = [
     </form>
 
     <div class="result" id="est-result" aria-live="polite" hidden>
-      <h3>Estimate range</h3>
+      <p class="kicker">Estimate range</p>
       <p><span class="big" id="est-total">$—</span> total (low–high shown below)</p>
       <ul>
         <li>Stone: <b id="est-tons">—</b> tons → <b id="est-material">—</b></li>
@@ -138,6 +138,8 @@ const schema = [
     <div class="related">
       <a href="/gravel-driveway-calculator/">Gravel driveway calculator</a>
       <a href="/gravel-driveway-cost-calculator/">Gravel driveway cost</a>
+      <a href="/how-many-bags-of-concrete-in-a-yard/">How many bags of concrete in a yard</a>
+      <a href="/concrete-bags-calculator/">How many bags of concrete do I need</a>
       <a href="/bulk-bag-vs-bags-calculator/">Bulk bag vs bags</a>
       <a href="/gravel-road-calculator/">Gravel road calculator</a>
     </div>

@@ -65,6 +65,16 @@ const {
 const siteUrl = Astro.site ?? new URL(Astro.url.origin);
 const path = `/${slug}/`;
 
+// Sitewide core guides — every calculator page links to them unless already present.
+const coreLinks = [
+  { label: 'How many bags of concrete in a yard', href: '/how-many-bags-of-concrete-in-a-yard/' },
+  { label: 'How many bags of concrete do I need', href: '/concrete-bags-calculator/' },
+];
+const relatedLinks = [
+  ...related,
+  ...coreLinks.filter((core) => !related.some((l) => l.href === core.href)),
+];
+
 const schema = [
   softwareApplicationSchema(title, path, siteUrl),
   breadcrumbSchema(
@@ -125,7 +135,7 @@ const schema = [
     </form>
 
     <div class="result" id="result" aria-live="polite" hidden>
-      <h3>Your result</h3>
+      <p class="kicker">Your result</p>
       <ul>
         {results.map((result) => (
           <li>
@@ -194,7 +204,7 @@ const schema = [
   <section class="card">
     <h2>Related calculators</h2>
     <div class="related">
-      {related.map((link) => (
+      {relatedLinks.map((link) => (
         <a href={link.href}>{link.label}</a>
       ))}
     </div>

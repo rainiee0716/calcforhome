@@ -4,7 +4,7 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
 import { breadcrumbSchema, faqSchema } from '../lib/schema';
 import { calculateBulkVsBags } from '../lib/longtail/estimates';
 
-const UPDATED = '2026-11-08';
+const UPDATED = '2026-11-18';
 const siteUrl = Astro.site ?? new URL(Astro.url.origin);
 
 // 预设对照表：yard 0.5~10，默认 $40/吨、$6/袋
@@ -51,7 +51,7 @@ const schema = [
 
 <BaseLayout
   title={`Bulk Bag vs Bags of Gravel Calculator — Which Is Cheaper?`}
-  description={`Compare bulk gravel (super sacks and delivered tons) against 0.5 cu ft bags by the yard: costs at 2026 prices, the crossover point, and when bags actually win. Free calculator, no sign-up.`}
+  description={`Bulk gravel vs 0.5 cu ft bags by the yard: 2026 costs, the crossover point and when bags win. Free calculator, no sign-up.`}
   schema={schema}
 >
   <Breadcrumbs
@@ -94,7 +94,7 @@ const schema = [
     </form>
 
     <div class="result" id="bulk-result" aria-live="polite" hidden>
-      <h3 id="bulk-verdict">—</h3>
+      <p class="kicker" id="bulk-verdict">—</p>
       <ul>
         <li>Bulk (delivered): <b id="bulk-cost">—</b> for <span id="bulk-tons">—</span> tons</li>
         <li>Bags (0.5 cu ft): <b id="bagged-cost">—</b> for <span id="bag-count">—</span> bags</li>
@@ -167,6 +167,8 @@ const schema = [
       <a href="/gravel-driveway-calculator/">Gravel driveway calculator</a>
       <a href="/gravel-driveway-cost-calculator/">Gravel driveway cost</a>
       <a href="/gravel-road-calculator/">Gravel road calculator</a>
+      <a href="/how-many-bags-of-concrete-in-a-yard/">How many bags of concrete in a yard</a>
+      <a href="/concrete-bags-calculator/">How many bags of concrete do I need</a>
     </div>
     <p class="muted">Last updated: {UPDATED}</p>
   </section>

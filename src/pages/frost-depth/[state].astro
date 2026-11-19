@@ -17,7 +17,7 @@ export function getStaticPaths() {
 const { group } = Astro.props;
 const { state, abbr, regions } = group;
 
-const UPDATED = '2026-11-07';
+const UPDATED = '2026-11-18';
 
 // 城市/区域速查表：仅当该州有城市映射时渲染
 const cityZoneMap = frostCityZonesAll[state];
@@ -140,7 +140,8 @@ const schema = [
     ],
     Astro.site ?? new URL(Astro.url.origin),
   ),
-  faqSchema(faqs),
+  // FAQ answers may carry inline links for display; strip the markup for JSON-LD.
+  faqSchema(faqs.map((f) => ({ question: f.question, answer: f.answer.replace(/<[^>]+>/g, '') }))),
   ...(youtubeVideoId
     ? [
         {
@@ -161,7 +162,7 @@ const schema = [
   title={cityRows
     ? `Frost Depth in ${state} — by City & County (${abbr})`
     : `Frost Depth in ${state} — ${depthLabel} Code Footing Depth`}
-  description={`Frost depth in ${state} (${abbr}): the code requires ${depthLabel} of footing depth${splitState ? `, split by zone — ${zoneText}` : ''}${cityRows ? ', down to the city and county level' : ''}. Plus the dig depth, Sonotube length and bags of concrete per footing.`}
+  description={`Frost depth in ${state}: code footing depth ${depthLabel}${splitState ? ' by county zone' : ''}${cityRows ? ' with city-level data' : ''}, plus dig depth, Sonotube length and bags per footing.`}
   schema={schema}
 >
   <Breadcrumbs
@@ -374,9 +375,11 @@ const schema = [
       </p>
     )}
     <p>
-      The <a href="/concrete-bags-calculator/">Concrete bags calculator</a> converts any total into 80, 60,
-      50 or 40-pound bags, and the <a href="/concrete-calculator/">concrete calculator</a> handles
-      slab and footing volumes.
+      Working out <a href="/concrete-bags-calculator/">how many bags of concrete do I need</a> for
+      the whole job? That calculator converts any total into 80, 60, 50 or 40-pound bags, and the
+      <a href="/concrete-calculator/">concrete calculator</a> handles slab and footing volumes. For
+      the conversion behind both — <a href="/how-many-bags-of-concrete-in-a-yard/">how many bags of
+      concrete in a yard</a> — the per-bag-size table is on its own page.
     </p>
   </section>
 
@@ -385,21 +388,22 @@ const schema = [
     {faqs.map((faq) => (
       <>
         <h3>{faq.question}</h3>
-        <p>{faq.answer}</p>
+        <p set:html={faq.answer} />
       </>
     ))}
   </section>
 
   <section class="card">
-    <h3>Plan a pour in {state}</h3>
+    <h2>Plan a pour in {state}</h2>
     <div class="related">
       <a href="/concrete-fence-post-calculator/">Concrete per fence post</a>
+      <a href="/concrete-bags-calculator/">How many bags of concrete do I need</a>
+      <a href="/how-many-bags-of-concrete-in-a-yard/">How many bags of concrete in a yard</a>
       <a href="/concrete-calculator/">Concrete slab &amp; footing volume</a>
-      <a href="/concrete-bags-calculator/">Concrete bags calculator</a>
       <a href="/frost-depth-by-state/">Frost depth in every state</a>
     </div>
 
-    <h3>Other states</h3>
+    <h2>Other states</h2>
     <div class="related">
       <a href={statePagePath(prev.state)}>Frost depth in {prev.state}</a>
       <a href={statePagePath(next.state)}>Frost depth in {next.state}</a>

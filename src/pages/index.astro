@@ -3,9 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import ToolIcon from '../components/ToolIcon.astro';
 import { tools } from '../lib/tools';
 import { SITE_NAME } from '../lib/site';
-import { websiteSchema } from '../lib/schema';
-
-const schema = websiteSchema(Astro.site ?? new URL(Astro.url.origin));
+import { websiteSchema, faqSchema } from '../lib/schema';
 
 const features = [
   {
@@ -24,26 +22,57 @@ const features = [
     icon: 'shield',
   },
 ];
+
+const slabSizes = ['10x10', '10x12', '10x20', '12x12', '12x16', '12x24', '16x20', '20x20', '20x30', '24x24', '24x30', '30x30'];
+const gravelLengths = [50, 60, 80, 100, 150, 200, 300, 400];
+
+const homeFaqs = [
+  {
+    question: 'How many bags of concrete do I need for a 10x10 slab?',
+    answer:
+      'A 10x10 slab at 4 inches thick is 1.23 cubic yards, which takes 56 bags of 80 lb mix without waste and about 62 with 10%. The concrete bags calculator gives the count for any slab size, and the 10x10 slab guide breaks the whole pour down step by step.',
+  },
+  {
+    question: 'How many bags of concrete in a yard?',
+    answer:
+      'Forty-five bags of 80 lb mix, 60 of 60 lb, 72 of 50 lb or 90 of 40 lb — a cubic yard is 27 cubic feet and every bag prints its yield. The bags-per-yard page has the full table with 2026 prices per yard.',
+  },
+  {
+    question: 'How much gravel do I need for a driveway?',
+    answer:
+      'Figure 4 inches deep for cars and 6 inches total if trucks use it, at 1.4 tons per cubic yard. A 50 ft driveway at 10 ft wide takes about 8.6 tons; the gravel driveway calculator converts your exact length, width and depth into yards and tons.',
+  },
+  {
+    question: 'When is a bag job too big for bags?',
+    answer:
+      'Around 1.5 cubic yards. Below that, bags beat the short-load delivery fee; above 2 yards, delivered ready-mix wins on price, labor and set time. Every calculator on this site shows the crossover for your volume.',
+  },
+];
+
+const schema = [
+  websiteSchema(Astro.site ?? new URL(Astro.url.origin)),
+  faqSchema(homeFaqs),
+];
 ---
 
 <BaseLayout
-  title={`${SITE_NAME} — Free Concrete & Gravel Calculators`}
-  description="Free DIY calculators for home projects: how many bags of concrete you need, cubic yards for a slab, gravel for a driveway, paver sand, mulch, lumber, and concrete per fence post. Fast, accurate, no sign-up."
+  title="Concrete & Gravel Calculators — Bags, Slabs, Footings"
+  description="Free concrete and gravel calculators: bags, cubic yards, slabs, footings, fence posts, driveways, frost depth. Exact quantities, math shown, no sign-up."
   schema={schema}
 >
   <section class="hero">
     <span class="hero-badge"><span class="dot"></span>Free · Instant · No sign-up</span>
-    <h1>Free Concrete &amp; Gravel Calculators — <span class="accent">order the right amount, every time.</span></h1>
+    <h1>Concrete &amp; Gravel Calculators — <span class="accent">order the right amount, every time.</span></h1>
     <p class="lead">Before you buy, know exactly how much material to get. Each tool does one job,
       runs instantly in your browser, and shows its math — so you stop over-ordering or running short.</p>
     <div class="hero-actions">
       <a class="btn" href="#calculators">Browse calculators</a>
-      <a class="btn-ghost" href="#why">Why calculate first</a>
+      <a class="btn-ghost" href="#guides">Popular guides</a>
     </div>
     <div class="hero-stats">
       <div class="stat"><b>{tools.length}</b><span>Pro-grade tools</span></div>
+      <div class="stat"><b>80+</b><span>Guides & pages</span></div>
       <div class="stat"><b>100%</b><span>Free, forever</span></div>
-      <div class="stat"><b>0</b><span>Sign-up required</span></div>
       <div class="stat"><b>&lt;1s</b><span>Instant results</span></div>
     </div>
   </section>
@@ -78,6 +107,110 @@ const features = [
   <!-- ===== AdSense: bottom of hub =====
   <div class="ad"><div class="box">[AdSense — bottom banner]</div></div>
   -->
+
+  <div class="section-head" id="guides">
+    <span class="eyebrow">Start here</span>
+    <h2>Concrete: two questions cover most pours</h2>
+    <p>Almost every bagged-concrete problem is one of these two questions. Both pages carry the full
+      tables, the formulas and the bag-size trade-offs.</p>
+  </div>
+
+  <section class="card">
+    <h3>Question 1 — count for your pour</h3>
+    <p>
+      You have a slab, pad or set of post holes drawn out, and you need the number of bags to buy.
+      That is the <a href="/concrete-bags-calculator/">how many bags of concrete do I need</a>
+      calculator: enter length, width and thickness, pick 80, 60, 50 or 40 lb bags, and it returns
+      the exact count rounded up with a waste margin already included — plus the cubic-yard figure
+      for the day the truck becomes the better option. For a 10x10 slab at 4 inches the answer is
+      56 bags of 80 lb mix; the calculator scales that to any footprint in one step.
+    </p>
+    <h3>Question 2 — the yard conversion</h3>
+    <p>
+      Quotes, delivery minimums and pallet pricing all speak in cubic yards, while the home center
+      sells bags. The bridge between the two is
+      <a href="/how-many-bags-of-concrete-in-a-yard/">how many bags of concrete in a yard</a>:
+      45 bags of 80 lb mix, 60 of 60 lb, 72 of 50 lb or 90 of 40 lb, because a yard is 27 cubic feet
+      and each bag yields a fixed slice of it. That page also prices a full yard in bags at 2026
+      home-center rates — $315 to $405 — and marks the volume where delivered ready-mix takes over.
+    </p>
+    <p>
+      Everything else hangs off those two. The <a href="/concrete-calculator/">concrete calculator</a>
+      gives you volume in cubic feet and yards first; the
+      <a href="/concrete-slab-cost-calculator/">slab cost calculator</a> turns volume into a material
+      budget; the <a href="/concrete-bag-coverage-calculator/">bag coverage calculator</a> works
+      backwards from square footage to bag count at a fixed thickness; and the
+      <a href="/concrete-fence-post-calculator/">fence post calculator</a> subtracts the post volume
+      from each hole so a 60-post fence does not over-order by a dozen bags.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>Slab guides by size, bag counts worked out</h2>
+    <p>
+      Twelve sizes cover nearly every pour people ask about, from a 10x10 shed floor to a 30x30
+      garage pad. Each guide has the bag table for 80/60/40 lb mix, a thickness chart from 4 to 6
+      inches, and the bags-versus-truck verdict for that footprint:
+    </p>
+    <div class="related">
+      {slabSizes.map((s) => (
+        <a href={`/how-many-bags-of-concrete-for-a-${s}-slab/`}>{s} slab</a>
+      ))}
+    </div>
+    <p>
+      Sizes are clickable because the math scales cleanly: square footage drives cubic yards, cubic
+      yards drive bag count, and only the mixing time and the short-load fee change the verdict.
+      A 12x12 pad at 4 inches is 1.33 cubic yards — still a bag job; a 24x30 at 5 inches is over 11
+      cubic yards — call the plant.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>Gravel: driveways, roads and paths</h2>
+    <p>
+      Gravel is sold by the ton and moved by the truckload, so the calculators here convert your
+      length, width and depth into cubic yards <em>and</em> tons — at 1.4 tons per cubic yard for
+      crushed stone — then price the stone at 2026 delivered rates of $30–$60 per ton. The main
+      <a href="/gravel-driveway-calculator/">gravel driveway calculator</a> handles the standard
+      pour-in-place drive; the <a href="/gravel-driveway-cost-calculator/">cost calculator</a> adds
+      the material budget, the <a href="/gravel-driveway-depth-calculator/">depth calculator</a>
+      splits base and surface layers for cars versus trucks, the
+      <a href="/gravel-road-calculator/">gravel road calculator</a> sizes longer private roads, and
+      the <a href="/bulk-bag-vs-bags-calculator/">bulk-bag-vs-bags comparison</a> settles whether
+      super sacks or 0.5 cu ft bags are cheaper for small jobs. The
+      <a href="/gravel-driveway-estimate/">driveway estimate page</a> rolls material, delivery and
+      total cost into one number.
+    </p>
+    <p>
+      For the eight driveway lengths people actually build — 50 to 400 feet — there is a worked
+      example for each, with the two-layer 4-inch-base-plus-2-inch-surface build and truckload
+      counts:
+    </p>
+    <div class="related">
+      {gravelLengths.map((l) => (
+        <a href={`/how-much-gravel-for-a-${l}-ft-driveway/`}>{l} ft driveway</a>
+      ))}
+    </div>
+    <p>
+      Companion materials are covered too: the <a href="/paver-sand-calculator/">paver sand
+      calculator</a> for bedding layers and the <a href="/mulch-calculator/">mulch calculator</a>
+      for beds — both convert square feet into the yards or bags you actually order.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>Frost depth decides how deep your footings go</h2>
+    <p>
+      Any footing — post holes, deck piers, slab edges — has to reach below the frost line, or
+      freeze-thaw heave will lift it a little every winter until doors stick and posts lean. Code
+      depth varies from 12 inches in the Deep South to 60 inches in the northern states, and it is
+      set state by state (and sometimes county by county). The
+      <a href="/frost-depth-by-state/">frost depth by state</a> hub lists the code footing depth,
+      the practical dig depth and the bags of concrete per post hole for all 50 states, with major
+      cities broken out — so the fence-post math and the footer math both start from the right
+      number for where you live.
+    </p>
+  </section>
 
   <div class="section-head" id="why">
     <span class="eyebrow">Why it matters</span>
@@ -117,4 +250,42 @@ const features = [
       </div>
     ))}
   </div>
+
+  <section class="card">
+    <h2>The math behind every calculator on this site</h2>
+    <p>
+      None of it is hidden, and none of it is complicated. Concrete volume is a box:
+      <code>length × width × (thickness ÷ 12) = cubic feet</code>, divided by 27 for cubic yards.
+      Bag counts are the same box divided by yield:
+      <code>bags = cubic feet ÷ yield per bag</code> — an 80 lb bag yields 0.60 cubic feet, so a
+      full 27-cubic-foot yard is 27 ÷ 0.60 = 45 bags, a 60 lb bag yields 0.45 for 60 bags per yard,
+      and so on. Gravel follows the same volume math with a density step: cubic yards × 1.4 = tons
+      of crushed stone.
+    </p>
+    <p>
+      The assumptions differ per tool and each page states them: 10% waste on formed slabs because
+      formwork bows and subgrade settles, 4 inches minimum for a car driveway and 6 inches total for
+      trucks, and the 1.5-cubic-yard crossover where bags stop beating the short-load fee. If a
+      number here disagrees with your supplier's quote, check the assumptions section on that
+      calculator's page — every input is labeled and nothing is rounded silently.
+    </p>
+    <p>
+      A note on the bag math people get wrong most often: yields are fixed by weight, not by brand.
+      Whatever the logo on the bag, an 80 lb pre-blended mix yields about 0.60 cubic feet — premium
+      fast-set and high-strength blends yield slightly less, closer to 0.55, which moves a full yard
+      from 45 bags toward 50. Check the printed yield when you switch products.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      {homeFaqs.map((f) => (
+        <details>
+          <summary>{f.question}</summary>
+          <p>{f.answer}</p>
+        </details>
+      ))}
+    </div>
+  </section>
 </BaseLayout>

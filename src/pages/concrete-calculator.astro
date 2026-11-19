@@ -5,7 +5,7 @@ import ToolIcon from '../components/ToolIcon.astro';
 import { breadcrumbSchema, faqSchema, softwareApplicationSchema } from '../lib/schema';
 
 const siteUrl = Astro.site ?? new URL(Astro.url.origin);
-const UPDATED = '2026-10-29';
+const UPDATED = '2026-11-18';
 
 const faqs = [
   {
@@ -93,7 +93,7 @@ const bagRows = [
 
 <BaseLayout
   title="Concrete Calculator — Slab & Footing Volume in Cubic Yards"
-  description="Free concrete calculator: enter length, width and thickness to get slab volume in cubic feet and cubic yards, plus the bags of mix it takes. Includes a slab size and thickness chart."
+  description="Enter length, width and thickness to get slab volume in cubic feet and cubic yards, plus the bags of mix it takes. Includes a slab size and thickness chart."
   schema={schema}
 >
   <Breadcrumbs items={[{ name: 'Home', path: '/' }, { name: 'Concrete Calculator' }]} />
@@ -131,7 +131,7 @@ const bagRows = [
     </form>
 
     <div class="result" id="result" aria-live="polite" hidden>
-      <h3>You need about</h3>
+      <p class="kicker">You need about</p>
       <p><span class="big" id="cubic-yards">—</span> cubic yards with waste</p>
       <ul>
         <li>Cubic feet before waste: <b id="cubic-feet">—</b></li>
@@ -192,9 +192,10 @@ const bagRows = [
       Nothing else is involved — no density correction, no shape factor, because a formed slab is a
       box.</p>
     <p>For bags, we divide the volume plus waste by 0.60 cubic feet, which is the yield of one 80 lb
-      bag of pre-blended mix, and round up. If you are buying 60 lb or 40 lb bags instead, use the
-      <a href="/concrete-bags-calculator/">concrete bags calculator</a> — the count changes but the
-      volume does not.</p>
+      bag of pre-blended mix, and round up. If you are buying 60 lb or 40 lb bags instead — or working
+      from the question of
+      <a href="/concrete-bags-calculator/">how many bags of concrete do I need</a> for a fixed slab
+      size — the count changes but the volume does not.</p>
 
     <h3>Why waste is not optional</h3>
     <p>Formwork bows, subgrade settles, and a slab poured 1/4 inch thick on a 400 square foot pour
@@ -282,7 +283,9 @@ const bagRows = [
     <p>Read the last column carefully. Three cubic yards in bags is $945 to $1,215, and delivered
       concrete for the same pour is roughly $450 to $600 plus a short-load fee. Bags cost about twice
       as much per yard and they are the right choice only when the pour is small or the truck cannot
-      reach the site.</p>
+      reach the site. The bag-side arithmetic —
+      <a href="/how-many-bags-of-concrete-in-a-yard/">how many bags of concrete in a yard</a>, by
+      weight class — has its own page.</p>
   </section>
 
   <section class="card">
@@ -338,9 +341,10 @@ const bagRows = [
       <p>Prices are 2026 US residential averages and vary by region, plant distance and order size.</p>
     </div>
 
-    <h3>Related calculators</h3>
+    <h2>Related calculators</h2>
     <div class="related">
-      <a href="/concrete-bags-calculator/">Concrete bags calculator</a>
+      <a href="/concrete-bags-calculator/">How many bags of concrete do I need</a>
+      <a href="/how-many-bags-of-concrete-in-a-yard/">How many bags of concrete in a yard</a>
       <a href="/concrete-fence-post-calculator/">Concrete for fence posts</a>
       <a href="/gravel-driveway-calculator/">Gravel for a driveway</a>
     </div>

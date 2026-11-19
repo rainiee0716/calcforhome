@@ -10,7 +10,7 @@ export function getStaticPaths() {
 
 const { size } = Astro.params;
 const data = buildSlabPage(size!) as SlabPageData;
-const UPDATED = '2026-11-07';
+const UPDATED = '2026-11-18';
 
 const a = data.answer;
 const siteUrl = Astro.site ?? new URL(Astro.url.origin);
@@ -85,7 +85,7 @@ const fmt = (n: number) => n.toFixed(n >= 100 ? 0 : 2);
 
 <BaseLayout
   title={`How Many Bags of Concrete for a ${data.size} Slab? (${a.bags80} Bags at 4")`}
-  description={`A ${data.size} slab at 4 inches needs ${a.cubicYards.toFixed(2)} cubic yards of concrete — ${a.bags80} bags of 80 lb mix with 10% waste. Full bag counts for 80/60/40 lb bags, thickness chart and ready-mix comparison.`}
+  description={`A ${data.size} slab at 4 inches takes ${a.cubicYards.toFixed(2)} cubic yards — ${a.bags80} bags of 80 lb mix with 10% waste. Thickness chart, bag counts and the ready-mix comparison.`}
   schema={schema}
 >
   <Breadcrumbs
@@ -108,7 +108,7 @@ const fmt = (n: number) => n.toFixed(n >= 100 ? 0 : 2);
       </div>
     </div>
     <div class="result">
-      <h3>You need about</h3>
+      <p class="kicker">You need about</p>
       <p><span class="big">{fmt(a.cubicYardsWithWaste)}</span> cubic yards with 10% waste</p>
       <ul>
         <li>80 lb bags: <b>{a.bags80}</b></li>
@@ -119,7 +119,7 @@ const fmt = (n: number) => n.toFixed(n >= 100 ? 0 : 2);
     </div>
     <p class="muted">
       Typical use: {data.projectLabel}. Check the numbers yourself with the
-      <a href="/concrete-bags-calculator/">concrete bags calculator</a>.
+      <a href="/concrete-bags-calculator/">how many bags of concrete do I need calculator</a>.
     </p>
   </section>
 
@@ -180,7 +180,9 @@ const fmt = (n: number) => n.toFixed(n >= 100 ? 0 : 2);
     <p>
       Bag yields: one 80 lb bag makes 0.60 cubic feet, a 60 lb bag 0.45, a 40 lb bag 0.30. The
       counts are rounded up — you cannot buy seven tenths of a bag, and running short mid-pour
-      leaves a cold joint that never fully bonds.
+      leaves a cold joint that never fully bonds. Working the other direction —
+      <a href="/how-many-bags-of-concrete-in-a-yard/">how many bags of concrete in a yard</a>, for
+      the pour that outgrows this slab — is the same division against 27 cubic feet.
     </p>
   </section>
 
@@ -264,7 +266,8 @@ const fmt = (n: number) => n.toFixed(n >= 100 ? 0 : 2);
 
     <h2>Related calculators</h2>
     <div class="related">
-      <a href="/concrete-bags-calculator/">Concrete bags calculator</a>
+      <a href="/concrete-bags-calculator/">How many bags of concrete do I need</a>
+      <a href="/how-many-bags-of-concrete-in-a-yard/">How many bags of concrete in a yard</a>
       <a href="/concrete-calculator/">Concrete calculator (cubic yards)</a>
       <a href="/concrete-slab-cost-calculator/">Slab cost calculator</a>
     </div>

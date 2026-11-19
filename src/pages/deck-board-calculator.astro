@@ -5,7 +5,7 @@ import ToolIcon from '../components/ToolIcon.astro';
 import { breadcrumbSchema, faqSchema, softwareApplicationSchema } from '../lib/schema';
 
 const siteUrl = Astro.site ?? new URL(Astro.url.origin);
-const UPDATED = '2026-10-29';
+const UPDATED = '2026-11-18';
 
 const faqs = [
   {
@@ -169,7 +169,7 @@ const spanRows = [
     </form>
 
     <div class="result" id="result" aria-live="polite" hidden>
-      <h3>Buy about</h3>
+      <p class="kicker">Buy about</p>
       <p><span class="big" id="board-count">—</span> boards</p>
       <ul>
         <li>Courses across the deck: <b id="row-count">—</b></li>
@@ -418,10 +418,12 @@ const spanRows = [
         building department before you frame.</p>
     </div>
 
-    <h3>Related calculators</h3>
+    <h2>Related calculators</h2>
     <div class="related">
       <a href="/lumber-calculator/">Lumber for wall framing</a>
       <a href="/concrete-calculator/">Concrete for the footings</a>
+      <a href="/concrete-bags-calculator/">How many bags of concrete do I need</a>
+      <a href="/how-many-bags-of-concrete-in-a-yard/">How many bags of concrete in a yard</a>
       <a href="/frost-depth-by-state/">Frost depth by state</a>
       <a href="/concrete-fence-post-calculator/">Concrete for fence posts</a>
     </div>

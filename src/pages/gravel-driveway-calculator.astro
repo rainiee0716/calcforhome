@@ -5,7 +5,7 @@ import ToolIcon from '../components/ToolIcon.astro';
 import { breadcrumbSchema, faqSchema, softwareApplicationSchema } from '../lib/schema';
 
 const siteUrl = Astro.site ?? new URL(Astro.url.origin);
-const UPDATED = '2026-10-29';
+const UPDATED = '2026-11-18';
 
 const faqs = [
   {
@@ -146,7 +146,7 @@ const coverRows = [
     </form>
 
     <div class="result" id="result" aria-live="polite" hidden>
-      <h3>You need about</h3>
+      <p class="kicker">You need about</p>
       <p><span class="big" id="cubic-yards">—</span> cubic yards</p>
       <ul>
         <li>Tons: <b id="tons">—</b></li>
@@ -346,10 +346,12 @@ const coverRows = [
       <p>Prices are 2026 US averages for delivered aggregate and vary by region and haul distance.</p>
     </div>
 
-    <h3>Related calculators</h3>
+    <h2>Related calculators</h2>
     <div class="related">
-      <a href="/concrete-calculator/">Concrete slab volume</a>
-      <a href="/concrete-bags-calculator/">Concrete bags calculator</a>
+      <a href="/gravel-driveway-cost-calculator/">Gravel driveway cost</a>
+      <a href="/gravel-driveway-depth-calculator/">Gravel driveway depth</a>
+      <a href="/concrete-bags-calculator/">How many bags of concrete do I need</a>
+      <a href="/how-many-bags-of-concrete-in-a-yard/">How many bags of concrete in a yard</a>
       <a href="/concrete-fence-post-calculator/">Concrete for fence posts</a>
     </div>
     <h3>Gravel by driveway length</h3>

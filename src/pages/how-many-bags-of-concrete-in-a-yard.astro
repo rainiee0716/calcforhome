@@ -21,6 +21,14 @@ const volumeRows = [
   { yards: '3', project: 'Call the plant', exact: 135, withWaste: 149 },
 ];
 
+const fractionRows = [
+  { yards: '0.25', cuft: 6.75, b80: 12, b60: 15, b50: 18, b40: 23 },
+  { yards: '0.5', cuft: 13.5, b80: 23, b60: 30, b50: 36, b40: 45 },
+  { yards: '0.75', cuft: 20.25, b80: 34, b60: 45, b50: 54, b40: 68 },
+  { yards: '1.5', cuft: 40.5, b80: 68, b60: 90, b50: 108, b40: 135 },
+  { yards: '2', cuft: 54, b80: 90, b60: 120, b50: 144, b40: 180 },
+];
+
 const faqs = [
   {
     question: 'How many 80 lb bags of concrete make a cubic yard?',
@@ -64,7 +72,7 @@ const schema = [
 
 <BaseLayout
   title="How Many Bags of Concrete in a Yard — 45×80 lb, 60×60, 90×40"
-  description="A cubic yard of concrete is 45 bags of 80 lb mix, 60 of 60 lb, 72 of 50 lb or 90 of 40 lb. The math, the cost per yard by bag size, and the volumes where a truck beats bags."
+  description="A cubic yard is 45 bags of 80 lb mix, 60 of 60 lb, 72 of 50 lb or 90 of 40 lb. The math, cost per yard by bag size, and when a truck beats bags."
   schema={schema}
 >
   <Breadcrumbs
@@ -174,6 +182,81 @@ const schema = [
   </section>
 
   <section class="card">
+    <h2>Half a yard, a quarter yard: bags per fraction of a yard</h2>
+    <p>
+      Most pours between the post-hole scale and the truck scale land on a fraction of a yard. The
+      same division applies — multiply 27 cubic feet by the fraction, divide by the bag yield, round
+      up. These are exact whole-bag counts, no waste allowance yet; add 10% on top.
+    </p>
+    <div class="table-wrap">
+      <table class="data">
+        <caption>Bags per fraction of a cubic yard, exact counts by bag size. Add 10% for waste
+          before you buy.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Cubic yards</th>
+            <th scope="col">Cubic feet</th>
+            <th scope="col">80 lb</th>
+            <th scope="col">60 lb</th>
+            <th scope="col">50 lb</th>
+            <th scope="col">40 lb</th>
+          </tr>
+        </thead>
+        <tbody>
+          {fractionRows.map((r) => (
+            <tr>
+              <td>{r.yards}</td>
+              <td>{r.cuft.toFixed(2)}</td>
+              <td class="hl">{r.b80}</td>
+              <td>{r.b60}</td>
+              <td>{r.b50}</td>
+              <td>{r.b40}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p>
+      The half-yard row is the one worth memorizing: 23 bags of 80 lb covers a 6x8 patio pad or ten
+      fence-post holes, and it is the largest pour one person can finish comfortably in a morning
+      before the first batch starts to set.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>What a yard of bags actually weighs</h2>
+    <p>
+      One yard in bags is 3,600 pounds no matter which size you buy — 45 × 80 lb, 60 × 60 lb,
+      72 × 50 lb and 90 × 40 lb all land on the same number, because it is the same concrete portioned
+      differently. Add roughly 300 pounds of mixing water (about 0.8 gallons per 80 lb bag) and the
+      material you place weighs close to 3,900 pounds per yard.
+    </p>
+    <p>
+      That weight decides how the bags get home. A half-ton pickup carries 1,500 to 2,000 pounds of
+      payload legally, so 45 bags of 80 lb mix means two to three trailer trips or a home-center
+      delivery fee — around $80 at most chains. A delivered cubic yard from the plant puts the same
+      weight in one move, which is part of why the truck wins above 2 yards even before you count
+      your back.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>Fast-set and high-strength mixes change the count</h2>
+    <p>
+      The 45-bags-per-yard figure is for standard pre-blended mix. Fast-setting and high-strength
+      80 lb bags typically yield a little less — around 0.55 cubic feet instead of 0.60 — which moves
+      a full yard from 45 bags to 50. Same 27 cubic feet, smaller yield, higher count: the formula
+      <code>27 ÷ yield</code> does not change, only the yield does.
+    </p>
+    <p>
+      The yield is printed on every bag, usually on the front face near the coverage claim. Check it
+      before you multiply — buying 45 bags of a fast-set mix for a full yard leaves you five bags
+      short on a pour that sets in 20 minutes, which is the worst possible time to drive back to the
+      store.
+    </p>
+  </section>
+
+  <section class="card">
     <h2>Bags or a delivered yard: the break-even</h2>
     <p>
       Bagged concrete for one yard costs <b>$315 to $405</b> in material. A delivered cubic yard runs
@@ -183,7 +266,7 @@ const schema = [
     </p>
     <p>
       For the bag-vs-truck math on your exact volume, the
-      <a href="/concrete-bags-calculator/">concrete bags calculator</a> and the
+      <a href="/concrete-bags-calculator/">how many bags of concrete do I need calculator</a> and the
       <a href="/concrete-slab-cost-calculator/">slab cost calculator</a> both carry the comparison —
       and the <a href="/concrete-calculator/">concrete calculator</a> turns any slab size into the
       cubic yards this page prices.
@@ -203,9 +286,9 @@ const schema = [
   </section>
 
   <section class="card">
-    <h3>Related calculators</h3>
+    <h2>Related calculators</h2>
     <div class="related">
-      <a href="/concrete-bags-calculator/">Concrete bags calculator</a>
+      <a href="/concrete-bags-calculator/">How many bags of concrete do I need</a>
       <a href="/concrete-calculator/">Concrete calculator (cubic yards)</a>
       <a href="/concrete-fence-post-calculator/">Bags per fence post hole</a>
       <a href="/concrete-slab-cost-calculator/">Concrete slab cost</a>

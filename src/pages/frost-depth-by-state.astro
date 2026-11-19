@@ -7,7 +7,7 @@ import { calculateFootingDepth } from '../lib/calculations';
 import { AFI_TABLE, FROST_REGIONS, regionsByState, statePagePath } from '../lib/frost';
 
 const siteUrl = Astro.site ?? new URL(Astro.url.origin);
-const UPDATED = '2026-10-29';
+const UPDATED = '2026-11-18';
 
 const states = regionsByState();
 
@@ -186,7 +186,7 @@ const schema = [
     </form>
 
     <div class="result" id="result" aria-live="polite" hidden>
-      <h3>Dig each hole</h3>
+      <p class="kicker">Dig each hole</p>
       <p><span class="big" id="dig-depth">—</span> inches deep</p>
       <ul>
         <li>Code frost depth: <b id="frost-depth">—</b> inches</li>
@@ -483,11 +483,12 @@ const schema = [
         run the numbers yourself than retype them.</p>
     </div>
 
-    <h3>Related calculators</h3>
+    <h2>Related calculators</h2>
     <div class="related">
       <a href="/concrete-fence-post-calculator/">Concrete per fence post</a>
+      <a href="/concrete-bags-calculator/">How many bags of concrete do I need</a>
+      <a href="/how-many-bags-of-concrete-in-a-yard/">How many bags of concrete in a yard</a>
       <a href="/concrete-calculator/">Concrete slab & footing volume</a>
-      <a href="/concrete-bags-calculator/">Concrete bags calculator</a>
       <a href="/gravel-driveway-calculator/">Gravel for a driveway</a>
     </div>
     <p class="muted">Last updated: {UPDATED}</p>
