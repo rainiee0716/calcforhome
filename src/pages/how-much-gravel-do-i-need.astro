@@ -1,0 +1,101 @@
+---
+import LongTailCalculator from '../components/LongTailCalculator.astro';
+
+const fields = [
+  { id: 'length', label: 'Length (ft)', type: 'number', min: 1, step: 0.5, value: '20' },
+  { id: 'width', label: 'Width (ft)', type: 'number', min: 1, step: 0.5, value: '20' },
+  { id: 'depth', label: 'Depth (in)', type: 'number', min: 1, step: 0.5, value: '4' },
+  { id: 'density', label: 'Stone density (tons/cu yd)', type: 'number', min: 1.1, max: 1.8, step: 0.05, value: '1.4' },
+  { id: 'price', label: 'Price ($/ton)', type: 'number', min: 10, step: 5, value: '40' },
+  { id: 'waste', label: 'Waste (%)', type: 'number', min: 0, max: 30, step: 1, value: '10' },
+];
+
+const results = [
+  { key: 'cubicYards', label: 'Gravel volume', unit: 'cu yd', format: 'fixed2' },
+  { key: 'tons', label: 'Gravel weight', unit: 'tons', format: 'fixed2' },
+  { key: 'materialCost', label: 'Material cost', format: 'money' },
+];
+---
+
+<LongTailCalculator
+  title="How Much Gravel Do I Need? — Calculator & Chart"
+  description="Enter length, width and depth to get gravel in cubic yards and tons, with a coverage chart for common areas and driveway lengths at 4 inches deep."
+  slug="how-much-gravel-do-i-need"
+  calcType="gravel-cost"
+  quickAnswer="One cubic yard of crushed stone covers about 81 sq ft at 4 inches deep and weighs roughly 1.4 tons. A 20x20 patio at 4 inches takes about 5.4 cubic yards — 7.6 tons with 10% waste."
+  formula="Volume = length × width × (depth ÷ 12) ÷ 27. Tons = volume × density (1.4 for crushed stone)."
+  fields={fields}
+  results={results}
+  table={{
+    caption: 'Gravel for common areas at 4 inches deep, 1.4 tons per cubic yard, 10% waste included.',
+    headers: ['Area', 'Cubic yards', 'Tons', 'Cost ($30–$60/ton)'],
+    rows: [
+      ['10 x 10 (shed pad)', '1.4', '1.9', '$57–$114'],
+      ['12 x 12 (small patio)', '2.0', '2.7', '$81–$162'],
+      ['10 x 20 (walkway)', '2.7', '3.8', '$114–$228'],
+      ['20 x 20 (patio)', '5.4', '7.6', '$228–$456'],
+      ['10 x 50 (short drive)', '6.8', '9.5', '$285–$570'],
+      ['10 x 100 (driveway)', '13.6', '19.0', '$570–$1,140'],
+      ['10 x 200 (long drive)', '27.2', '38.0', '$1,140–$2,280'],
+    ],
+  }}
+  note="Counts assume compacted 4-inch depth on firm ground. Soft subgrade eats 10–15% more; geotextile under the stone stops the loss."
+  guide={[
+    {
+      heading: 'The three numbers you actually need',
+      paragraphs: [
+        'Gravel volume is length × width × depth, divided by 27 for cubic yards. Weight is that volume times 1.4 tons per yard for crushed stone (1.2 for pea gravel, 1.5 for dense base like #411). Cost is tons times your delivered price — $30–$60 per ton is the 2026 band for most of the US.',
+        'Depth decides everything else: <b>4 inches</b> is the floor for a car-only drive or walkway, <b>6 inches total</b> for anything trucks touch, built as two layers — 4 inches of compacted base plus 2 inches of #57 surface. The <a href="/gravel-driveway-depth-calculator/">driveway depth calculator</a> splits that two-layer build for your exact footprint.',
+      ],
+    },
+    {
+      heading: 'Driveway lengths, already worked out',
+      paragraphs: [
+        'If your project is a standard 10-foot-wide driveway, the per-length answers are on their own pages with depth charts, two-layer totals and truckload counts: <a href="/how-much-gravel-for-a-50-ft-driveway/">50 ft</a>, <a href="/how-much-gravel-for-a-100-ft-driveway/">100 ft</a>, <a href="/how-much-gravel-for-a-150-ft-driveway/">150 ft</a>, <a href="/how-much-gravel-for-a-200-ft-driveway/">200 ft</a>, <a href="/how-much-gravel-for-a-300-ft-driveway/">300 ft</a> and <a href="/how-much-gravel-for-a-400-ft-driveway/">400 ft</a>.',
+        'For the money side of a driveway build — delivery, geotextile and total all-in — the <a href="/gravel-driveway-cost-calculator/">gravel driveway cost calculator</a> prices it, and the <a href="/gravel-driveway-calculator/">gravel driveway calculator</a> handles stone-type choices from pea gravel to base rock.',
+      ],
+    },
+    {
+      heading: 'Ordering and spreading without waste',
+      paragraphs: [
+        'Order by the ton, not by the bucket — the truck scale is what you pay on, and the supplier ticket should list weight and stone size. Have the pile dumped as close to the final area as the truck can reach; moving gravel by wheelbarrow costs about 15 minutes per ton of your afternoon.',
+        'Spread in one 4-inch lift and compact it before the surface layer goes on. A plate compactor rents for $60–$90 a day and does more for a driveway that stays put than any extra thickness of loose stone. Rake the final layer flush to your forms, crown the middle a quarter inch per foot, and the surface will shed water instead of holding it.',
+      ],
+    },
+    {
+      heading: 'Bags, bulk sacks or a dump truck?',
+      paragraphs: [
+        'Under about a yard, 0.5 cu ft bags win — a 10x10 shed pad at 4 inches is roughly 41 bags. Past that, bulk matters: super sacks (about one ton each) until you hit the 5–10 ton range, then a dump truck delivered loose is cheapest per ton. The <a href="/bulk-bag-vs-bags-calculator/">bulk-bag-vs-bags comparison</a> has the crossover math.',
+        'For private roads longer than a driveway, the <a href="/gravel-road-calculator/">gravel road calculator</a> sizes by road width and truckload counts instead.',
+      ],
+    },
+  ]}
+  faqs={[
+    {
+      question: 'How much gravel do I need for a driveway?',
+      answer: 'At the standard 10 feet wide and 4 inches deep, figure 1.7 tons per 10 feet of length — a 50 ft drive takes about 9.5 tons with waste, a 100 ft drive about 19. Add depth to 6 inches total if trucks will use it.',
+    },
+    {
+      question: 'How deep should gravel be?',
+      answer: 'Four inches compacted for cars, six inches total for trucks — built as two layers so the base compacts hard and the surface drains. Single-size stone alone never locks and ravels under tires.',
+    },
+    {
+      question: 'How many tons is a yard of gravel?',
+      answer: 'About 1.4 tons for crushed stone, 1.2 for pea gravel and up to 1.5 for dense-graded base. When a supplier quotes tons and your plans say yards, multiply by the density — never by 1.',
+    },
+    {
+      question: 'How much area does a ton of gravel cover?',
+      answer: 'At 4 inches deep, one ton of crushed stone covers about 58 square feet — roughly a 7x8 patch. At 2 inches for a decorative top-dressing, the same ton stretches to about 116 square feet.',
+    },
+    {
+      question: 'Should I order 10% extra?',
+      answer: 'Yes for driveways and anything on soft or sloped ground — compaction, spillage and subgrade losses eat 10–15%. On a flat, firm patio base over landscape fabric, 5% is enough.',
+    },
+  ]}
+  related={[
+    { label: 'Gravel driveway calculator', href: '/gravel-driveway-calculator/' },
+    { label: 'Gravel driveway cost', href: '/gravel-driveway-cost-calculator/' },
+    { label: 'Gravel driveway depth', href: '/gravel-driveway-depth-calculator/' },
+    { label: 'Gravel road calculator', href: '/gravel-road-calculator/' },
+  ]}
+/>

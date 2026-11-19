@@ -12,6 +12,7 @@ import {
   calculateLayeredGravel,
   calculatePaverSand,
   calculateMulch,
+  calculateSonotube,
   calculateFootingDepth,
   calculateFraming,
   calculateDeckBoards,
@@ -374,4 +375,18 @@ test('a wider board needs fewer courses and a narrow one more', () => {
   // Butting boards tight removes the gaps, not the board width.
   const tight = calculateDeckBoards({ deckLengthFt: 16, deckWidthFt: 12, boardWidthIn: 5.5, gapIn: 0 });
   assert.equal(tight.rows, 27);
+});
+
+test('sonotube calculator prices a tube pier', () => {
+  const result = calculateSonotube({
+    diameterIn: 12,
+    heightFt: 4,
+    wastePercent: 10,
+    bagYieldCubicFeet: 0.6,
+  });
+  // pi * 0.5^2 * 4 = 3.1416 cu ft; with 10% waste = 3.4558; / 0.6 = 5.76 -> 6 bags
+  assert.equal(result.bags, 6);
+  assert.equal(result.bags80, 6);
+  assert.equal(result.bags60, 8);
+  assert.equal(result.bags40, 12);
 });

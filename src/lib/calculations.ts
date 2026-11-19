@@ -164,6 +164,46 @@ export function calculateBagCoverage(input: BagCoverageInput): BagCoverageResult
   };
 }
 
+export interface SonotubeInput {
+  diameterIn: number;
+  heightFt: number;
+  wastePercent?: number;
+  bagYieldCubicFeet?: number;
+}
+
+export interface SonotubeResult {
+  cubicFeet: number;
+  volumeWithWasteCubicFeet: number;
+  cubicYards: number;
+  bags: number;
+  bags80: number;
+  bags60: number;
+  bags40: number;
+}
+
+export function calculateSonotube(input: SonotubeInput): SonotubeResult {
+  assertPositive(input.diameterIn, 'Diameter');
+  assertPositive(input.heightFt, 'Height');
+  const yieldPerBag = input.bagYieldCubicFeet ?? 0.6;
+  assertPositive(yieldPerBag, 'Bag yield');
+
+  const radiusFt = input.diameterIn / 2 / 12;
+  const cubicFeet = Math.PI * radiusFt * radiusFt * input.heightFt;
+  const volumeWithWasteCubicFeet = applyWaste(cubicFeet, input.wastePercent ?? 0);
+  const countBags = (yieldCubicFeet: number) =>
+    Math.ceil(volumeWithWasteCubicFeet / yieldCubicFeet);
+
+  return {
+    cubicFeet,
+    volumeWithWasteCubicFeet,
+    cubicYards: volumeWithWasteCubicFeet / CUBIC_FEET_PER_CUBIC_YARD,
+    bags: countBags(yieldPerBag),
+    bags80: countBags(0.6),
+    bags60: countBags(0.45),
+    bags40: countBags(0.3),
+  };
+}
+
 export interface ConcreteSlabCostInput extends ConcreteInput {
   pricePerCubicYard: number;
 }

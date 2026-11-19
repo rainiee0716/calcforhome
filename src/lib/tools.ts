@@ -105,4 +105,16 @@ export const tools: Tool[] = [
     blurb: 'Material, delivery and total cost in one place',
     updated: '2026-11-18',
   },
+  {
+    slug: 'sonotube-calculator',
+    title: 'Sonotube Calculator',
+    blurb: 'Concrete volume and bags for tube piers',
+    updated: '2026-11-19',
+  },
+  {
+    slug: 'how-much-gravel-do-i-need',
+    title: 'How Much Gravel Do I Need',
+    blurb: 'Yards, tons and cost by area and depth',
+    updated: '2026-11-19',
+  },
 ];

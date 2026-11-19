@@ -1,6 +1,6 @@
 # 外链候选清单 — 两个核心页的引用域建设
 
-目标页：`/how-many-bags-of-concrete-in-a-yard/`、`/concrete-bags-calculator/`（先做这两个，别撒到别的页）
+目标页：`/concrete-slab-cost-calculator/`（12,100/月、KD 21.1，2026-11-19 起第一优先）、`/how-many-bags-of-concrete-in-a-yard/`、`/concrete-bags-calculator/`（这三个之外的页先只靠内链，不投外链）
 目标：20~30 个引用域。本清单按"验证状态 + 可达性"整理，**DR 数字需要你用 Ahrefs 账号复核后再排优先级**（我没有你的 Ahrefs 权限，只验证了页面可达和收录内容）。
 
 核实时间：2026-11-19。
@@ -55,8 +55,9 @@ Subject: A concrete bag-count table your readers can audit
 > Hi [Name],
 > I run CalcForHome, a set of free concrete & gravel calculators. I noticed your [article/page] covers [topic].
 > I recently published a table of how many bags of concrete are in a cubic yard (45×80 lb, 60×60 lb, 72×50 lb, 90×40 lb) with the math shown, at 2026 home-center prices:
-> https://www.calcforhome.com/how-many-bags-of-concrete-in-a-yard/
-> If it fits, feel free to cite it; happy to write a guest piece on bag-vs-truck break-even if you accept contributions.
+> https://www.calcforhome.com/concrete-slab-cost-calculator/ (slab cost math, 2026 prices)
+> https://www.calcforhome.com/how-many-bags-of-concrete-in-a-yard/ (bags-per-yard table)
+> If they fit, feel free to cite either; happy to write a guest piece on bag-vs-truck break-even if you accept contributions.
 > — [Name]
 
 ## 注意

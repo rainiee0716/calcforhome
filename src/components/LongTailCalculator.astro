@@ -155,7 +155,7 @@ const schema = [
       <>
         <h2>{section.heading}</h2>
         {section.paragraphs.map((paragraph) => (
-          <p>{paragraph}</p>
+          <p set:html={paragraph} />
         ))}
       </>
     ))}
@@ -213,14 +213,15 @@ const schema = [
 </BaseLayout>
 
 <script>
-  import {
-    calculateBagCoverage,
-    calculateConcreteSlabCost,
-    calculateGravelCost,
-    calculateLayeredGravel,
-    calculateMulch,
-    calculatePaverSand,
-  } from '../lib/calculations';
+import {
+  calculateBagCoverage,
+  calculateConcreteSlabCost,
+  calculateGravelCost,
+  calculateLayeredGravel,
+  calculateMulch,
+  calculatePaverSand,
+  calculateSonotube,
+} from '../lib/calculations';
 
   const form = document.querySelector('#calculator-form');
   const error = document.querySelector('#form-error');
@@ -252,6 +253,8 @@ const schema = [
         return calculatePaverSand(input);
       case 'mulch':
         return calculateMulch(input);
+      case 'sonotube':
+        return calculateSonotube(input);
       default:
         throw new Error('Unknown calculator type.');
     }
@@ -305,6 +308,13 @@ const schema = [
           lengthFt: value('length'),
           widthFt: value('width'),
           depthIn: value('depth'),
+          wastePercent: value('waste'),
+          bagYieldCubicFeet: value('bag-size'),
+        };
+      case 'sonotube':
+        return {
+          diameterIn: value('diameter'),
+          heightFt: value('height'),
           wastePercent: value('waste'),
           bagYieldCubicFeet: value('bag-size'),
         };

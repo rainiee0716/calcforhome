@@ -1,0 +1,103 @@
+---
+import LongTailCalculator from '../components/LongTailCalculator.astro';
+
+const fields = [
+  { id: 'diameter', label: 'Tube diameter (in)', type: 'number', min: 4, max: 24, step: 0.5, value: '12' },
+  { id: 'height', label: 'Fill height (ft)', type: 'number', min: 0.5, step: 0.25, value: '4' },
+  {
+    id: 'bag-size',
+    label: 'Bag size',
+    type: 'select',
+    options: [
+      { value: '0.60', label: '80 lb (~0.60 cu ft)' },
+      { value: '0.45', label: '60 lb (~0.45 cu ft)' },
+      { value: '0.375', label: '50 lb (~0.375 cu ft)' },
+      { value: '0.30', label: '40 lb (~0.30 cu ft)' },
+    ],
+  },
+  { id: 'waste', label: 'Waste (%)', type: 'number', min: 0, max: 30, step: 1, value: '10' },
+];
+
+const results = [
+  { key: 'cubicFeet', label: 'Concrete volume', unit: 'cu ft', format: 'fixed2' },
+  { key: 'cubicYards', label: 'Cubic yards', format: 'fixed2' },
+  { key: 'bags', label: 'Bags to buy' },
+];
+---
+
+<LongTailCalculator
+  title="Sonotube Calculator — Concrete for Tube Piers"
+  description="Enter tube diameter and fill height for concrete volume and the exact bag count for a sonotube pier, waste included, plus frost-depth dig guidance."
+  slug="sonotube-calculator"
+  calcType="sonotube"
+  quickAnswer="A 12-inch sonotube filled 4 feet tall takes about 3.14 cubic feet of concrete — 6 bags of 80 lb mix with 10% waste."
+  formula="Volume = π × (diameter ÷ 2 ÷ 12)² × height. Bags = (volume with waste) ÷ bag yield, rounded up to whole bags."
+  fields={fields}
+  results={results}
+  table={{
+    caption: '80 lb bags per tube with 10% waste, at common form sizes.',
+    headers: ['Tube size', 'Cu ft', 'Cu yd', '80 lb bags'],
+    rows: [
+      ['8" × 4 ft', '1.40', '0.05', '3'],
+      ['10" × 4 ft', '2.18', '0.08', '4'],
+      ['12" × 4 ft', '3.14', '0.12', '6'],
+      ['12" × 6 ft', '4.71', '0.17', '9'],
+      ['16" × 4 ft', '5.59', '0.21', '11'],
+      ['18" × 4 ft', '7.07', '0.26', '13'],
+    ],
+  }}
+  note="Tubes are sold in 4, 8 and 12 foot lengths. Fill height is the concrete height, not the tube length — cut the tube to the pour depth plus 2–3 inches above grade."
+  guide={[
+    {
+      heading: 'What a sonotube actually does',
+      paragraphs: [
+        'A sonotube is a cardboard form that shapes a concrete pier: it keeps the walls from caving while the pour cures and gives the pier a smooth, sized column that deck posts and mailbox posts bolt straight onto. Below grade the cardboard breaks down after a season or two — the concrete column is what remains, and that is fine; the form is scaffolding, not structure.',
+        'The math is pure cylinder: <code>π × r² × height</code>. A 12-inch tube 4 feet tall is π × 0.5² × 4 = 3.14 cubic feet — about 0.12 cubic yards. That is why tubes are always a bag job; even a dozen tubes rarely reach the 1.5-cubic-yard point where a truck takes over.',
+      ],
+    },
+    {
+      heading: 'How deep should a sonotube go?',
+      paragraphs: [
+        'The bottom of the pier has to sit below your local frost line plus a bearing allowance, or freeze-thaw will lift it a little every winter until the deck above is visibly out of level. The rule the codes use: <b>frost depth + 6 inches of bearing</b>. In Minnesota that can mean a 48-inch hole; in the South, 12 inches of footing may be the whole depth.',
+        'The code footing depth for all 50 states, with major cities broken out, is on the <a href="/frost-depth-by-state/">frost depth by state</a> page — start there before you dig. Add 2–3 inches of tube above grade so the form can be cut cleanly and the post base sits on dry concrete.',
+      ],
+    },
+    {
+      heading: 'Tube size vs post size',
+      paragraphs: [
+        'A 6x6 post takes a 10–12 inch tube; a 4x4 takes an 8–10 inch tube. The hole itself should run 2–4 inches wider than the tube so you can backfill and tamp around it — a tight hole with loose fill does nothing for lateral stability. Wider is not automatically better: past 12 inches for a 4x4 you are buying concrete that adds little holding power.',
+        'For rectangular footings and slabs rather than cylinders, the <a href="/concrete-calculator/">concrete calculator</a> handles the box math. For fence posts — where the post itself displaces concrete inside the hole — the <a href="/concrete-fence-post-calculator/">fence post calculator</a> does the subtraction per hole.',
+      ],
+    },
+    {
+      heading: 'Bags or a small truck?',
+      paragraphs: [
+        'Up to about ten 12-inch tubes (60 bags of 80 lb mix), bags are the right buy — carried a few at a time, mixed in a wheelbarrow, poured one tube at a time. Past that, the bag math crosses the short-load math: the conversion of <a href="/how-many-bags-of-concrete-in-a-yard/">how many bags of concrete in a yard</a> (45 × 80 lb) and the <a href="/concrete-bags-calculator/">how many bags of concrete do I need calculator</a> cover the totals.',
+        'Pour each tube in one continuous lift — stopping halfway up a tube leaves a cold joint exactly where the post load is highest. Rod or vibrate each lift to chase out voids against the cardboard wall.',
+      ],
+    },
+  ]}
+  faqs={[
+    {
+      question: 'How many bags of concrete for a 12-inch sonotube?',
+      answer: 'Six bags of 80 lb mix for a 4-foot fill with 10% waste (3.14 cubic feet, or 5.76 bag-equivalents after waste, rounded up to whole bags). A 6-foot fill in the same tube takes 9 bags.',
+    },
+    {
+      question: 'Does the cardboard tube stay in the ground?',
+      answer: 'Yes below grade — moisture breaks the cardboard down within a couple of seasons and the cured concrete column remains. Cut off any part extending above grade after the pour cures, since exposed cardboard holds water against the concrete.',
+    },
+    {
+      question: 'Should I fill the sonotube to the top?',
+      answer: 'Fill to the top of the cut tube, then screed. The finished pier should end 2–3 inches above grade so the post base and hardware sit on dry concrete, not soil.',
+    },
+    {
+      question: 'Do sonotubes need rebar?',
+      answer: 'For deck piers, one or two #4 bars run vertically through the pier (or a bracket bolted into wet concrete) is standard practice and cheap insurance; check the detail your permit set specifies. Fence-post tubes poured with fast-set mix usually go without.',
+    },
+  ]}
+  related={[
+    { label: 'Concrete for fence posts', href: '/concrete-fence-post-calculator/' },
+    { label: 'Frost depth by state', href: '/frost-depth-by-state/' },
+    { label: 'Concrete calculator (cubic yards)', href: '/concrete-calculator/' },
+  ]}
+/>
