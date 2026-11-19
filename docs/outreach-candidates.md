@@ -3,7 +3,7 @@
 目标页：`/concrete-slab-cost-calculator/`（12,100/月、KD 21.1，2026-11-19 起第一优先）、`/how-many-bags-of-concrete-in-a-yard/`、`/concrete-bags-calculator/`（这三个之外的页先只靠内链，不投外链）
 目标：20~30 个引用域。本清单按"验证状态 + 可达性"整理，**DR 数字需要你用 Ahrefs 账号复核后再排优先级**（我没有你的 Ahrefs 权限，只验证了页面可达和收录内容）。
 
-核实时间：2026-11-19。
+核实时间：2026-11-19。每个候选的发送邮件见 [outreach-drafts.md](./outreach-drafts.md)（复制即发）。
 
 ---
 
