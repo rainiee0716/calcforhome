@@ -1,12 +1,16 @@
 # CalcForHome (Astro) — Concrete & Gravel Calculator Hub
 
+**Live site: [https://www.calcforhome.com/](https://www.calcforhome.com/)** — free concrete and
+gravel calculators for DIY homeowners: bags per cubic yard, slab cost by thickness and region,
+gravel by driveway length, and frost depth for all 50 states.
+
 Free DIY calculator hub for home-improvement material estimates, built with
 [Astro](https://astro.build). The output is fully static HTML, and calculator logic is extracted into
 testable TypeScript modules.
 
 ## Features
 
-- 13 focused calculators:
+- 15 focused calculators plus 20+ long-tail guides:
   - Concrete slab/footing volume
   - Concrete bags by 80/60/50/40 lb bag size
   - Concrete bag coverage
@@ -18,6 +22,8 @@ testable TypeScript modules.
   - Deck board takeoff
   - Paver sand
   - Mulch
+  - Sonotube (tube pier) concrete
+  - Gravel by area ("how much gravel do I need")
 - Shared calculation module with Node tests
 - Semantic forms, keyboard submission, validation errors, and `aria-live` results
 - Canonical URLs, sitemap, JSON-LD, breadcrumbs, FAQ schema, Open Graph, and Twitter metadata

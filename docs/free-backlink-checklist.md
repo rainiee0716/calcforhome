@@ -1,0 +1,46 @@
+# 免费外链渠道清单 — 产品发布 / 内容平台 / 社区
+
+**外链目标页（不变）**：`/concrete-bags-calculator/`、`/concrete-slab-cost-calculator/`（yard 页退出外链目标）。
+**节奏**：每天 1~2 个动作；遇到要登录、要验证码、提交后看不到的 → 直接跳过换下一个（哥飞：筛选，不死磕）。
+**性质说明**：本清单里的产品发布和内容平台链接大多是 nofollow——它们的价值是**引流 + 加快抓取 + 品牌词搜索**；真正推 DR 的仍是 10~15 个相关中小站的 dofollow 外链（outreach-drafts.md 那条线）。两条线并行。
+
+## 一、产品发布类（本周做）
+
+| 平台 | 提交入口 | 账号 | 链接性质 | 优先级 | 状态 |
+|---|---|---|---|---|---|
+| Product Hunt | producthunt.com/posts/new | 需注册，**先养号**：前 1~2 周只评论不发帖（哥飞 2024-06-06） | nofollow，高曝光 | 中 | ☐ 养号中 |
+| IndieHackers | indiehackers.com/new-post | 需注册 | nofollow | 高（DIY/独立开发者气质合） | ☐ |
+| Betapage | betapage.org/submit-startup | 需注册，免费档要排队 | dofollow 常见 | 中 | ☐ |
+| AlternativeTo | alternativeto.net/software/new | 需注册，列到 "Concrete Calculator" 类目下 | nofollow | 中 | ☐ |
+| SaaSHub | saashub.com/add-service | 需注册，免费收录工具站 | dofollow 常见 | 高 | ☐ |
+| Hacker News | news.ycombinator.com/submit | 需注册，Show HN 格式：`Show HN: I built a free concrete cost calculator with auditable math` | nofollow 但流量可能爆 | 中（周末美区时间发） | ☐ |
+
+**提交素材（直接复制）**：CalcForHome — free concrete & gravel calculators with auditable math. Bags per cubic yard (45×80 lb), slab cost per square foot by thickness and region, gravel by driveway length, frost depth for all 50 states. 97 pages, no sign-up, formulas printed on every page.
+
+## 二、内容平台类（本周 3~5 篇）
+
+| 平台 | 入口 | 账号 | 锚文本 | 状态 |
+|---|---|---|---|---|
+| Medium | medium.com（Google 登录可直通） | Google 账号 | 正文完整词组可点 | ☐ 草稿已备：docs/article-medium-bags-per-yard.md |
+| dev.to | dev.to/enter | GitHub/Google 登录 | 同上 | ☐（"build in public" 角度复用同一篇改写） |
+| Substack | substack.com（Google 登录） | Google 账号 | 同上 | ☐ |
+| Notion 公开页 | notion.site | 已有则用 | 同上 | ☐ |
+
+文章规则：每篇 600~900 词，一个主题，正文 2~3 处完整锚文本（`concrete bags calculator` / `concrete slab cost calculator` / `how many bags of concrete in a yard`），别写 "click here"；三平台别发同一篇原文——各改写 30% 避免重复内容。
+
+## 三、社区类（下周开始，每天 20 分钟）
+
+- **Reddit**：r/DIY、r/HomeImprovement、r/landscaping——先答题攒 karma，被问到计算问题时才自然带链接；新号直接发链接=秒删+域名进黑名单
+- **Quora**：搜 "how many bags of concrete do I need" 等问题，认真答一道带一次链接；两个目标词的第一页已有帖子占位
+- **博客评论**：英文语法 `inurl:blog "leave a comment" concrete calculator`（群友的中文语法是 `inurl:blog "我要发表看法"`，英文站换这个）；只评有实质内容的相关博文，评论里不带链接（带链接必进垃圾箱），靠评论者资料页挂站
+
+## 四、GitHub（今天已完成 ✅）
+
+- 仓库 github.com/rainiee0716/calcforhome 是 public——README 已加线上地址和完整项目介绍（2026-11-22）
+- 待用户在 repo Settings 里把 Website 字段从 vercel.app 临时地址改成 https://www.calcforhome.com/
+
+## 五、4 周后效率复盘（12-20 前后）
+
+1. Ahrefs 免费查询器看 referring domains 实际新增了多少（左右复盘的教训：免费渠道真实有效率不到 10%，保住能进的 20~30%）
+2. 没进谷歌收录的平台从本清单划掉，后面只做留下来的
+3. 别忘了主指标还是 outreach 线：10~15 个相关中小站的 dofollow 才是推 bags/slab-cost 两页进前 40 的主力
