@@ -5,7 +5,7 @@
 使用规则：
 - 每周发 3~5 封，别一天全发完
 - 发前把 `[Name]`、站点引用句改成对方页面上的真实细节（我已给出每家的切入点）
-- 锚文本让对方自己写，自然多样比精确匹配安全
+- 锚文本：客座文正文自然写出完整词组（bags 页 → "concrete bags calculator" / "concrete bag calculator"；slab-cost 页 → "concrete slab cost calculator"）。对方主动收录时让他自己选措辞，但可以在邮件里给出建议链接形式
 - 付费位必须 nofollow/sponsored 标注（roohome 有明确披露条款，按它条款走）
 - 跟进规则：7~10 天没回，跟一封短邮件；再没回就放弃，别纠缠
 
@@ -23,7 +23,7 @@
 | thehomeimproving / dailyhomediy | DNS 不通 | — | — | 换网络验证后再投 |
 
 > 代发说明：4 封邮件从 rainiee0716@gmail.com 的 Gmail 网页发出（2026-11-20），已存"已发送"，回复会进该收件箱。
-> 本周已发 6 封——达到每周 3~5 封的节奏上限，剩余候选（slabcalc、D 类）下周再投。
+> 本周已发 6 封——达到每周 3~5 封的节奏上限，剩余候选（slabcalc、D 类）下周再投。下周起新增目标：再筛 10~15 个家装/DIY 中小站，外链一律指向 bags 页与 slab-cost 页两个 URL。
 
 ---
 

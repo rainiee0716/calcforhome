@@ -1,6 +1,10 @@
 # 外链候选清单 — 两个核心页的引用域建设
 
-目标页：`/concrete-slab-cost-calculator/`（12,100/月、KD 21.1，2026-11-19 起第一优先）、`/how-many-bags-of-concrete-in-a-yard/`、`/concrete-bags-calculator/`（这三个之外的页先只靠内链，不投外链）
+目标页（2026-11-22 收窄）：**只投两个 URL**——`/concrete-bags-calculator/`（全站曝光最高，409 次）和 `/concrete-slab-cost-calculator/`（12,100/月、KD 21.1）。其余 90+ 页一律不投，包括州页和 yard 页（yard 页保留内链核心地位，退出外链目标）。
+
+锚文本规范：bags 页用 `concrete bags calculator` 或 `concrete bag calculator`；slab-cost 页用 `concrete slab cost calculator`。别用 "here" / "this tool"。
+
+选源标准（哥飞 2024-07-24）：初期不追单个 DR60，先攒 **10~15 个相关度高的中小站**（家装/DIY/建材博客、计算器目录）；挑"本来就有外链指向"的页面，避开孤岛内页；只看 referring domains 数量，不看 backlink 总条数。
 目标：20~30 个引用域。本清单按"验证状态 + 可达性"整理，**DR 数字需要你用 Ahrefs 账号复核后再排优先级**（我没有你的 Ahrefs 权限，只验证了页面可达和收录内容）。
 
 核实时间：2026-11-19。每个候选的发送邮件见 [outreach-drafts.md](./outreach-drafts.md)（复制即发）。

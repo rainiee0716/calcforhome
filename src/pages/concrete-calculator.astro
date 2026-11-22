@@ -9,6 +9,16 @@ const UPDATED = '2026-11-18';
 
 const faqs = [
   {
+    question: 'How do I calculate concrete by square feet?',
+    answer:
+      'Multiply square feet by thickness in inches, divide by 12 and then by 27: square feet × (thickness ÷ 12) ÷ 27 = cubic yards. For 100 square feet at 4 inches that is 1.23 cubic yards net, 1.36 with 10% waste — about 62 bags of 80 lb mix.',
+  },
+  {
+    question: 'How many square feet does a yard of concrete cover?',
+    answer:
+      'One cubic yard covers 81 square feet at 4 inches, 64.8 square feet at 5 inches, and 54 square feet at 6 inches. Halve those numbers for a 2-inch topping slab.',
+  },
+  {
     question: 'How much concrete do I need for a 10x10 slab?',
     answer:
       'A 10x10 slab at 4 inches thick needs 1.23 cubic yards, or about 56 bags of 80 lb mix. At 5 inches it is 1.54 cubic yards and at 6 inches it is 1.85 cubic yards. Add 10% for waste on uneven ground and order 1.36 cubic yards.',
@@ -209,6 +219,36 @@ const bagRows = [
       <a href="/concrete-fence-post-calculator/">fence post calculator</a> already does that maths for
       post holes. Stepped footings and sloped slabs should be broken into rectangles and calculated
       one step at a time.</p>
+  </section>
+
+  <section class="card">
+    <h2>Concrete per square foot: the square-foot conversion table</h2>
+    <p>This page doubles as a <b>concrete square foot calculator</b> when you think in coverage
+      instead of dimensions. One cubic yard covers a fixed number of square feet at each
+      thickness — that is the whole conversion:</p>
+    <div class="table-wrap">
+      <table class="data">
+        <caption>Per-square-foot coverage by thickness, with 10% waste already included in the
+          100-square-foot rows.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Thickness</th>
+            <th scope="col">Sq ft per cubic yard</th>
+            <th scope="col">100 sq ft needs (cu yd)</th>
+            <th scope="col">80 lb bags for 100 sq ft</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>4 inches</td><td>81</td><td>1.36</td><td class="hl">62</td></tr>
+          <tr><td>5 inches</td><td>64.8</td><td>1.70</td><td class="hl">77</td></tr>
+          <tr><td>6 inches</td><td>54</td><td>2.04</td><td class="hl">92</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Using a <b>square feet concrete calculator</b> this way is the fastest sanity check there
+      is: take your area, find the row for your thickness, and scale linearly — 200 square feet
+      at 4 inches is 2.72 cubic yards, 400 square feet is 5.43. The math is
+      <code>square feet × (thickness ÷ 12) ÷ 27 = cubic yards</code>, then add 10%.</p>
   </section>
 
   <section class="card">
