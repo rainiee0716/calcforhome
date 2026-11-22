@@ -19,11 +19,12 @@
 | homoper | HomoperMedia@gmail.com（Gmail 代发） | 2026-11-20 | 2026-11-27 | Message sent |
 | calculatingconcrete | info@calculatingconcrete.com（Gmail 代发） | 2026-11-20 | 2026-11-27 | Message sent |
 | concretecalcs | contact@concretecalcs.com（Gmail 代发） | 2026-11-20 | 2026-11-27 | Message sent。注意：其站内表单是演示品不会真发送，别再填 |
-| slabcalc | 渠道待查（无 /contact 页，主机间歇不通） | — | — | 稍后换网络重试 |
-| thehomeimproving / dailyhomediy | DNS 不通 | — | — | 换网络验证后再投 |
+| slabcalc | contact@slabcalc.co（Gmail 代发，2026-11-22 找到邮箱） | 2026-11-22 | 2026-11-29 | Message sent |
+| thehomeimproving | mearanamahi@gmail.com（Gmail 代发，2026-11-22 恢复可达） | 2026-11-22 | 2026-11-29 | Message sent |
+| dailyhomediy | 持续 DNS 不通 | — | — | 判定死站，放弃 |
 
 > 代发说明：4 封邮件从 rainiee0716@gmail.com 的 Gmail 网页发出（2026-11-20），已存"已发送"，回复会进该收件箱。
-> 本周已发 6 封——达到每周 3~5 封的节奏上限，剩余候选（slabcalc、D 类）下周再投。下周起新增目标：再筛 10~15 个家装/DIY 中小站，外链一律指向 bags 页与 slab-cost 页两个 URL。
+> 节奏（2026-11-22 更新）：已发 8 封（11-20 ×6、11-22 ×2）。后续改为**每天 1~2 封**的持续节奏（上不封顶 8~10 封/周），新候选从家装/DIY 中小站持续补充——质量（相关度+个性化）优先于数量，绝不群发。下周起新增目标：再筛 10~15 个家装/DIY 中小站，外链一律指向 bags 页与 slab-cost 页两个 URL。
 
 ---
 
