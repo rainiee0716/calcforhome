@@ -34,10 +34,19 @@
 - **Quora**：搜 "how many bags of concrete do I need" 等问题，认真答一道带一次链接；两个目标词的第一页已有帖子占位
 - **博客评论**：英文语法 `inurl:blog "leave a comment" concrete calculator`（群友的中文语法是 `inurl:blog "我要发表看法"`，英文站换这个）；只评有实质内容的相关博文，评论里不带链接（带链接必进垃圾箱），靠评论者资料页挂站
 
-## 四、GitHub（今天已完成 ✅）
+## 四、GitHub（已完成 ✅）
 
-- 仓库 github.com/rainiee0716/calcforhome 是 public——README 已加线上地址和完整项目介绍（2026-11-22）
-- 待用户在 repo Settings 里把 Website 字段从 vercel.app 临时地址改成 https://www.calcforhome.com/
+- 仓库 github.com/rainiee0716/calcforhome（public）
+- README 含线上地址 ✅（2026-11-22）
+- 仓库 Website 字段 = https://www.calcforhome.com/ ✅（2026-11-23 经 API 设置，已验证渲染）
+- 仓库 description 已补关键词文案 ✅（2026-11-23）
+
+## 四点五、自定义域名邮箱（ImprovMX，2026-11-23 配置完成）
+
+- rainiee@calcforhome.com → 转发 rainiee0716@gmail.com（通配别名 *@calcforhome.com）
+- DNS 记录已在 Spaceship 生效（MX×2 + SPF，权威服务器确认）
+- 转发链路端到端测试通过（SaaSHub 确认邮件已收到）
+- **所有平台注册/署名从现在起统一用 rainiee@calcforhome.com**；SaaSHub 账号：calcforhome / 密码同 ImprovMX
 
 ## 五、4 周后效率复盘（12-20 前后）
 
