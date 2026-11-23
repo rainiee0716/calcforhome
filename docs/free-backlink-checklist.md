@@ -28,7 +28,21 @@
 
 文章规则：每篇 600~900 词，一个主题，正文 2~3 处完整锚文本（`concrete bags calculator` / `concrete slab cost calculator` / `how many bags of concrete in a yard`），别写 "click here"；三平台别发同一篇原文——各改写 30% 避免重复内容。
 
-## 三、社区类（下周开始，每天 20 分钟）
+## 三、社区类（已跑通 ✅ 2026-11-23）
+
+- **Quora**：✅ 已发布首个答案（"How many 80lb bags of concrete are in a yard?"，链接指向 yard 页，新账号答案先走审核）。账号已登录（既有账号），之后每天 1 题节奏
+- **每日跑通的渠道（已验证可全自动）**：dev.to 文章、Substack 文章、Quora 答题、邮件 pitch 1~2 封、SaaSHub 待审核
+- **IAB 内跑不通、需你桌面浏览器的**：Medium（App 强推）、IndieHackers（Firebase 弹窗被挡）、Hacker News（注册关闭中）
+
+### Quora 已发答案存档
+- 问题：How many 80lb bags of concrete are in a yard?
+- 链接：quora.com/How-many-80lb-bags-of-concrete-are-in-a-yard/answer/Cc-陈-13
+- 状态：PREVIEW/审核中（新账号+外链正常流程），通过后链接可点
+
+## 三点五、其他平台（2026-11-23 跑通尝试结果）
+- **SaaSHub**：✅ 产品已提交（审核队列中）。审核通过后需补：分类（Calculators/Home Improvement）、竞品列表（calculator.net、slabcalc.co 等）、产品验证（会用 rainiee@calcforhome.com 发确认信）
+- **Hacker News**：❌ 注册已关闭（HN 周期性关闭开放注册，隔几周再试）
+- **Betapage / AlternativeTo**：未试（下批）
 
 - **Reddit**：r/DIY、r/HomeImprovement、r/landscaping——先答题攒 karma，被问到计算问题时才自然带链接；新号直接发链接=秒删+域名进黑名单
 - **Quora**：搜 "how many bags of concrete do I need" 等问题，认真答一道带一次链接；两个目标词的第一页已有帖子占位
