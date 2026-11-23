@@ -21,8 +21,8 @@
 
 | 平台 | 入口 | 账号 | 锚文本 | 状态 |
 |---|---|---|---|---|
-| Medium | medium.com（Google 登录可直通） | Google 账号 | 正文完整词组可点 | ☐ 草稿已备：docs/article-medium-bags-per-yard.md |
-| dev.to | dev.to/enter | GitHub/Google 登录 | 同上 | ☐（"build in public" 角度复用同一篇改写） |
+| Medium | medium.com（Google 登录可直通） | Google 账号 | 正文完整词组可点 | ⚠️ 账号已通（Google 直登），但 Medium 把 IAB 判为移动端强推 App 编辑器，网页编辑器打不开——**需你在桌面浏览器发布**，草稿在 docs/article-medium-bags-per-yard.md |
+| dev.to | dev.to/enter | Google 登录 | 完整锚文本 | ✅ 2026-11-23 已发布：dev.to/cc_df91c4a3f6d5a15f18577/how-many-bags-of-concrete-in-a-yard-the-math-most-diyers-get-wrong-5b9d（3 条 calcforhome 链接） |
 | Substack | substack.com（Google 登录） | Google 账号 | 同上 | ☐ |
 | Notion 公开页 | notion.site | 已有则用 | 同上 | ☐ |
 
