@@ -36,7 +36,8 @@
 | SaaSHub | calcforhome / rainiee@calcforhome.com / Cfh#2026calc! | 已验证登录 |
 | ImprovMX | rainiee0716@gmail.com / Cfh#2026calc! | 已配置 rainiee@calcforhome.com 通配转发 |
 | GitHub | rainiee0716（本机 keychain 有凭据，API 可用） | gh 无 CLI，用 git credential fill 取 token |
-| Blogger/Hackernoon/Tumblr | 待注册（Google 登录可通） | 每周任务尝试 |
+| **Blogger** | CalcForHome Field Notes（calcforhome.blogspot.com）/ Google 登录 / Cfh#2026calc! 同密码 | ✅ 2026-11-24 建成，首篇文章待发（编辑器按钮在 IAB 内打不开，每日任务重试或用户手动点"新建博文"） |
+| Hackernoon/Tumblr | 待注册（Google 登录可通） | 每周任务尝试 |
 
 ## 锚文本与质量红线
 
