@@ -25,6 +25,8 @@
 | 11-23 | GitHub 仓库 | README + Website 字段 + description | 首页 | ✅ 已上线（dofollow） |
 | 11-24 | Substack | 文章 What a Concrete Slab Actually Costs in 2026（slab-cost/yard/bags 链接） | B+C+A | ✅ 已上线（calcforhome.substack.com/p/what-a-concrete-slab-actually-costs） |
 | 11-25 | Quora | 答案：80lb bags per cubic yard 问题 | C | 已发布（新账号审核中，链接待放行） |
+| 11-26 | dev.to | 文章 Sonotube Footings: How Much Concrete Per Tube | E+A+frost hub | ✅ 已上线（dev.to/.../sonotube-footings-...-2m4k） |
+| 11-26 | theconcretetalk（邮件） | 客座 pitch（混凝土垂直站，最对口） | B+C | 已发等回复 |
 
 ## 各平台账号速查
 
@@ -36,7 +38,7 @@
 | SaaSHub | calcforhome / rainiee@calcforhome.com / Cfh#2026calc! | 已验证登录 |
 | ImprovMX | rainiee0716@gmail.com / Cfh#2026calc! | 已配置 rainiee@calcforhome.com 通配转发 |
 | GitHub | rainiee0716（本机 keychain 有凭据，API 可用） | gh 无 CLI，用 git credential fill 取 token |
-| **Blogger** | CalcForHome Field Notes（calcforhome.blogspot.com）/ Google 登录 / Cfh#2026calc! 同密码 | ✅ 2026-11-24 建成，首篇文章待发（编辑器按钮在 IAB 内打不开，每日任务重试或用户手动点"新建博文"） |
+| **Blogger** | CalcForHome Field Notes（calcforhome.blogspot.com）/ Google 登录 / Cfh#2026calc! 同密码 | ✅ 建成。首篇文章：11-24、11-26 两次自动点击均被弹窗拦截——**需用户在 IAB 手动点左侧栏"新建博文"**（真人环境可能直接弹出），或桌面 Chrome 发 |
 | Hackernoon/Tumblr | 待注册（Google 登录可通） | 每周任务尝试 |
 
 ## 锚文本与质量红线
