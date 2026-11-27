@@ -25,6 +25,8 @@
 | 11-23 | GitHub 仓库 | README + Website 字段 + description | 首页 | ✅ 已上线（dofollow） |
 | 11-24 | Substack | 文章 What a Concrete Slab Actually Costs in 2026（slab-cost/yard/bags 链接） | B+C+A | ✅ 已上线（calcforhome.substack.com/p/what-a-concrete-slab-actually-costs） |
 | 11-25 | Quora | 答案：80lb bags per cubic yard 问题 | C | 已发布（新账号审核中，链接待放行） |
+| 11-27 | 跟进邮件 ×6 | roohome/homoper/calculatingconcrete/concretecalcs/mearanamahi/slabcalc | B+C | 全部 Message sent（11-27） |
+| 11-27 | dev.to | 文章 Frost Depth by State: The Number Inspectors Actually Enforce（frost hub/fence post/bags 链接） | frost hub+A | ✅ 已上线（dev.to/.../frost-depth-by-state-the-number-inspectors-actually-enforce-4g8k） |
 | 11-26 | dev.to | 文章 Sonotube Footings: How Much Concrete Per Tube | E+A+frost hub | ✅ 已上线（dev.to/.../sonotube-footings-...-2m4k） |
 | 11-26 | theconcretetalk（邮件） | 客座 pitch（混凝土垂直站，最对口） | B+C | 已发等回复 |
 
